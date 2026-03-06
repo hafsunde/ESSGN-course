@@ -1,0 +1,211 @@
+---
+title: "Behavioral Genetics: Causal Effect, R^2, and Omitted Variable Bias"
+subtitle: "Color-mapped equation walkthrough"
+author: "ESSGN 2026 Workshop"
+format:
+  revealjs:
+    theme: dark
+    transition: slide
+    incremental: true
+    slide-number: true
+    center: false
+    chalkboard: false
+    scrollable: true
+    width: 1280
+    height: 720
+    margin: 0.08
+---
+
+## Model Setup
+
+We start with a simple structural equation:
+
+$$ Y_i = {\color{orange}{a_1X_i}} + {\color{deepskyblue}{e_i}} $$
+
+- $\color{orange}{a_1X_i}$: causal part from $X$ to $Y$
+- $\color{deepskyblue}{e_i}$: residual (everything else)
+
+
+::: {.fragment}
+Assumption for the baseline case:
+$$
+\mathrm{Cov}(X,e)=0
+$$
+:::
+
+---
+
+## Notation Simplification
+
+To simplify later derivations, define:
+
+$$
+\color{orange}{A_i} \equiv \color{orange}{a_1X_i}
+$$
+
+Then the model is:
+
+::: {.fragment}
+$$
+Y_i = \color{orange}{A_i} + \color{deepskyblue}{e_i}
+$$
+:::
+
+From this point on, $\color{orange}{A_i}$ denotes the scaled component from $\color{orange}{X}$.
+
+---
+
+## Variance Decomposition (Baseline)
+
+From the variance-sum law:
+
+$$
+\mathrm{Var}(Y)
+= {\color{orange}{\mathrm{Var}(A)}}
++ {\color{deepskyblue}{\mathrm{Var}(e)}}
+$$
+
+Interpretation:
+
+- $\color{orange}{\mathrm{Var}(A)}$ is variance in $Y$ attributable to $X$
+- $\color{deepskyblue}{\mathrm{Var}(e)}$ is unexplained residual variance
+
+---
+
+## Standardized Share (R^2)
+
+In this one-predictor baseline setup:
+
+$$
+R^2
+= \frac{{\color{orange}{\mathrm{Var}(A)}}}{\mathrm{Var}(Y)}
+$$
+
+So $R^2$ is the share of total variance due to the colored causal term.
+
+---
+
+## Why OLS Is Unbiased Here
+
+Simple regression slope:
+
+$$
+\hat{\beta}
+= \frac{\mathrm{Cov}(X,Y)}{\mathrm{Var}(X)}
+$$
+
+Substitute $Y_i=\color{orange}{A_i}+\color{deepskyblue}{e_i}$:
+
+::: {.fragment}
+$$
+\hat{\beta}
+= \frac{{\color{orange}{\mathrm{Cov}(X,A)}} + {\color{crimson}{\mathrm{Cov}(X,e)}}}{\mathrm{Var}(X)}
+$$
+:::
+
+If $\mathrm{Cov}(X,e)=0$, then:
+
+::: {.fragment}
+$$
+\hat{\beta}=\frac{\mathrm{Cov}(X,A)}{\mathrm{Var}(X)}=a_1
+$$
+:::
+
+because $A_i=a_1X_i$ implies $\mathrm{Cov}(X,A)=a_1\mathrm{Var}(X)$.
+
+---
+
+## Covariance Matrix View (Baseline)
+
+For $(A,e)$, baseline assumption gives:
+
+$$
+\Sigma_{(A,e)}=
+\begin{bmatrix}
+\mathrm{Var}(A) & {\color{crimson}{0}} \\
+{\color{crimson}{0}} & \mathrm{Var}(e)
+\end{bmatrix}
+$$
+
+Off-diagonal zero means no correlation between explained and residual components.
+
+---
+
+## What Changes If $A$ and $e$ Are Correlated?
+
+Now let:
+
+$$
+\mathrm{Cov}(A,e)\neq 0
+$$
+
+Then:
+
+::: {.fragment}
+$$
+\mathrm{Var}(Y)
+= {\color{orange}{\mathrm{Var}(A)}}
++ {\color{deepskyblue}{\mathrm{Var}(e)}}
++ {\color{crimson}{2\mathrm{Cov}(A,e)}}
+$$
+:::
+
+So $R^2$ is no longer only the pure $\color{orange}{\mathrm{Var}(A)}$ component.
+
+---
+
+## Biased Regression Coefficient
+
+With $\mathrm{Cov}(X,e)\neq 0$:
+
+$$
+\hat{\beta}
+= a_1 + {\color{crimson}{\frac{\mathrm{Cov}(X,e)}{\mathrm{Var}(X)}}}
+$$
+
+Equivalent form:
+
+::: {.fragment}
+$$
+\hat{\beta}
+= a_1 + {\color{crimson}{r_{Xe}\frac{\sigma_e}{\sigma_X}}}
+$$
+:::
+
+Meaning:
+
+- The red term $\color{crimson}{\frac{\mathrm{Cov}(X,e)}{\mathrm{Var}(X)}}$ is bias from confounding / omitted causes
+- $\hat{\beta}$ is no longer the causal effect $a_1$
+
+---
+
+## Omitted Variable Intuition
+
+Suppose an omitted factor $U$ affects both $X$ and $Y$:
+
+$$
+X \leftarrow U \rightarrow Y
+$$
+
+Then $U$ leaks into the residual $e$, creating:
+
+::: {.fragment}
+$$
+\mathrm{Cov}(X,e)\neq 0
+$$
+:::
+
+That is exactly the red bias pathway in previous equations.
+
+---
+
+## Takeaway
+
+$$
+Y_i={\color{orange}{A_i}}+{\color{deepskyblue}{e_i}}
+$$
+
+1. If $\mathrm{Cov}(A,e)=0$: $R^2$ cleanly reflects explained variance and $\hat{\beta}=a_1$.
+2. If $\mathrm{Cov}(A,e)\neq 0$: covariance enters variance decomposition, and if $\mathrm{Cov}(X,e)\neq0$, $\hat{\beta}$ is biased.
+3. In behavioral genetics, this is why causal interpretation needs stronger identification than simple regression.
+
