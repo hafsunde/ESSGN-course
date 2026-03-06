@@ -42,6 +42,7 @@ Run these commands from the project root (`variance-sum-quarto-manim`).
 
 ```powershell
 python -m manim --format=mp4 --fps 30 -r 1280,720 manim/variance_sum.py VarianceOfSumScene
+python -m manim --format=mp4 --fps 30 -r 1280,720 manim/behavioral_genetics_bias.py BehavioralGeneticsBiasScene
 ```
 
 Expected output file:
