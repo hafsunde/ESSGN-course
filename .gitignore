@@ -1,0 +1,22 @@
+# --- Python cache/artifacts ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# --- Manim generated output ---
+media/
+
+# --- Quarto generated output ---
+.quarto/
+
+# --- Local environment files ---
+.env
+.venv/
+venv/
+
+# --- OS/editor noise ---
+.DS_Store
+Thumbs.db
+*.log
+*.tmp
+*~
