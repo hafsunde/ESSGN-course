@@ -183,7 +183,7 @@ Y_i = \color{orange}{A_i} + \color{deepskyblue}{e_i}
 </ul>
 </section>
 <section id="standardized-share-r2" class="slide level2">
-<h2>Standardized Share (R^2)</h2>
+<h2>Standardized Share (<span class="math inline">\(R^2\)</span>)</h2>
 <p>In this one-predictor baseline setup:</p>
 <p><span class="math display">\[
 R^2
@@ -191,27 +191,20 @@ R^2
 \]</span></p>
 <p>So <span class="math inline">\(R^2\)</span> is the share of total variance due to the colored causal term.</p>
 </section>
-<section id="why-ols-is-unbiased-here" class="slide level2">
-<h2>Why OLS Is Unbiased Here</h2>
-<p>Simple regression slope:</p>
+<section id="from-hatbeta-to-a_1" class="slide level2">
+<h2>From <span class="math inline">\(\hat{\beta}\)</span> to <span class="math inline">\(a_1\)</span></h2>
+<p>By definition, the estimated slope is:</p>
 <p><span class="math display">\[
 \hat{\beta}
 = \frac{\mathrm{Cov}(X,Y)}{\mathrm{Var}(X)}
 \]</span></p>
-<p>Substitute <span class="math inline">\(Y_i=\color{orange}{A_i}+\color{deepskyblue}{e_i}\)</span>:</p>
 <div class="fragment">
 <p><span class="math display">\[
 \hat{\beta}
-= \frac{{\color{orange}{\mathrm{Cov}(X,A)}} + {\color{crimson}{\mathrm{Cov}(X,e)}}}{\mathrm{Var}(X)}
+= a_1 + {\color{crimson}{\frac{\mathrm{Cov}(X,e)}{\mathrm{Var}(X)}}}
 \]</span></p>
 </div>
-<p>If <span class="math inline">\(\mathrm{Cov}(X,e)=0\)</span>, then:</p>
-<div class="fragment">
-<p><span class="math display">\[
-\hat{\beta}=\frac{\mathrm{Cov}(X,A)}{\mathrm{Var}(X)}=a_1
-\]</span></p>
-</div>
-<p>because <span class="math inline">\(A_i=a_1X_i\)</span> implies <span class="math inline">\(\mathrm{Cov}(X,A)=a_1\mathrm{Var}(X)\)</span>.</p>
+<p>So the red term is the correction from the observed regression slope <span class="math inline">\(\hat{\beta}\)</span> to the causal effect <span class="math inline">\(a_1\)</span>.</p>
 </section>
 <section id="covariance-matrix-view-baseline" class="slide level2">
 <h2>Covariance Matrix View (Baseline)</h2>

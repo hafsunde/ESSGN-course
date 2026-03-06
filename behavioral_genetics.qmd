@@ -72,7 +72,7 @@ Interpretation:
 
 ---
 
-## Standardized Share (R^2)
+## Standardized Share ($R^2$)
 
 In this one-predictor baseline setup:
 
@@ -85,33 +85,24 @@ So $R^2$ is the share of total variance due to the colored causal term.
 
 ---
 
-## Why OLS Is Unbiased Here
+## From $\hat{\beta}$ to $a_1$
 
-Simple regression slope:
+By definition, the estimated slope is:
 
 $$
 \hat{\beta}
 = \frac{\mathrm{Cov}(X,Y)}{\mathrm{Var}(X)}
 $$
 
-Substitute $Y_i=\color{orange}{A_i}+\color{deepskyblue}{e_i}$:
-
 ::: {.fragment}
 $$
 \hat{\beta}
-= \frac{{\color{orange}{\mathrm{Cov}(X,A)}} + {\color{crimson}{\mathrm{Cov}(X,e)}}}{\mathrm{Var}(X)}
+= a_1 + {\color{crimson}{\frac{\mathrm{Cov}(X,e)}{\mathrm{Var}(X)}}}
 $$
 :::
 
-If $\mathrm{Cov}(X,e)=0$, then:
 
-::: {.fragment}
-$$
-\hat{\beta}=\frac{\mathrm{Cov}(X,A)}{\mathrm{Var}(X)}=a_1
-$$
-:::
-
-because $A_i=a_1X_i$ implies $\mathrm{Cov}(X,A)=a_1\mathrm{Var}(X)$.
+So the red term is the correction from the observed regression slope $\hat{\beta}$ to the causal effect $a_1$.
 
 ---
 
@@ -208,4 +199,3 @@ $$
 1. If $\mathrm{Cov}(A,e)=0$: $R^2$ cleanly reflects explained variance and $\hat{\beta}=a_1$.
 2. If $\mathrm{Cov}(A,e)\neq 0$: covariance enters variance decomposition, and if $\mathrm{Cov}(X,e)\neq0$, $\hat{\beta}$ is biased.
 3. In behavioral genetics, this is why causal interpretation needs stronger identification than simple regression.
-
