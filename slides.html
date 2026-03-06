@@ -6,11 +6,11 @@
 <script src="slides_files/libs/quarto-html/tippy.umd.min.js"></script>
 <link href="slides_files/libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="slides_files/libs/quarto-html/light-border.css" rel="stylesheet">
-<link href="slides_files/libs/quarto-html/quarto-syntax-highlighting-ed96de9b727972fe78a7b5d16c58bf87.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
+<link href="slides_files/libs/quarto-html/quarto-syntax-highlighting-dark-4d9afe2b8d18ee9fa5d0d57b5ed4214d.css" rel="stylesheet" id="quarto-text-highlighting-styles"><meta charset="utf-8">
   <meta name="generator" content="quarto-1.8.27">
 
   <meta name="author" content="Your Name">
-  <title>slides</title>
+  <title>Variance of a Sum from a 2x2 Covariance Matrix</title>
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
@@ -29,7 +29,8 @@
       vertical-align: middle;
     }
   </style>
-  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto-534cd8e3a96973385dffff3f4709048d.css">
+  <link rel="stylesheet" href="slides_files/libs/revealjs/dist/theme/quarto-327cab17de08e4a17faa7d61f48ae591.css">
+  <link rel="stylesheet" href="slides.css">
   <link href="slides_files/libs/revealjs/plugin/quarto-line-highlight/line-highlight.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/menu.css" rel="stylesheet">
   <link href="slides_files/libs/revealjs/plugin/reveal-menu/quarto-menu.css" rel="stylesheet">
@@ -122,7 +123,7 @@
     }
   </style>
 </head>
-<body class="quarto-light">
+<body class="quarto-dark">
   <div class="reveal">
     <div class="slides">
 
@@ -178,9 +179,9 @@ Your browser does not support the video tag.
 \]</span></p>
 <p>This identity underlies many decomposition arguments:</p>
 <ul>
-<li>Partitioning phenotypic variance into components</li>
-<li>Understanding when covariance terms can be ignored (or cannot)</li>
-<li>Building intuition before moving to matrix-based mixed models</li>
+<li class="fragment">Partitioning phenotypic variance into components</li>
+<li class="fragment">Understanding when covariance terms can be ignored (or cannot)</li>
+<li class="fragment">Building intuition before moving to matrix-based mixed models</li>
 </ul>
 <script>
 document.addEventListener("DOMContentLoaded", function () {
@@ -274,7 +275,7 @@ document.addEventListener("DOMContentLoaded", function () {
         progress: true,
 
         // Display the page number of the current slide
-        slideNumber: false,
+        slideNumber: 'c/t',
 
         // 'all', 'print', or 'speaker'
         showSlideNumber: 'all',
@@ -379,7 +380,7 @@ document.addEventListener("DOMContentLoaded", function () {
         previewLinks: false,
 
         // Transition style (none/fade/slide/convex/concave/zoom)
-        transition: 'none',
+        transition: 'slide',
 
         // Transition speed (default/fast/slow)
         transitionSpeed: 'default',

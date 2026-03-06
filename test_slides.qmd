@@ -1,97 +1,50 @@
 ---
-
 title: "Heritability & Genetic Correlations"
-
 subtitle: ""
-
 author: "ESSGN 2026 Workshop"
-
 date: 2026-06-01
-
 format:
-
   revealjs:
-
-    theme: simple
-
+    theme: dark
     slide-number: true
-
     center: false
-
     chalkboard: false
-
     smaller: false
-
     scrollable: false
-
     transition: fade
-
     fig-align: center
-
     html-math-method: mathjax
-
     width: 1280
-
     height: 720
-
     margin: 0.1
-
     code-fold: true
-
 execute:
-
   echo: true
-
   warning: false
-
   message: false
-
 ---
-
- 
 
 # Part 0: Statistical Foundations {background-color="#8e44ad" style="color: white;"}
 
- 
-
 ## Random variables and expectation
-
- 
 
 A **random variable** $X$ is a quantity whose value is uncertain. It has a distribution.
 
 The **expectation** (mean) summarizes its center:
 
- 
-
 $$E[X] = \mu_X$$
-
- 
 
 A linear transformation of a random variable $aX + b$ has expectation:
 
- 
-
 $$E[aX + b] = a\,E[X] + b$$
-
- 
 
 ## Expectation of a sum of random variables
 
- 
-
-The expectation of a **sum** of random variables is the sum of their individual expectations — **linearity of expectation**:
-
- 
+The expectation of a **sum** of random variables is the sum of their individual expectations - **linearity of expectation**:
 
 $$E[aX + bY] = a\,E[X] + b\,E[Y]$$
 
- 
-
 $$
-
 E\left[\sum_{i=1}^n a_i X_i + c\right]
-
 = \sum_{i=1}^n a_i\,E[X_i] + c
-
 $$

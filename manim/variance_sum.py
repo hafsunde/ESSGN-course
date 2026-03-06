@@ -6,7 +6,6 @@ This file is intentionally heavily commented for beginners.
 
 from manim import *
 
-
 class VarianceOfSumScene(Scene):
     """
     A Scene is the basic Manim unit of animation.
@@ -21,6 +20,8 @@ class VarianceOfSumScene(Scene):
         # Color roles used consistently from matrix to equation.
         variance_color = YELLOW
         covariance_color = BLUE
+        variable_index_color = ORANGE
+        matrix_symbol_color = TEAL_B
 
         # A short title helps orient the viewer before equations appear.
         title = Text("The variance sum law", font_size=42)
@@ -30,14 +31,69 @@ class VarianceOfSumScene(Scene):
 
         # Start with the general double-sum identity for any number of variables.
         eq_general = MathTex(
-            r"\mathrm{Var}\!\left(\sum_{l=1}^{m} X_l\right)",
+            r"\mathrm{Var}\!\left(\sum_{l=1}^{m}",
+            r"X_l",
+            r"\right)",
             r"=",
-            r"\sum_{i=1}^{m}\sum_{j=1}^{m}\mathbf{X}_{ij}",
+            r"\sum_{i=1}^{m}\sum_{j=1}^{m}",
+            r"\mathbf{X}_{ij}",
             font_size=44,
         )
         eq_general.move_to(DOWN * 2.2)
         self.play(Write(eq_general))
         self.wait(pause_long)
+
+        # Highlight what X_l means before moving to the matrix.
+        xl_box = SurroundingRectangle(eq_general[1], color=variable_index_color, buff=0.08)
+        xl_symbol = MathTex(r"X_l", font_size=38, color=variable_index_color)
+        xl_text = Text(
+            "refers to variable l (e.g., X_1 or X_2).",
+            font_size=28,
+        )
+        xl_label = VGroup(xl_symbol, xl_text).arrange(RIGHT, buff=0.2)
+        xl_label.next_to(eq_general, UP, buff=0.85).align_to(eq_general, LEFT)
+        xl_arrow = Arrow(
+            xl_label.get_bottom(),
+            eq_general[1].get_top(),
+            buff=0.08,
+            stroke_width=4,
+            color=variable_index_color,
+            max_tip_length_to_length_ratio=0.2,
+        )
+        self.play(
+            Create(xl_box),
+            eq_general[1].animate.set_color(variable_index_color),
+            FadeIn(xl_label),
+            GrowArrow(xl_arrow),
+        )
+        self.wait(pause_short)
+        self.play(FadeOut(xl_box), FadeOut(xl_label), FadeOut(xl_arrow))
+
+        # Highlight bold X and connect it to covariance-matrix meaning.
+        x_symbol_box = SurroundingRectangle(eq_general[5], color=matrix_symbol_color, buff=0.08)
+        matrix_symbol = MathTex(r"\mathbf{X}", font_size=38, color=matrix_symbol_color)
+        matrix_text = Text(
+            "is the covariance matrix for these variables.",
+            font_size=28,
+        )
+        x_symbol_label = VGroup(matrix_symbol, matrix_text).arrange(RIGHT, buff=0.2)
+        x_symbol_label.next_to(eq_general, UP, buff=0.85).align_to(eq_general, RIGHT)
+        x_symbol_arrow = Arrow(
+            x_symbol_label.get_bottom(),
+            eq_general[5].get_top(),
+            buff=0.08,
+            stroke_width=4,
+            color=matrix_symbol_color,
+            max_tip_length_to_length_ratio=0.2,
+        )
+        self.play(
+            Create(x_symbol_box),
+            eq_general[5].animate.set_color(matrix_symbol_color),
+            FadeIn(x_symbol_label),
+            GrowArrow(x_symbol_arrow),
+        )
+        self.wait(pause_long)
+        self.play(FadeOut(x_symbol_box), FadeOut(x_symbol_label), FadeOut(x_symbol_arrow))
 
         # Introduce the covariance matrix directly, named bold X.
         x_matrix = MathTex(

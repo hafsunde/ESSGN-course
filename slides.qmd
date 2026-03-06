@@ -1,14 +1,19 @@
-﻿---
+---
 title: "Variance of a Sum from a 2x2 Covariance Matrix"
 subtitle: "Minimal Quarto + reveal.js + Manim example"
 author: "Your Name"
 format:
   revealjs:
-    theme: beige
+    theme: dark
+    css: slides.css
     transition: slide
     incremental: true
     slide-number: true
     mathjax: default
+execute:
+  echo: true
+  warning: false
+  message: false
 ---
 
 ## Variance of a Sum
