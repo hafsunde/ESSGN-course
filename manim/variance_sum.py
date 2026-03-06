@@ -29,55 +29,191 @@ class VarianceOfSumScene(Scene):
         self.play(Write(title))
         self.wait(pause_short)
 
-        # Start with the general double-sum identity for any number of variables.
+        # 1) Start from the familiar two-variable identity.
+        eq_known = MathTex(
+            r"\mathrm{Var}(X+Y)",
+            r"=",
+            r"\mathrm{Var}(X)",
+            r"+",
+            r"\mathrm{Var}(Y)",
+            r"+",
+            r"2\mathrm{Cov}(X,Y)",
+            font_size=48,
+        )
+        eq_known.move_to(DOWN * 2.2)
+        eq_known[2].set_color(variance_color)
+        eq_known[4].set_color(variance_color)
+        eq_known[6].set_color(covariance_color)
+        self.play(Write(eq_known))
+        self.wait(pause_long)
+
+        # Switch to sigma notation before moving into the matrix entries.
+        eq_sigma = MathTex(
+            r"\mathrm{Var}(X+Y)",
+            r"=",
+            r"\sigma_{\scriptscriptstyle X}^{2}",
+            r"+",
+            r"\sigma_{\scriptscriptstyle Y}^{2}",
+            r"+",
+            r"2\sigma_{\scriptscriptstyle XY}",
+            font_size=48,
+        )
+        eq_sigma.move_to(eq_known)
+        eq_sigma[2].set_color(variance_color)
+        eq_sigma[4].set_color(variance_color)
+        eq_sigma[6].set_color(covariance_color)
+        self.play(TransformMatchingTex(eq_known, eq_sigma))
+        self.wait(pause_short)
+
+        # 2) Show the 2x2 covariance matrix and recover the same identity.
+        sigma_matrix = MathTex(
+            r"\mathbf{\Sigma}=",
+            r"\begin{bmatrix}",
+            r"\sigma_{\scriptscriptstyle X}^{2}",
+            r"&",
+            r"\sigma_{\scriptscriptstyle XY}",
+            r"\\",
+            r"\sigma_{\scriptscriptstyle XY}",
+            r"&",
+            r"\sigma_{\scriptscriptstyle Y}^{2}",
+            r"\end{bmatrix}",
+            font_size=54,
+        )
+        sigma_matrix.move_to(UP * 0.9)
+
+        # Persistent colors on matrix entries.
+        sigma_matrix[2].set_color(variance_color)
+        sigma_matrix[8].set_color(variance_color)
+        sigma_matrix[4].set_color(covariance_color)
+        sigma_matrix[6].set_color(covariance_color)
+
+        self.play(FadeIn(sigma_matrix, shift=0.2 * DOWN), run_time=1.2)
+        self.wait(pause_short)
+        self.play(FadeOut(eq_sigma))
+
+        eq_from_matrix = MathTex(
+            r"\mathrm{Var}(X+Y)",
+            r"=",
+            r"\sigma_{\scriptscriptstyle X}^{2}",
+            r"+",
+            r"\sigma_{\scriptscriptstyle Y}^{2}",
+            r"+",
+            r"\sigma_{\scriptscriptstyle XY}",
+            r"+",
+            r"\sigma_{\scriptscriptstyle XY}",
+            font_size=48,
+        )
+        eq_from_matrix.move_to(DOWN * 2.2)
+        eq_from_matrix[2].set_color(variance_color)
+        eq_from_matrix[4].set_color(variance_color)
+        eq_from_matrix[6].set_color(covariance_color)
+        eq_from_matrix[8].set_color(covariance_color)
+
+        self.play(Write(eq_from_matrix[0:2]))
+
+        # First copy the diagonal entries (variances), then off-diagonals (covariances).
+        self.play(
+            TransformFromCopy(sigma_matrix[2], eq_from_matrix[2]),
+            Write(eq_from_matrix[3]),
+            TransformFromCopy(sigma_matrix[8], eq_from_matrix[4]),
+            run_time=1.3,
+        )
+        self.wait(pause_short)
+
+        self.play(
+            Write(eq_from_matrix[5]),
+            TransformFromCopy(sigma_matrix[4], eq_from_matrix[6]),
+            Write(eq_from_matrix[7]),
+            TransformFromCopy(sigma_matrix[6], eq_from_matrix[8]),
+            run_time=1.3,
+        )
+        self.wait(pause_long)
+
+        self.play(TransformMatchingTex(eq_from_matrix, eq_sigma))
+        self.wait(pause_short)
+
+        # 3) Generalize: summing all entries of the covariance matrix.
+        eq_two_sum = MathTex(
+            r"\mathrm{Var}(X+Y)",
+            r"=",
+            r"\sum_{i=1}^{2}\sum_{j=1}^{2}\mathbf{\Sigma}_{ij}",
+            font_size=42,
+        )
+        eq_two_sum.move_to(DOWN * 2.2)
+        self.play(TransformMatchingTex(eq_sigma, eq_two_sum), run_time=1.1)
+        self.wait(pause_short)
+
         eq_general = MathTex(
             r"\mathrm{Var}\!\left(\sum_{l=1}^{m}",
             r"X_l",
             r"\right)",
             r"=",
             r"\sum_{i=1}^{m}\sum_{j=1}^{m}",
-            r"\mathbf{X}_{ij}",
+            r"\mathbf{\Sigma}_{ij}",
             font_size=44,
         )
-        eq_general.move_to(DOWN * 2.2)
-        self.play(Write(eq_general))
+        eq_general.move_to(eq_two_sum)
+        eq_general[1].set_color(variable_index_color)
+        eq_general[5].set_color(matrix_symbol_color)
+        self.play(TransformMatchingTex(eq_two_sum, eq_general), run_time=1.2)
+        self.wait(pause_short)
+
+        # Expand the visual from 2x2 to a larger m x m covariance matrix.
+        sigma_matrix_large = MathTex(
+            r"\mathbf{\Sigma}=",
+            r"\begin{bmatrix}",
+            r"\sigma_{\scriptscriptstyle 11}",
+            r"&",
+            r"\sigma_{\scriptscriptstyle 12}",
+            r"&",
+            r"\cdots",
+            r"&",
+            r"\sigma_{\scriptscriptstyle 1m}",
+            r"\\",
+            r"\sigma_{\scriptscriptstyle 21}",
+            r"&",
+            r"\sigma_{\scriptscriptstyle 22}",
+            r"&",
+            r"\cdots",
+            r"&",
+            r"\sigma_{\scriptscriptstyle 2m}",
+            r"\\",
+            r"\vdots",
+            r"&",
+            r"\vdots",
+            r"&",
+            r"\ddots",
+            r"&",
+            r"\vdots",
+            r"\\",
+            r"\sigma_{\scriptscriptstyle m1}",
+            r"&",
+            r"\sigma_{\scriptscriptstyle m2}",
+            r"&",
+            r"\cdots",
+            r"&",
+            r"\sigma_{\scriptscriptstyle mm}",
+            r"\end{bmatrix}",
+            font_size=42,
+        )
+        sigma_matrix_large.move_to(sigma_matrix)
+        self.play(TransformMatchingTex(sigma_matrix, sigma_matrix_large), run_time=1.2)
+        sigma_matrix = sigma_matrix_large
+        self.wait(pause_short)
+
+        sum_caption = Text(
+            "Same idea: add every element in the covariance matrix.",
+            font_size=30,
+        )
+        sum_caption.next_to(eq_general, UP, buff=0.8)
+        self.play(FadeIn(sum_caption))
         self.wait(pause_long)
 
-        # Highlight what X_l means before moving to the matrix.
-        xl_box = SurroundingRectangle(eq_general[1], color=variable_index_color, buff=0.08)
-        xl_symbol = MathTex(r"X_l", font_size=38, color=variable_index_color)
-        xl_text = Text(
-            "refers to variable l (e.g., X_1 or X_2).",
-            font_size=28,
-        )
-        xl_label = VGroup(xl_symbol, xl_text).arrange(RIGHT, buff=0.2)
-        xl_label.next_to(eq_general, UP, buff=0.85).align_to(eq_general, LEFT)
-        xl_arrow = Arrow(
-            xl_label.get_bottom(),
-            eq_general[1].get_top(),
-            buff=0.08,
-            stroke_width=4,
-            color=variable_index_color,
-            max_tip_length_to_length_ratio=0.2,
-        )
-        self.play(
-            Create(xl_box),
-            eq_general[1].animate.set_color(variable_index_color),
-            FadeIn(xl_label),
-            GrowArrow(xl_arrow),
-        )
-        self.wait(pause_short)
-        self.play(FadeOut(xl_box), FadeOut(xl_label), FadeOut(xl_arrow))
-
-        # Highlight bold X and connect it to covariance-matrix meaning.
         x_symbol_box = SurroundingRectangle(eq_general[5], color=matrix_symbol_color, buff=0.08)
-        matrix_symbol = MathTex(r"\mathbf{X}", font_size=38, color=matrix_symbol_color)
-        matrix_text = Text(
-            "is the covariance matrix for these variables.",
-            font_size=28,
-        )
+        matrix_symbol = MathTex(r"\mathbf{\Sigma}", font_size=38, color=matrix_symbol_color)
+        matrix_text = Text("is the covariance matrix.", font_size=28)
         x_symbol_label = VGroup(matrix_symbol, matrix_text).arrange(RIGHT, buff=0.2)
-        x_symbol_label.next_to(eq_general, UP, buff=0.85).align_to(eq_general, RIGHT)
+        x_symbol_label.next_to(eq_general, UP, buff=0.8).align_to(eq_general, RIGHT)
         x_symbol_arrow = Arrow(
             x_symbol_label.get_bottom(),
             eq_general[5].get_top(),
@@ -87,150 +223,17 @@ class VarianceOfSumScene(Scene):
             max_tip_length_to_length_ratio=0.2,
         )
         self.play(
+            FadeOut(sum_caption),
             Create(x_symbol_box),
-            eq_general[5].animate.set_color(matrix_symbol_color),
             FadeIn(x_symbol_label),
             GrowArrow(x_symbol_arrow),
         )
-        self.wait(pause_long)
+        self.wait(pause_short)
         self.play(FadeOut(x_symbol_box), FadeOut(x_symbol_label), FadeOut(x_symbol_arrow))
 
-        # Introduce the covariance matrix directly, named bold X.
-        x_matrix = MathTex(
-            r"\mathbf{X}=",
-            r"\begin{bmatrix}",
-            r"\sigma_{\scriptscriptstyle 1}^{2}",
-            r"&",
-            r"\sigma_{\scriptscriptstyle 12}",
-            r"\\",
-            r"\sigma_{\scriptscriptstyle 12}",
-            r"&",
-            r"\sigma_{\scriptscriptstyle 2}^{2}",
-            r"\end{bmatrix}",
-            font_size=54,
-        )
-        x_matrix.move_to(UP * 0.9)
-
-        # Persistent colors on matrix entries.
-        x_matrix[2].set_color(variance_color)
-        x_matrix[8].set_color(variance_color)
-        x_matrix[4].set_color(covariance_color)
-        x_matrix[6].set_color(covariance_color)
-
-        self.play(FadeIn(x_matrix, shift=0.2 * DOWN), run_time=1.2)
-        self.wait(pause_short)
-
-        # Show matrix meaning in the lower equation area.
-        var_1_box = SurroundingRectangle(x_matrix[2], color=variance_color, buff=0.1)
-        var_2_box = SurroundingRectangle(x_matrix[8], color=variance_color, buff=0.1)
-        var_label = Text("Diagonal: variances", font_size=34, color=variance_color)
-        var_label.move_to(DOWN * 2.2)
-
         self.play(
-            Create(var_1_box),
-            Create(var_2_box),
-            FadeOut(eq_general),
-            FadeIn(var_label),
-        )
-        self.wait(pause_long)
-        self.play(FadeOut(var_label), FadeOut(var_1_box), FadeOut(var_2_box))
-
-        cov_12_box = SurroundingRectangle(x_matrix[4], color=covariance_color, buff=0.1)
-        cov_21_box = SurroundingRectangle(x_matrix[6], color=covariance_color, buff=0.1)
-        cov_label = Text("Off-diagonal: covariances", font_size=34, color=covariance_color)
-        cov_label.move_to(DOWN * 2.2)
-
-        self.play(
-            Create(cov_12_box),
-            Create(cov_21_box),
-            FadeIn(cov_label),
-        )
-        self.wait(pause_long)
-        self.play(FadeOut(cov_label), FadeOut(cov_12_box), FadeOut(cov_21_box))
-
-        # Build the two-variable case in two grouped movements.
-        eq_full = MathTex(
-            r"\mathrm{Var}(X_1+X_2)",
-            r"=",
-            r"\sigma_{\scriptscriptstyle 1}^{2}",
-            r"+",
-            r"\sigma_{\scriptscriptstyle 2}^{2}",
-            r"+",
-            r"\sigma_{\scriptscriptstyle 12}",
-            r"+",
-            r"\sigma_{\scriptscriptstyle 12}",
-            font_size=48,
-        )
-        eq_full.move_to(DOWN * 2.2)
-
-        # Match destination colors so copied terms retain visual identity.
-        eq_full[2].set_color(variance_color)
-        eq_full[4].set_color(variance_color)
-        eq_full[6].set_color(covariance_color)
-        eq_full[8].set_color(covariance_color)
-
-        self.play(Write(eq_full[0:2]))
-
-        # Movement 1: both variance terms together.
-        self.play(
-            TransformFromCopy(x_matrix[2], eq_full[2]),
-            Write(eq_full[3]),
-            TransformFromCopy(x_matrix[8], eq_full[4]),
-            run_time=1.3,
-        )
-        self.wait(pause_short)
-
-        # Movement 2: both covariance terms together.
-        self.play(
-            Write(eq_full[5]),
-            TransformFromCopy(x_matrix[4], eq_full[6]),
-            Write(eq_full[7]),
-            TransformFromCopy(x_matrix[6], eq_full[8]),
-            run_time=1.3,
-        )
-        self.wait(pause_long)
-
-        eq_simple = MathTex(
-            r"\mathrm{Var}(X_1+X_2)",
-            r"=",
-            r"\sigma_{\scriptscriptstyle 1}^{2}",
-            r"+",
-            r"\sigma_{\scriptscriptstyle 2}^{2}",
-            r"+",
-            r"2\sigma_{\scriptscriptstyle 12}",
-            font_size=48,
-        )
-        eq_simple.move_to(eq_full)
-        eq_simple[2].set_color(variance_color)
-        eq_simple[4].set_color(variance_color)
-        eq_simple[6].set_color(covariance_color)
-
-        self.play(TransformMatchingTex(eq_full, eq_simple))
-        self.wait(pause_long)
-
-        # Connect back to the general law: m=2 is a special case.
-        eq_special_case = MathTex(
-            r"\mathrm{Var}(X_1+X_2)",
-            r"=",
-            r"\sum_{i=1}^{2}\sum_{j=1}^{2}\mathbf{X}_{ij}",
-            r"=",
-            r"\sigma_{\scriptscriptstyle 1}^{2}",
-            r"+",
-            r"\sigma_{\scriptscriptstyle 2}^{2}",
-            r"+",
-            r"2\sigma_{\scriptscriptstyle 12}",
-            font_size=42,
-        )
-        eq_special_case.move_to(eq_simple)
-        eq_special_case[4].set_color(variance_color)
-        eq_special_case[6].set_color(variance_color)
-        eq_special_case[8].set_color(covariance_color)
-        self.play(TransformMatchingTex(eq_simple, eq_special_case), run_time=1.2)
-        self.wait(2.8)
-
-        self.play(
-            FadeOut(x_matrix),
+            FadeOut(sigma_matrix),
             FadeOut(title),
-            eq_special_case.animate.move_to(ORIGIN).scale(1.06),
+            eq_general.animate.move_to(ORIGIN).scale(1.06),
         )
         self.wait(3.0)
