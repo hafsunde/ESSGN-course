@@ -279,6 +279,248 @@ Y_i={\color{orange}{A_i}}+{\color{deepskyblue}{e_i}}
 <li class="fragment">If <span class="math inline">\(\mathrm{Cov}(A,e)\neq 0\)</span>: covariance enters variance decomposition, and if <span class="math inline">\(\mathrm{Cov}(X,e)\neq0\)</span>, <span class="math inline">\(\hat{\beta}\)</span> is biased.</li>
 <li class="fragment">In behavioral genetics, this is why causal interpretation needs stronger identification than simple regression.</li>
 </ol>
+</section>
+<section id="the-infinitesimal-model-for-genetics" class="slide level2">
+<h2>The Infinitesimal Model for Genetics</h2>
+<p>Consider a phenotype <span class="math inline">\(Y\)</span> explained by many SNPs:</p>
+<p><span class="math display">\[
+{\color{orange}{A_i}} = \sum_{j=1}^{M} {\color{gold}{a_j}} \cdot {\color{lightyellow}{X_{ij}}}
+\]</span></p>
+<ul>
+<li class="fragment"><span class="math inline">\(\color{gold}{a_j}\)</span>: effect size (weight) of SNP <span class="math inline">\(j\)</span></li>
+<li class="fragment"><span class="math inline">\(\color{lightyellow}{X_{ij}}\)</span>: genotype of individual <span class="math inline">\(i\)</span> at SNP <span class="math inline">\(j\)</span> (coded 0, 1, 2)</li>
+<li class="fragment"><span class="math inline">\(\color{orange}{A_i}\)</span>: total additive genetic component</li>
+</ul>
+<div class="fragment">
+<p><strong>Genetic variance:</strong> <span class="math display">\[
+{\color{orange}{\sigma_A^2}} = \mathrm{Var}(A) = \sum_{j=1}^{M} {\color{gold}{a_j}}^2 \cdot {\color{lightyellow}{\mathrm{Var}(X_j)}}
+\]</span></p>
+</div>
+</section>
+<section id="the-full-model-with-environment" class="slide level2">
+<h2>The Full Model with Environment</h2>
+<p>Phenotype as genetic plus environmental:</p>
+<p><span class="math display">\[
+Y_i = {\color{orange}{A_i}} + {\color{deepskyblue}{E_i}}
+\]</span></p>
+<p><strong>Heritability</strong> (SNP heritability): <span class="math display">\[
+h^2 = \frac{{\color{orange}{\sigma_A^2}}}{\mathrm{Var}(Y)}
+\]</span></p>
+<div class="fragment">
+<p><strong>Variance decomposition:</strong> <span class="math display">\[
+\mathrm{Var}(Y) = {\color{orange}{\sigma_A^2}} + {\color{deepskyblue}{\sigma_E^2}}
+\]</span></p>
+</div>
+</section>
+<section id="discovering-snp-effects-gwas" class="slide level2">
+<h2>Discovering SNP Effects: GWAS</h2>
+<p>We don’t know the true effect sizes <span class="math inline">\(\color{gold}{a_j}\)</span>. GWAS estimates them via univariate regression for each SNP:</p>
+<p><span class="math display">\[
+{\color{plum}{\hat{\beta}_j}} = \frac{\mathrm{Cov}(X_j, Y)}{\mathrm{Var}(X_j)}
+\]</span></p>
+<div class="fragment">
+<p><strong>GWAS test statistic</strong> (standardized): <span class="math display">\[
+{\color{plum}{z_j}} = \frac{{\color{plum}{\hat{\beta}_j}}}{\mathrm{SE}({\color{plum}{\hat{\beta}_j}})}
+\]</span></p>
+</div>
+<ul>
+<li class="fragment"><span class="math inline">\(\color{plum}{z_j}\)</span> measures signal strength for SNP <span class="math inline">\(j\)</span></li>
+<li class="fragment">But <strong>these estimates are confounded by Linkage Disequilibrium (LD)</strong></li>
+</ul>
+</section>
+<section id="what-is-linkage-disequilibrium-ld" class="slide level2">
+<h2>What is Linkage Disequilibrium (LD)?</h2>
+<p>LD: SNPs are in <strong>non-random association</strong> in the population.</p>
+<div class="fragment">
+<p>Two SNPs <span class="math inline">\(j\)</span> and <span class="math inline">\(k\)</span> are in LD if: <span class="math display">\[
+\mathrm{Cov}(X_j, X_k) \neq 0
+\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Examples of LD:</strong> - Adjacent SNPs on chromosome (physical proximity) - SNPs in low recombination regions - Recent mutations on same haplotype background</p>
+</div>
+</section>
+<section id="why-does-ld-occur-locally" class="slide level2">
+<h2>Why Does LD Occur Locally?</h2>
+<p>SNPs that are <strong>close together on the genome</strong> tend to be inherited together.</p>
+<div class="fragment">
+<p><strong>Genetic basis:</strong> - Recombination is rare over short distances - During meiosis, DNA segments swap between chromosomes - Segments inherited intact from parent → SNPs stay together</p>
+</div>
+<div class="fragment">
+<p><strong>Physical proximity → genetic linkage → LD</strong></p>
+<p>Two SNPs on the same chromosome → correlated genotypes → <span class="math inline">\(\mathrm{Cov}(X_j, X_k) \neq 0\)</span></p>
+</div>
+</section>
+<section id="the-ld-confounding-problem" class="slide level2">
+<h2>The LD Confounding Problem</h2>
+<p>When we regress <span class="math inline">\(Y\)</span> on SNP <span class="math inline">\(j\)</span>, we also capture the effects transmitted through other SNPs in LD with <span class="math inline">\(j\)</span>:</p>
+<div class="fragment">
+<p><span class="math display">\[
+{\color{plum}{\hat{\beta}_j}} = {\color{gold}{a_j}} + \sum_{k \neq j} {\color{gold}{a_k}} \cdot {\color{limegreen}{\rho_{jk}}}
+\]</span></p>
+</div>
+<div class="fragment">
+<p><strong>Components:</strong> - <span class="math inline">\(\color{gold}{a_j}\)</span>: true effect of SNP <span class="math inline">\(j\)</span> (what we want) - <span class="math inline">\(\sum_{k \neq j} {\color{gold}{a_k}} \cdot {\color{limegreen}{\rho_{jk}}}\)</span>: confounding bias from SNPs in LD - <span class="math inline">\(\color{limegreen}{\rho_{jk}}\)</span>: LD correlation between SNPs <span class="math inline">\(j\)</span> and <span class="math inline">\(k\)</span></p>
+</div>
+<div class="fragment">
+<p><strong>Key problem:</strong> The estimated <span class="math inline">\(\color{plum}{\hat{\beta}_j}\)</span> mixes SNP <span class="math inline">\(j\)</span>’s true effect with effects of its LD partners.</p>
+</div>
+</section>
+<section id="linkage-disequilibrium-score-ld-score" class="slide level2">
+<h2>Linkage Disequilibrium Score (LD-score)</h2>
+<p>Define the <strong>LD-score</strong> for SNP <span class="math inline">\(j\)</span>:</p>
+<p><span class="math display">\[
+{\color{limegreen}{\ell_j}} = \sum_{k=1}^{M} \rho_{jk}^2
+\]</span></p>
+<ul>
+<li class="fragment">Sum of <strong>squared LD correlations</strong> between SNP <span class="math inline">\(j\)</span> and (nearby) other SNPs</li>
+<li class="fragment">Measures how much LD “burden” SNP <span class="math inline">\(j\)</span> carries</li>
+</ul>
+<div class="fragment">
+<p><strong>Practical limitation - Local LD:</strong></p>
+<p>Computationally, we cannot compute correlations between each SNP and <em>all</em> millions of other SNPs. Instead, LD-scores are calculated using only <strong>local LD</strong> (SNPs in a genomic window around the target SNP). This is computationally feasible and captures the dominant LD structure.</p>
+</div>
+<div class="fragment">
+<p><strong>Interpretation:</strong> - Minimum LD-score = 1: Each SNP is correlated with itself (<span class="math inline">\(\rho_{jj}^2 = 1\)</span>) - SNPs with no additional LD have <span class="math inline">\(\ell_j = 1\)</span> - High LD-score <span class="math inline">\(\rightarrow\)</span> SNP <span class="math inline">\(j\)</span> is in strong local LD with many other SNPs (e.g., <span class="math inline">\(\ell_j = 5\)</span> means it tags 5 SNPs total including itself)</p>
+</div>
+</section>
+<section id="ld-score-slide" class="slide level2">
+<h2>How LD-scores Are Computed</h2>
+<video id="ld-score-video" src="assets/ld_score_visualization.mp4" muted="" playsinline="" preload="metadata" style="width: 90%; max-height: 80vh; display: block; margin: auto;">
+Your browser does not support the video tag.
+</video>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  if (!window.Reveal) return;
+
+  const deck = window.Reveal;
+  
+  const video = document.getElementById("ld-score-video");
+  if (!video) return;
+
+  function updateVideoPlayback(event) {
+    const slide = event.currentSlide;
+    const onVideoSlide = slide && slide.id === "ld-score-slide";
+
+    if (onVideoSlide) {
+      video.currentTime = 0;
+      const playPromise = video.play();
+      if (playPromise && typeof playPromise.catch === "function") {
+        playPromise.catch(() => {});
+      }
+    } else {
+      video.pause();
+      video.currentTime = 0;
+    }
+  }
+
+  deck.on("ready", updateVideoPlayback);
+  deck.on("slidechanged", updateVideoPlayback);
+});
+</script>
+</section>
+<section id="the-test-statistic-pattern" class="slide level2">
+<h2>The Test Statistic Pattern</h2>
+<p>GWAS test statistics show a striking pattern. They scale with LD and heritability:</p>
+<p><span class="math display">\[
+{\color{plum}{z_j}}^2 \propto {\color{limegreen}{\ell_j}} \cdot {\color{orange}{h^2}} + \text{noise}
+\]</span></p>
+<div class="fragment">
+<p><strong>More precisely (on average across SNPs):</strong> <span class="math display">\[
+\mathbb{E}[{\color{plum}{z_j}}^2] \approx N \left( {\color{limegreen}{\ell_j}} \cdot {\color{orange}{h^2}} + 1 \right)
+\]</span></p>
+</div>
+</section>
+<section id="understanding-the-test-statistic-equation" class="slide level2">
+<h2>Understanding the Test Statistic Equation</h2>
+<p>Breaking down the components:</p>
+<p><span class="math display">\[
+\mathbb{E}[{\color{plum}{z_j}}^2] \approx N \left( {\color{limegreen}{\ell_j}} \cdot {\color{orange}{h^2}} + 1 \right)
+\]</span></p>
+<div class="fragment">
+<ul>
+<li class="fragment"><span class="math inline">\(\color{limegreen}{\ell_j}\)</span>: LD-score of SNP <span class="math inline">\(j\)</span> (includes correlation with itself + other SNPs in LD)</li>
+<li class="fragment"><span class="math inline">\(\color{orange}{h^2}\)</span>: SNP heritability per SNP (true signal strength)</li>
+<li class="fragment"><span class="math inline">\(N\)</span>: sample size</li>
+<li class="fragment">The “+1” term: from each SNP’s perfect self-correlation (minimum LD-score is 1)</li>
+</ul>
+</div>
+<div class="fragment">
+<p><strong>Key insight:</strong> Test statistics scale linearly with LD-score: - A SNP with no LD (<span class="math inline">\(\ell_j = 1\)</span>) has expected <span class="math inline">\(z_j^2 \approx N(h^2 + 1)\)</span> - A SNP with 5x LD burden (<span class="math inline">\(\ell_j = 5\)</span>) has expected <span class="math inline">\(z_j^2 \approx N(5 h^2 + 1)\)</span></p>
+<p>We will <em>exploit</em> this relationship in LD-score regression.</p>
+</div>
+</section>
+<section id="the-logic-of-ld-score-regression" class="slide level2">
+<h2>The Logic of LD-score Regression</h2>
+<p><strong>Confounding by LD:</strong> We observe <span class="math inline">\(\color{plum}{z_j}^2\)</span> for many SNPs, and they’re confounded by LD.</p>
+<p><strong>Exploit the confounding:</strong> Since test statistics scale linearly with LD-score, we can use this relationship to estimate heritability:</p>
+<div class="fragment">
+<p><span class="math display">\[
+\mathbb{E}[{\color{plum}{z_j}}^2] = {\color{orange}{\tau_h}} \cdot {\color{limegreen}{\ell_j}} + {\color{purple}{\tau_0}}
+\]</span></p>
+<ul>
+<li class="fragment"><span class="math inline">\(\color{orange}{\tau_h}\)</span> (slope): heritability signal per unit LD</li>
+<li class="fragment"><span class="math inline">\(\color{purple}{\tau_0}\)</span> (intercept): non-heritability contribution (polygenicity, population structure, etc.)</li>
+</ul>
+</div>
+</section>
+<section id="ld-score-regression-the-method" class="slide level2">
+<h2>LD-score Regression: The Method</h2>
+<p>We exploit the LD relationship to estimate heritability:</p>
+<div class="fragment">
+<p><strong>Step-by-step approach:</strong> 1. For each SNP <span class="math inline">\(j\)</span>, compute <span class="math inline">\(\color{limegreen}{\ell_j}\)</span> (local LD-score) 2. Regress observed <span class="math inline">\(\color{plum}{z_j}^2\)</span> on <span class="math inline">\(\color{limegreen}{\ell_j}\)</span> across all SNPs 3. From regression slope <span class="math inline">\(\Rightarrow\)</span> estimate <span class="math inline">\(\color{orange}{h^2}\)</span> (heritability) 4. From intercept <span class="math inline">\(\Rightarrow\)</span> assess confounding/inflation from other sources</p>
+</div>
+</section>
+<section id="ld-score-regression-formulas" class="slide level2">
+<h2>LD-score Regression Formulas</h2>
+<p><strong>Linear regression model:</strong></p>
+<p><span class="math display">\[
+{\color{plum}{z_j}}^2 = {\color{purple}{\text{intercept}}} + {\color{orange}{\text{slope}}} \cdot {\color{limegreen}{\ell_j}} + \epsilon_j
+\]</span></p>
+<div class="fragment">
+<p>where: - <span class="math inline">\(\color{purple}{\text{intercept}}\)</span>: non-genetic sources of inflation (structure, polygenicity artifacts) - <span class="math inline">\(\color{orange}{\text{slope}}\)</span>: heritability signal (proportional to <span class="math inline">\(h^2\)</span>) - <span class="math inline">\(\color{limegreen}{\ell_j}\)</span>: local LD-score (captures the confounding pattern) - <span class="math inline">\(\epsilon_j\)</span>: residual error</p>
+</div>
+</section>
+<section id="computing-heritability-from-ld-score-regression" class="slide level2">
+<h2>Computing Heritability from LD-score Regression</h2>
+<p><strong>From the regression slope, we extract heritability:</strong></p>
+<div class="fragment">
+<p><span class="math display">\[
+\widehat{{\color{orange}{h^2}}} = \frac{{\color{orange}{\text{slope}}} \times N}{\text{# SNPs}}
+\]</span></p>
+<p>This estimates <strong>SNP heritability</strong> by exploiting the relationship between test statistics and LD-score.</p>
+</div>
+</section>
+<section id="advantages-of-ld-score-regression" class="slide level2">
+<h2>Advantages of LD-score Regression</h2>
+<p><strong>Why LD-score regression exploits the confounding:</strong></p>
+<div class="fragment">
+<ul>
+<li class="fragment"><strong>Naive approach:</strong> <span class="math inline">\(\hat{h}^2 \propto \sum {{\color{plum}{z_j}}}^2\)</span><br>
+Problem: High-LD SNPs contribute more and inflate estimates</li>
+</ul>
+</div>
+<div class="fragment">
+<ul>
+<li class="fragment"><strong>LD-score regression:</strong> Use the linear relationship <span class="math inline">\(z_j^2 \propto {{\color{limegreen}{\ell_j}}} \cdot {{\color{orange}{h^2}}}\)</span><br>
+Advantage: Extracts <span class="math inline">\({{\color{orange}{h^2}}}\)</span> by accounting for LD variation<br>
+Robust to polygenicity and LD patterns</li>
+</ul>
+</div>
+</section>
+<section id="summary-from-gwas-to-ld-score-regression" class="slide level2 scrollable">
+<h2>Summary: From GWAS to LD-score Regression</h2>
+<p><strong>The complete picture:</strong></p>
+<div class="fragment">
+<ol type="1">
+<li class="fragment"><strong>Infinitesimal model:</strong> <span class="math inline">\(Y = \sum {\color{gold}{a_j}} X_j + {\color{deepskyblue}{E}}\)</span></li>
+<li class="fragment"><strong>GWAS estimates:</strong> <span class="math inline">\({{\color{plum}{\hat{\beta}_j}}}\)</span> for each SNP (test statistics <span class="math inline">\({{\color{plum}{z_j}}}\)</span>)</li>
+<li class="fragment"><strong>Confounding:</strong> LD causes <span class="math inline">\({{\color{plum}{z_j}}}^2 \propto {{\color{limegreen}{\ell_j}}} \cdot {{\color{orange}{h^2}}}\)</span></li>
+<li class="fragment"><strong>LD-score regression:</strong> Exploit this relationship by regressing <span class="math inline">\({{\color{plum}{z_j}}}^2\)</span> on <span class="math inline">\({{\color{limegreen}{\ell_j}}}\)</span></li>
+<li class="fragment"><strong>Extraction:</strong> From slope estimate <span class="math inline">\({{\color{orange}{h^2}}}\)</span></li>
+<li class="fragment"><strong>Insight:</strong> LD confounds individual SNP estimates but enables heritability recovery via LDSC</li>
+</ol>
+</div>
 
 </section>
     </div>

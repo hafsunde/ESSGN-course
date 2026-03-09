@@ -43,6 +43,7 @@ Run these commands from the project root (`variance-sum-quarto-manim`).
 ```powershell
 python -m manim --format=mp4 --fps 30 -r 1280,720 manim/variance_sum.py VarianceOfSumScene
 python -m manim --format=mp4 --fps 30 -r 1280,720 manim/behavioral_genetics_bias.py BehavioralGeneticsBiasScene
+py -m manim --format=mp4 --fps 30 -r 1280,720 manim/ld_score_visualization.py LDScoreVisualization   
 ```
 
 Expected output file:
@@ -59,6 +60,7 @@ Copy-Item media/videos/variance_sum/720p30/VarianceOfSumScene.mp4 assets/varianc
 
 ```powershell
 quarto render slides.qmd --to revealjs
+quarto render behavioral_genetics.qmd --to revealjs
 ```
 
 Output is typically a `slides.html` file in this folder.
