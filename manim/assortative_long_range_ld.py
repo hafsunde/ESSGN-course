@@ -125,11 +125,11 @@ LAYOUT = {
     "card_label_y": 0.32,
     "card_line_gap": 0.05,
     "card_contents_shift": 0.02,
-    "right_panel_center": np.array([4.05, 0.85, 0.0]),
-    "right_panel_max_width": 4.85,
-    "legend_center": np.array([4.0, -2.15, 0.0]),
-    "cells_center_x": -1.6,
-    "label_buffer": 0.44,
+    "right_panel_center": np.array([4.55, 0.92, 0.0]),
+    "right_panel_max_width": 4.15,
+    "legend_center": np.array([4.85, -2.10, 0.0]),
+    "cells_center_x": -1.25,
+    "label_buffer": 0.30,
     "cell_gap": 0.09,
     "cell_width": 0.58,
     "cell_height": 0.54,
@@ -450,7 +450,7 @@ class AssortativeLongRangeLDScene(Scene):
 
     def make_haplotype_row(self, values, label_tex, row_color):
         """Build one labeled haplotype row for the genome sections."""
-        label = MathTex(label_tex, font_size=30)
+        label = MathTex(label_tex, font_size=24)
         label.set_color(row_color)
 
         cells = [
@@ -481,7 +481,7 @@ class AssortativeLongRangeLDScene(Scene):
         """Create one small locus label above each cell."""
         labels = VGroup()
         for locus_index, cell in enumerate(reference_row["cells"], start=1):
-            label = MathTex(fr"j={locus_index}", font_size=22)
+            label = MathTex(fr"j={locus_index}", font_size=18)
             label.next_to(cell["box"], UP, buff=LAYOUT["locus_label_y_offset"])
             labels.add(label)
         return labels
@@ -510,8 +510,8 @@ class AssortativeLongRangeLDScene(Scene):
             fill_opacity=0.18,
         )
 
-        relevant_label = Text("trait-relevant locus", font_size=22)
-        neutral_label = Text("unrelated locus", font_size=22, color=COLORS["muted"])
+        relevant_label = Text("trait-relevant locus", font_size=20)
+        neutral_label = Text("unrelated locus", font_size=20, color=COLORS["muted"])
 
         relevant_item = VGroup(relevant_chip, relevant_label).arrange(RIGHT, buff=0.18)
         neutral_item = VGroup(neutral_chip, neutral_label).arrange(RIGHT, buff=0.18)
@@ -578,7 +578,15 @@ class AssortativeLongRangeLDScene(Scene):
             "neutral_pulses": neutral_pulses,
         }
 
-    def highlight_focal_locus(self, row, locus_index, label_tex, color):
+    def highlight_focal_locus(
+        self,
+        row,
+        locus_index,
+        label_tex,
+        color,
+        direction=UP,
+        font_size=24,
+    ):
         """Highlight one focal locus and annotate it with a short label."""
         focus_box = SurroundingRectangle(
             row["cells"][locus_index]["group"],
@@ -587,9 +595,9 @@ class AssortativeLongRangeLDScene(Scene):
             stroke_width=3.0,
         )
 
-        label = MathTex(label_tex, font_size=28)
+        label = MathTex(label_tex, font_size=font_size)
         label.set_color(color)
-        label.next_to(focus_box, UP, buff=0.10)
+        label.next_to(focus_box, direction, buff=0.06)
 
         return {"box": focus_box, "label": label}
 
@@ -664,7 +672,7 @@ class AssortativeLongRangeLDScene(Scene):
         """
         gamete_row = self.make_haplotype_row(
             [None] * NUM_LOCI,
-            r"\text{next-gen gamete}",
+            r"\text{new gamete}",
             COLORS["gamete"],
         )
         self.position_row(gamete_row, LAYOUT["genome_gamete_y"])
@@ -719,6 +727,7 @@ class AssortativeLongRangeLDScene(Scene):
 
         crossover_lines = VGroup()
         crossover_labels = VGroup()
+        first_break = self.recombination_breaks[0]
         for break_index in self.recombination_breaks:
             left_box = gamete_row["cells"][break_index - 1]["box"]
             right_box = gamete_row["cells"][break_index]["box"]
@@ -734,12 +743,17 @@ class AssortativeLongRangeLDScene(Scene):
                 dashed_ratio=0.60,
                 stroke_width=3.0,
             )
-            crossover_label = Text(
-                "xover",
-                font_size=18,
-                color=COLORS["highlight"],
-            )
-            crossover_label.next_to(crossover_line, DOWN, buff=0.10)
+            if break_index == first_break:
+                crossover_label = Text(
+                    "crossovers",
+                    font_size=18,
+                    color=COLORS["highlight"],
+                )
+                crossover_label.next_to(crossover_line, DOWN, buff=0.10)
+            else:
+                crossover_label = VectorizedPoint(
+                    np.array([x_coordinate, bottom_y - 0.12, 0.0])
+                )
 
             crossover_lines.add(crossover_line)
             crossover_labels.add(crossover_label)
@@ -776,12 +790,12 @@ class AssortativeLongRangeLDScene(Scene):
 
         self.paternal_row = self.make_haplotype_row(
             self.paternal_haplotype,
-            r"\text{father trait haplotype}",
+            r"\text{father row}",
             COLORS["paternal"],
         )
         self.maternal_row = self.make_haplotype_row(
             self.maternal_haplotype,
-            r"\text{mother trait haplotype}",
+            r"\text{mother row}",
             COLORS["maternal"],
         )
         self.position_row(self.paternal_row, LAYOUT["genome_paternal_y"])
@@ -938,7 +952,7 @@ class AssortativeLongRangeLDScene(Scene):
             note = self.make_right_panel_note(
                 self.color_equation(MathTex(r"y=g+e", font_size=38)),
                 step["equation"],
-                Text("Phenotype-based matching pushes correlation into components.", font_size=21),
+                Text("Sorting on y induces component correlation.", font_size=20),
             )
             links = self.draw_correlation_links(
                 step["sources"],
@@ -1000,8 +1014,8 @@ class AssortativeLongRangeLDScene(Scene):
 
         trait_note = self.make_right_panel_note(
             self.color_equation(MathTex(r"g=\sum_{k\in T}\beta_k x_k", font_size=34)),
-            Text("Only loci in T help build the assorted trait.", font_size=24),
-            Text("Unrelated loci stay visually quiet and statistically unaffected.", font_size=21),
+            Text("Only loci in T build the assorted trait.", font_size=22),
+            Text("Unrelated loci do not.", font_size=19, color=COLORS["muted"]),
         )
         self.swap_note(trait_note)
         self.play(
@@ -1033,12 +1047,16 @@ class AssortativeLongRangeLDScene(Scene):
             self.focal_trait_locus,
             "p",
             COLORS["trait_locus"],
+            direction=DOWN,
+            font_size=22,
         )
         self.neutral_focus = self.highlight_focal_locus(
             self.paternal_row,
             self.focal_neutral_locus,
             "u",
             COLORS["neutral_locus"],
+            direction=DOWN,
+            font_size=22,
         )
 
         maternal_trait_targets = [
@@ -1052,48 +1070,32 @@ class AssortativeLongRangeLDScene(Scene):
             tip=False,
         )
 
-        neutral_callout = Text(
-            "no induced long-range links",
-            font_size=20,
-            color=COLORS["muted"],
-        )
-        neutral_callout.next_to(
-            self.neutral_focus["box"],
-            DOWN,
-            buff=0.12,
-        )
-
         locus_note = self.make_right_panel_note(
-            Text("A trait locus can correlate with many trait loci in the mate.", font_size=24),
-            self.color_equation(MathTex(r"p\in T \Rightarrow \text{many maternal }k\in T", font_size=30)),
-            Text("A neutral locus u does not enter this pathway.", font_size=22, color=COLORS["muted"]),
+            Text("Trait locus p links broadly across maternal trait loci.", font_size=21),
+            self.color_equation(MathTex(r"p\in T \Rightarrow \text{many maternal }k\in T", font_size=26)),
+            Text("Neutral locus u stays unlinked here.", font_size=19, color=COLORS["muted"]),
         )
         self.swap_note(locus_note)
 
         self.play(
             Create(self.trait_focus["box"]),
-            FadeIn(self.trait_focus["label"], shift=0.08 * UP),
+            FadeIn(self.trait_focus["label"], shift=0.08 * DOWN),
             Create(self.neutral_focus["box"]),
-            FadeIn(self.neutral_focus["label"], shift=0.08 * UP),
+            FadeIn(self.neutral_focus["label"], shift=0.08 * DOWN),
             run_time=0.8,
         )
         self.play(Create(self.long_range_links), run_time=1.0)
-        self.play(FadeIn(neutral_callout, shift=0.08 * DOWN), run_time=0.5)
-        self.neutral_callout = neutral_callout
         self.wait(TIMING["long_pause"])
 
-    # -----------------------------------------------------------------------
-    # Section 5: offspring inherits between-haplotype trans correlation
-    # -----------------------------------------------------------------------
     def play_offspring_trans_view(self):
         # The same two rows now become the offspring's two inherited haplotypes.
-        new_paternal_label = MathTex(r"\text{offspring paternal haplotype}", font_size=28)
+        new_paternal_label = MathTex(r"\text{paternal copy}", font_size=24)
         new_paternal_label.set_color(COLORS["paternal"])
         new_paternal_label.next_to(
             self.paternal_row["cells_group"], LEFT, buff=LAYOUT["label_buffer"]
         )
 
-        new_maternal_label = MathTex(r"\text{offspring maternal haplotype}", font_size=28)
+        new_maternal_label = MathTex(r"\text{maternal copy}", font_size=24)
         new_maternal_label.set_color(COLORS["maternal"])
         new_maternal_label.next_to(
             self.maternal_row["cells_group"], LEFT, buff=LAYOUT["label_buffer"]
@@ -1126,8 +1128,8 @@ class AssortativeLongRangeLDScene(Scene):
         self.trans_brace_label.set_color(COLORS["trans"])
 
         trans_note = self.make_right_panel_note(
-            Text("The offspring inherits one correlated paternal row and one correlated maternal row.", font_size=22),
-            Text("At trait-relevant loci, the correlation is between haplotypes.", font_size=22),
+            Text("The offspring inherits two correlated copies.", font_size=21),
+            Text("At trait loci, the correlation is between haplotypes.", font_size=19),
             self.color_equation(MathTex(r"\text{trans correlation}", font_size=30)),
         )
         self.swap_note(trans_note)
@@ -1136,7 +1138,6 @@ class AssortativeLongRangeLDScene(Scene):
             Transform(self.paternal_row["label"], new_paternal_label),
             Transform(self.maternal_row["label"], new_maternal_label),
             FadeOut(self.long_range_links),
-            FadeOut(self.neutral_callout),
             run_time=0.8,
         )
         self.play(
@@ -1155,13 +1156,10 @@ class AssortativeLongRangeLDScene(Scene):
         )
         self.wait(TIMING["long_pause"])
 
-    # -----------------------------------------------------------------------
-    # Section 6: recombination turns trans correlation into cis correlation
-    # -----------------------------------------------------------------------
     def play_recombination_to_cis(self):
         recombination_note = self.make_right_panel_note(
-            Text("In the next generation, recombination mixes the two parental copies.", font_size=22),
-            Text("Earlier trans correlation can now reappear within one gamete.", font_size=22),
+            Text("Recombination mixes the two copies.", font_size=21),
+            Text("That earlier trans structure can reappear within one gamete.", font_size=18),
             self.color_equation(MathTex(r"\text{trans} \to \text{cis}", font_size=30)),
         )
         self.swap_note(recombination_note)
@@ -1248,14 +1246,14 @@ class AssortativeLongRangeLDScene(Scene):
             ]
         )
 
-        cis_label = Text("cis correlation / long-range LD", font_size=24, color=COLORS["cis"])
+        cis_label = Text("cis correlation", font_size=24, color=COLORS["cis"])
         cis_label.next_to(self.mosaic_setup["row"]["cells_group"], DOWN, buff=0.48)
         self.cis_label = cis_label
 
         cis_note = self.make_right_panel_note(
-            Text("Recombination shuffles the two trans-correlated parental copies into one gamete.", font_size=21),
-            Text("Now trait-relevant loci co-occur within the same haplotype.", font_size=22),
-            Text("Neutral loci still do not acquire the same highlighted structure.", font_size=20, color=COLORS["muted"]),
+            Text("Recombination converts trans structure into cis structure.", font_size=19),
+            Text("Now trait loci co-occur within one haplotype.", font_size=19),
+            Text("Neutral loci do not.", font_size=18, color=COLORS["muted"]),
         )
         self.swap_note(cis_note)
 
@@ -1279,18 +1277,19 @@ class AssortativeLongRangeLDScene(Scene):
             self.focal_trait_locus,
             "j",
             COLORS["highlight"],
+            font_size=24,
         )
 
         final_note = self.make_right_panel_note(
-            Text("Marginal GWAS-style coefficient at locus j:", font_size=24),
+            Text("Marginal GWAS coefficient at locus j", font_size=20),
             self.color_equation(
                 MathTex(
                     r"\hat b_j^{\mathrm{marg}} \sim \beta_j + \sum_{k\in T,\ k\neq j} r_{jk}\beta_k",
-                    font_size=30,
+                    font_size=24,
                 )
             ),
-            Text("So j picks up its direct effect plus tagged signal from correlated trait loci.", font_size=21),
-            Text("Loci unrelated to the assorted trait do not enter this induced long-range-LD path.", font_size=19, color=COLORS["muted"]),
+            Text("direct effect + tagged signal from correlated trait loci", font_size=16),
+            Text("unrelated loci stay outside this path", font_size=16, color=COLORS["muted"]),
         )
         self.swap_note(final_note)
 
