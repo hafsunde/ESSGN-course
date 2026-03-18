@@ -14,8 +14,8 @@ media/
 .venv/
 venv/
 
-# --- Folders ending in "cahce" ---
-*cahce/
+# --- Folders ending in "cache" ---
+*cache/
 
 # --- OS/editor noise ---
 .DS_Store
