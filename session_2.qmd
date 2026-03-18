@@ -1,0 +1,799 @@
+---
+title: "Gene-Environment Correlations and Assortative Mating"
+subtitle: "ESSGN 2026 Workshop"
+author: "Espen Eilertsen & Hans Fredrik Sunde"
+date: 2026-03-25
+format:
+  revealjs:
+    embed-resources: true
+    theme: simple
+    slide-number: true
+    center: false
+    chalkboard: false
+    smaller: true
+    scrollable: true
+    transition: fade
+    fig-align: center
+    width: 1280
+    height: 720
+    margin: 0.04
+    code-fold: true
+execute:
+  echo: true
+  warning: false
+  message: false
+  cache: true
+---
+
+## Lecture Outline
+
+The unifying theme today is that marginal SNP coefficients are **projections through correlation structure**, so extra covariance terms change what they mean.
+
+1. **Part 1: Local linkage disequilibrium**
+
+   Why nearby correlated SNPs distort and inform marginal effect estimates
+2. **Part 2: Assortative mating and long-range LD**
+
+   How matching on phenotype creates genome-wide correlation structure
+3. **Part 3: Gene-environment correlations**
+
+   How indirect effects, stratification, and correlated environments enter SNP estimates and variance decompositions
+4. **Part 4: Family GWAS**
+
+   How family designs remove much of the family-level confounding around marginal SNP estimates
+5. **Part 5: Practical**
+
+   Placeholder for future applied material
+
+
+## What does a GWAS estimate?
+The infensimal model says that the phenotype is a sum of many small genetic effects plus an environment:
+$$
+y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
+$$
+
+In a GWAS, each SNP $j$ is tested separately in a linear model:
+
+$$
+y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \varepsilon_{ij}
+$$
+
+
+$\tilde{\beta}_j$ is the **marginal coefficient** measuring the ***association*** between $x_{ij}$ and $y_i$: 
+
+$$
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+& = &
+\beta_j
+& + &
+\color{red}{\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}}
+& + &
+\color{blue}{\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}} \\
+& &
+\scriptstyle {\text{Causal Effect}}
+& &
+\scriptstyle {\text{Linkage Disequilibrium}}
+& &
+\scriptstyle {\text{rGE}}
+\end{array}
+$$
+
+# Part 1: Local Linkage Disequilibrium {background-color="#2c3e50" style="color: white;"}
+
+## Nearby SNPs correlate
+
+Recombination shuffles **chromosome segments**, not isolated SNPs. So loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together.
+
+```{dot}
+//| fig-width: 6.8
+//| fig-height: 3.2
+//| echo: false
+digraph haplotypes {
+  rankdir=TB;
+  graph [margin=0.08, fontname="Lato"];
+  node [shape=plain, fontname="Lato", fontsize=12];
+
+  haplos [label=<
+    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="1" CELLPADDING="6">
+      <TR>
+        <TD BORDER="0" ALIGN="RIGHT"><B>Parent haplotype 1</B></TD>
+        <TD BGCOLOR="#d6eaf8">1</TD>
+        <TD BGCOLOR="#d6eaf8">0</TD>
+        <TD BGCOLOR="#d6eaf8">1</TD>
+        <TD BGCOLOR="#d6eaf8">1</TD>
+        <TD BGCOLOR="#d6eaf8">0</TD>
+        <TD BGCOLOR="#d6eaf8">1</TD>
+        <TD>0</TD>
+        <TD>0</TD>
+        <TD>1</TD>
+        <TD>1</TD>
+      </TR>
+      <TR>
+        <TD BORDER="0" ALIGN="RIGHT"><B>Parent haplotype 2</B></TD>
+        <TD>0</TD>
+        <TD>1</TD>
+        <TD>0</TD>
+        <TD>0</TD>
+        <TD>1</TD>
+        <TD>0</TD>
+        <TD BGCOLOR="#fadbd8">1</TD>
+        <TD BGCOLOR="#fadbd8">1</TD>
+        <TD BGCOLOR="#fadbd8">0</TD>
+        <TD BGCOLOR="#fadbd8">0</TD>
+      </TR>
+      <TR>
+        <TD BORDER="0" COLSPAN="11" HEIGHT="10"></TD>
+      </TR>
+      <TR>
+        <TD BORDER="0" ALIGN="RIGHT"><B>Transmitted haplotype</B></TD>
+        <TD BGCOLOR="#d6eaf8"><B>1</B></TD>
+        <TD BGCOLOR="#d6eaf8"><B>0</B></TD>
+        <TD BGCOLOR="#d6eaf8"><B>1</B></TD>
+        <TD BGCOLOR="#d6eaf8"><B>1</B></TD>
+        <TD BGCOLOR="#d6eaf8"><B>0</B></TD>
+        <TD BGCOLOR="#d6eaf8"><B>1</B></TD>
+        <TD BGCOLOR="#fadbd8"><B>1</B></TD>
+        <TD BGCOLOR="#fadbd8"><B>1</B></TD>
+        <TD BGCOLOR="#fadbd8"><B>0</B></TD>
+        <TD BGCOLOR="#fadbd8"><B>0</B></TD>
+      </TR>
+    </TABLE>
+  >];
+}
+```
+
+
+## A two-SNP toy example
+
+
+:::: {.columns}
+::: {.column width="55%"}
+Suppose the true model is:
+
+$$
+y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + e_i
+$$
+
+and $\text{Cov}(x_1,x_2) \neq 0$ and $\text{Cov}(x_1,e)=0$. 
+
+Even if $\beta_1 = 0$, $x_1$ still appears associated with the phenotype ($\tilde{\beta}_1 \neq 0$):
+
+$$
+\tilde{\beta}_1
+= \beta_1 + \beta_2\frac{\text{Cov}(x_1,x_2)}{\text{Var}(x_1)}
+$$
+
+:::
+::: {.column width="45%"}
+```{dot}
+//| fig-width: 4.4
+//| fig-height: 2.8
+//| echo: false
+digraph twosnp {
+  rankdir=TB;
+  graph [margin=0.1, nodesep=0.5, ranksep=0.8];
+  node [shape=circle, style=filled, fixedsize=true, width=0.8, height=0.8,
+        fontsize=18, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
+  edge [penwidth=2, fontsize=16, fontname="Helvetica-Bold"];
+
+  x1 [label="x1", fillcolor="#3498db", color="#2980b9"];
+  x2 [label="x2", fillcolor="#e74c3c", color="#c0392b"];
+  y  [label="y", fillcolor="#7f8c8d", color="#707b7c"];
+
+  x2 -> y [label=" beta2"];
+  x1 -> x2 [dir=none, style=dashed, color="#27ae60", label=" LD"];
+  x1 -> y [style=dotted, color="#3498db", label=" marginal"];
+}
+```
+:::
+::::
+
+## General local-LD decomposition {.smaller}
+
+For this part, set the rGE term aside and focus on genotype correlation:
+
+$$
+\tilde{\beta}_j \approx \beta_j
++ \sum_{k \ne j} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+$$
+
+::: {.callout-note}
+This is the local-LD version of the master decomposition: **nearby correlated genotypes make a marginal coefficient absorb tagged effects from other loci**.
+:::
+
+## Marginal effects as a projection through LD
+
+Collect the marginal coefficients into a vector. Then the same idea can be written compactly as:
+
+$$
+\hat{\boldsymbol{\beta}}_{\text{marg}} \approx \mathbf{R}\boldsymbol{\beta}
+$$
+
+where $\mathbf{R}$ is the LD matrix with entries
+
+$$
+R_{jk} = \frac{\text{Cov}(x_j, x_k)}{\sqrt{\text{Var}(x_j)\text{Var}(x_k)}}
+\qquad
+\mathbf{R} \approx
+\begin{pmatrix}
+1 & .82 & .51 & .03 \\
+.82 & 1 & .63 & .05 \\
+.51 & .63 & 1 & .12 \\
+.03 & .05 & .12 & 1
+\end{pmatrix}
+$$
+
+::: {.callout-note}
+## Interpretation
+- The marginal effects are **projections through the LD structure**
+- A local LD block makes nearby coefficients move together
+- If SNPs were independent, $\mathbf{R}$ would be close to diagonal
+:::
+
+## What is an LD score?
+
+For SNP $j$, the **LD score** is the amount of local tagging it has:
+
+$$
+\ell_j = \sum_{k \in \mathcal{N}(j)} r_{jk}^2
+$$
+
+Here $\mathcal{N}(j)$ is a local window around SNP $j$, and the square matters because tagging accumulates in **magnitude**, not in signed direction.
+
+| SNP | Local LD pattern | LD score |
+|---|---|---|
+| Low-LD SNP | Few or weak local correlations | Small $\ell_j$ |
+| High-LD SNP | Many strong local correlations | Large $\ell_j$ |
+
+::: {.callout-note}
+A high LD score does **not** mean a SNP is more causal. It means the SNP tags more nearby variation.
+:::
+
+## LD score regression
+
+If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average.
+
+$$
+E[\chi_j^2] \approx 1 + \frac{N h_g^2}{M}\ell_j + c
+$$
+
+where $\chi_j^2 = z_j^2$ for the marginal test statistic at SNP $j$.
+
+::: {.callout-note}
+## High-level interpretation
+- Regress GWAS test statistics on LD scores
+- The **slope** tracks polygenic signal
+- The **intercept** tracks confounding or other inflation
+
+This is a teaching-level summary, not a full LDSC derivation.
+:::
+
+## Summary: local LD both confounds and helps
+
+| Step | Main lesson |
+|---|---|
+| Nearby SNPs correlate | Recombination makes nearby loci travel together |
+| Marginal coefficients absorb tagged effects | So $\tilde{\beta}_j$ need not equal $\beta_j$ |
+| LD scores quantify local tagging | They summarize how much nearby variation a SNP captures |
+| LD score regression exploits that structure | The same LD that complicates interpretation can be modeled |
+
+::: {.callout-note}
+This is the template for the rest of the lecture: **marginal associations are projections through correlation structure**.
+:::
+
+# Part 2: Assortative Mating and Long-Range LD {background-color="#2c3e50" style="color: white;"}
+
+## Assortative mating starts with phenotype similarity
+
+**Assortative mating** means that mates are not paired at random with respect to a trait or a trait-related signal.
+
+If the two mates are indexed by $m$ and $f$, then positive assortment on the phenotype means:
+
+$$
+\text{Cov}(y_m, y_f) > 0
+$$
+
+::: {.callout-note}
+The matching is on **$y$**, not directly on $g$. The question is how phenotype assortment gets translated into genetic covariance.
+:::
+
+## Expand $\text{Cov}(y_m,y_f)$ when $y=g+e$ {.smaller}
+
+Start from the same decomposition as in Session 1:
+
+$$
+y_i = g_i + e_i
+$$
+
+Then the covariance-of-sums law gives:
+
+$$
+\text{Cov}(y_m, y_f)
+= \text{Cov}(g_m, g_f)
++ \text{Cov}(g_m, e_f)
++ \text{Cov}(e_m, g_f)
++ \text{Cov}(e_m, e_f)
+$$
+
+::: {.callout-note}
+To focus on genetic assortment, we will often illustrate the case where the cross-terms are small. But matching on phenotype does **not** automatically imply a purely genetic pathway.
+:::
+
+## From phenotype assortment to genetic assortment
+
+If the phenotype is partly genetic, then positive $\text{Cov}(y_m,y_f)$ tends to induce positive $\text{Cov}(g_m,g_f)$.
+
+Because
+
+$$
+g_i = \sum_{j=1}^{M} \beta_j x_{ij},
+$$
+
+trait-increasing alleles begin to align across mates.
+
+:::: {.columns}
+::: {.column width="50%"}
+```{dot}
+//| fig-width: 5
+//| fig-height: 3.4
+//| echo: false
+digraph am_flow {
+  rankdir=TB;
+  graph [margin=0.08, nodesep=0.4, ranksep=0.6];
+  node [shape=circle, style=filled, fixedsize=true, width=0.9, height=0.9,
+        fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
+  edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
+
+  ym [label="y_m", fillcolor="#3498db", color="#2980b9"];
+  yf [label="y_f", fillcolor="#e74c3c", color="#c0392b"];
+  gm [label="g_m", fillcolor="#5dade2", color="#2e86c1"];
+  gf [label="g_f", fillcolor="#f1948a", color="#cb4335"];
+  off [label="offspring", fillcolor="#7f8c8d", color="#707b7c"];
+
+  ym -> gm;
+  yf -> gf;
+  ym -> yf [dir=none, style=dashed, color="#27ae60", label=" assortment on y"];
+  gm -> off;
+  gf -> off;
+}
+```
+:::
+::: {.column width="50%"}
+
+- Similar phenotypes imply more similar genetic values among mates
+- Offspring inherit combinations of alleles that are more aligned than under random mating
+- The induced covariance can accumulate across many loci
+
+:::
+::::
+
+## One generation creates trans covariance first
+
+Write the offspring genetic value as a maternal part plus a paternal part:
+
+$$
+g_i = g_i^{(m)} + g_i^{(f)}
+$$
+
+After **one generation** of positive assortment, the first new covariance is primarily:
+
+$$
+\text{Cov}\!\left(g^{(m)}, g^{(f)}\right) > 0
+$$
+
+:::: {.columns}
+::: {.column width="45%"}
+```{dot}
+//| fig-width: 4.6
+//| fig-height: 3
+//| echo: false
+digraph trans_cov {
+  rankdir=TB;
+  graph [margin=0.08, nodesep=0.5, ranksep=0.7];
+  node [shape=circle, style=filled, fixedsize=true, width=0.85, height=0.85,
+        fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
+  edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
+
+  gm [label="g^(m)", fillcolor="#3498db", color="#2980b9"];
+  gf [label="g^(f)", fillcolor="#e74c3c", color="#c0392b"];
+  go [label="g_i", fillcolor="#7f8c8d", color="#707b7c"];
+
+  gm -> go;
+  gf -> go;
+  gm -> gf [dir=none, style=dashed, color="#27ae60", label=" trans cov"];
+}
+```
+:::
+::: {.column width="55%"}
+
+This is **trans** covariance: covariance across the maternal and paternal contributions, before recombination has had time to move that covariance into within-haplotype structure.
+
+:::
+::::
+
+::: {.callout-note}
+Here, "trans" and "cis" are bookkeeping terms for **where the covariance lives**. They are not new biological mechanisms.
+:::
+
+## Later generations build cis covariance and long-range LD
+
+Repeated assortment plus recombination gradually converts part of the accumulated trans covariance into **cis** covariance within transmitted haplotypes.
+
+That is why assortative mating can generate long-range LD:
+
+$$
+\text{Cov}(x_j, x_k) > 0
+\qquad
+\text{even for distant loci}
+$$
+
+| Where the covariance lives | When it appears | Interpretation |
+|---|---|---|
+| Trans covariance | First generation | Maternal and paternal contributions become aligned |
+| Cis covariance | Later generations | Aligned alleles begin to co-occur within haplotypes |
+| Long-range LD | Repeated assortment | Distant loci become correlated in the population |
+
+::: {.callout-note}
+Assortative mating does not just create "more LD". It changes the **geography** of LD by creating nonlocal correlation structure.
+:::
+
+## Why marginal SNP effects now tag distant variants {.smaller}
+
+Again set the rGE term aside and focus on the LD component:
+
+$$
+\tilde{\beta}_j
+\approx \beta_j
++ \sum_{k \ne j} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+$$
+
+Under local LD, the sum is dominated by nearby loci. Under assortative mating, some of those covariance terms can involve **distant** causal variants.
+
+::: {.callout-note}
+So a marginal hit at SNP $j$ can partly reflect genome-wide covariance structure, not only local biology at SNP $j$.
+:::
+
+## Why $\text{Var}(g)$ increases for a few generations {.smaller}
+
+The genetic variance depends on both single-locus variances and cross-locus covariances:
+
+$$
+\text{Var}(g)
+= \text{Var}\!\left(\sum_{j=1}^{M} \beta_j x_j\right)
+= \sum_{j=1}^{M} \beta_j^2 \text{Var}(x_j)
++ 2\sum_{j<k}\beta_j\beta_k\text{Cov}(x_j,x_k)
+$$
+
+Positive cross-locus covariance inflates $\text{Var}(g)$ while assortative mating is building up.
+
+| Generation | Main covariance pattern | Expected $\text{Var}(g)$ |
+|---|---|---|
+| Random mating baseline | Little long-range covariance | Baseline |
+| After 1 generation | Positive trans covariance | Higher |
+| After several generations | Trans + cis covariance | Higher still |
+| Equilibrium | Assortment balanced by recombination | Plateau |
+
+::: {.callout-note}
+This trajectory is schematic: positive assortment tends to increase genetic variance for a few generations and then approach a new equilibrium, not increase forever.
+:::
+
+## Relatives also resemble each other more
+
+Once parental genomes are more aligned, resemblance among relatives increases for the trait under assortment.
+
+If mates are positively correlated in genetic value, then:
+
+$$
+\text{Cov}(g_m, g_f) > 0
+$$
+
+and therefore:
+
+$$
+\text{Var}\!\left(\frac{g_m + g_f}{2}\right)
+= \frac{1}{4}\text{Var}(g_m)
++ \frac{1}{4}\text{Var}(g_f)
++ \frac{1}{2}\text{Cov}(g_m, g_f)
+$$
+
+::: {.callout-note}
+The same induced covariance structure now appears in two places:
+- in GWAS, through long-range tagging
+- in families, through stronger resemblance among relatives
+:::
+
+## Summary: assortative mating changes GWAS, LD, and family resemblance
+
+| Step | Main lesson |
+|---|---|
+| Mates match on phenotype | Start with $\text{Cov}(y_m,y_f) > 0$ |
+| First generation | Mostly trans covariance appears |
+| Later generations | Cis covariance and long-range LD build up |
+| Population consequence | $\text{Var}(g)$ rises for a while, then approaches equilibrium |
+| Family consequence | Relatives resemble each other more |
+
+::: {.callout-note}
+Again, marginal associations reflect **induced correlation structure**, not only direct causal effects.
+:::
+
+# Part 3: Gene-Environment Correlations {background-color="#2c3e50" style="color: white;"}
+
+## Same projection, new covariance sources
+
+Now set the LD term aside and focus on gene-environment correlation:
+
+$$
+\tilde{\beta}_j \approx \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
+$$
+
+Part 3 is about a new question:
+
+$$
+\text{What can generate } \text{Cov}(x_j, e)?
+$$
+
+::: {.callout-note}
+In Part 1 and Part 2, the extra terms came mainly from **correlated genotypes**. Here the focus is **correlated environments**.
+:::
+
+## Where can $\text{Cov}(x_j,e)$ come from?
+
+| Source | Why genotype and environment become correlated |
+|---|---|
+| Passive rGE | Parents transmit both genes and family environments |
+| Evocative / active rGE | Genotypes shape responses from others or environmental choices |
+| Indirect genetic effects | Other people's genotypes shape the focal person's environment |
+| Stratification / population structure | Allele frequencies and environments differ across groups |
+| Residual confounding | Selection, ascertainment, measurement, or omitted structure |
+
+::: {.callout-note}
+Different mechanisms can produce the **same statistical symptom** in a marginal GWAS coefficient: $\text{Cov}(x_j,e) \neq 0$.
+:::
+
+## Indirect genetic effects
+
+A focal person's phenotype can be affected not only by their own genotype, but also by the genotypes of parents, siblings, peers, or partners through the environments those people create.
+
+$$
+y_i = g_i^{\text{direct}} + g_i^{\text{indirect}} + e_i
+\qquad
+g_i^{\text{direct}} = \sum_{j=1}^{M}\beta_j x_{ij}
+$$
+
+:::: {.columns}
+::: {.column width="50%"}
+```{dot}
+//| fig-width: 5
+//| fig-height: 3.1
+//| echo: false
+digraph ige {
+  rankdir=LR;
+  graph [margin=0.08, nodesep=0.45, ranksep=0.7];
+  node [shape=circle, style=filled, fixedsize=true, width=0.85, height=0.85,
+        fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
+  edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
+
+  xr [label="x_rel", fillcolor="#e74c3c", color="#c0392b"];
+  env [label="env", fillcolor="#e67e22", color="#ca6f1e"];
+  xi [label="x_i", fillcolor="#3498db", color="#2980b9"];
+  yi [label="y_i", fillcolor="#7f8c8d", color="#707b7c"];
+
+  xr -> env [label=" indirect"];
+  env -> yi [label=" environment"];
+  xi -> yi [label=" direct"];
+}
+```
+:::
+::: {.column width="50%"}
+
+- Your own genotype can affect your phenotype directly
+- Other people's genotypes can affect your phenotype indirectly by shaping your environment
+- That is why indirect genetic effects are not the same thing as stratification
+
+:::
+::::
+
+## Stratification and population structure
+
+Stratification can also induce correlation between genotype and environment, but through group-level differences rather than through other people's genotypes creating the focal environment.
+
+```{dot}
+//| fig-width: 5.2
+//| fig-height: 3
+//| echo: false
+digraph strat {
+  rankdir=TB;
+  graph [margin=0.08, nodesep=0.5, ranksep=0.7];
+  node [shape=circle, style=filled, fixedsize=true, width=0.9, height=0.9,
+        fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
+  edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
+
+  anc [label="group", fillcolor="#8e44ad", color="#7d3c98"];
+  xj  [label="x_j", fillcolor="#3498db", color="#2980b9"];
+  e   [label="e", fillcolor="#e67e22", color="#ca6f1e"];
+  y   [label="y", fillcolor="#7f8c8d", color="#707b7c"];
+
+  anc -> xj;
+  anc -> e;
+  xj -> y [label=" marginal"];
+  e  -> y [label=" env"];
+}
+```
+
+::: {.callout-important}
+Stratification is **confounding**, not nurture. It can create $\text{Cov}(x_j,e)$ even when there is no within-family environmental pathway from genotype to phenotype.
+:::
+
+## Back to the marginal SNP coefficient {.smaller}
+
+For this part, the relevant simplification is:
+
+$$
+\tilde{\beta}_j
+\approx \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
+$$
+
+::: {.callout-note}
+The orange term can now reflect many different things:
+- passive, evocative, or active gene-environment correlation
+- indirect genetic effects from parents, siblings, peers, or partners
+- stratification and population structure
+- other residual confounding
+:::
+
+## From SNP confounding to variance decomposition
+
+For the next two slides, let $g$ denote the focal individual's **direct additive genetic value**:
+
+$$
+g_i = \sum_{j=1}^{M} \beta_j x_{ij}
+$$
+
+Then:
+
+$$
+y = g + e
+\qquad \Longrightarrow \qquad
+\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)
+$$
+
+::: {.callout-note}
+If you split indirect genetic effects out as their own term, you get more covariance terms, not fewer. The interpretational problem does not disappear.
+:::
+
+## Why covariance terms complicate interpretation
+
+Keep these quantities conceptually separate:
+
+$$
+\text{Var}(g) \qquad \text{Var}(e) \qquad \text{Cov}(g,e) \qquad \text{Var}(y)
+$$
+
+The sign of the covariance matters:
+
+| Sign of $\text{Cov}(g,e)$ | Interpretation |
+|---|---|
+| Positive | Genetically higher-valued individuals tend to experience environments that push in the same direction |
+| Negative | Genetically higher-valued individuals tend to experience environments that push in the opposite direction |
+
+::: {.callout-important}
+$\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)$ is a **statistical identity**, not a clean causal partition of phenotypic variation.
+:::
+
+## Take-home map
+
+| Quantity | What it means | What it does not automatically mean |
+|---|---|---|
+| Direct effect $\beta_j$ | Causal effect of locus $j$ in the full model | The same thing as the marginal coefficient |
+| Marginal coefficient $\tilde{\beta}_j$ | Association between SNP $j$ and phenotype | A pure direct effect |
+| Indirect genetic effect | Other people's genotypes shape the focal environment | Population stratification |
+| Stratification | Group structure aligns genotypes and environments | Genetic nurture |
+| $\text{Cov}(g,e)$ | Statistical alignment of genetic values and environments | A causal share of variance |
+
+::: {.callout-note}
+Across local LD, assortative mating, and gene-environment correlation, the same lesson keeps returning: **marginal associations are projections through correlation structure**.
+:::
+
+# Part 4: Family GWAS {background-color="#2c3e50" style="color: white;"}
+
+## Why families help
+
+Much of this lecture has been about the fact that the **population** coefficient $\tilde{\beta}_j$ can include more than the direct effect $\beta_j$.
+
+If we compare unrelated people, that coefficient can still reflect LD, assortative mating, stratification, genetic nurture, and other family-level environments.
+
+::: {.callout-note}
+Family GWAS changes the comparison. Instead of relying only on differences across unrelated families, it uses variation **within families** to get closer to the direct effect.
+:::
+
+## A family-based regression
+
+Index individuals by $i$ within family $f$. A simple within-family model is:
+
+$$
+y_{if} = \alpha_f + \tilde{\beta}_j^{F} x_{ijf} + \varepsilon_{if}
+$$
+
+where $\alpha_f$ is a family intercept shared by relatives in the family design.
+
+With two siblings, this is equivalent to differencing:
+
+$$
+y_{1f} - y_{2f}
+= \tilde{\beta}_j^{F}\left(x_{1jf} - x_{2jf}\right)
++ \left(\varepsilon_{1f} - \varepsilon_{2f}\right)
+$$
+
+::: {.callout-note}
+This is exactly where Session 1's **segregation variance** comes back in. The sibling difference $x_{1jf} - x_{2jf}$ is generated by the random segregation deviations in transmission, not by between-family differences in ancestry or parental background.
+:::
+
+::: {.callout-note}
+Sibling differencing is only **one example** of a family design. The next day's session will go deeper into family-based GWAS more broadly.
+:::
+
+## Comparing the two coefficients
+
+| Estimate | What variation identifies it | What it tends to pick up |
+|---|---|---|
+| Population coefficient $\tilde{\beta}_j$ | Differences across individuals and families | Direct effects plus between-family confounding and tagging structure |
+| Family-design coefficient $\tilde{\beta}_j^{F}$ | Segregation-driven differences within families | Often closer to the direct effect $\beta_j$ |
+
+::: {.callout-note}
+The point is not that $\tilde{\beta}_j^{F}$ is magically perfect. The point is that it removes much of the **between-family** structure that biases the population coefficient.
+:::
+
+## Why this solves many earlier problems
+
+Relatives in the same family share parents, ancestry, and much of their family environment. That means many family-level confounders are held fixed by the comparison.
+
+| Earlier problem | Why family GWAS helps |
+|---|---|
+| Stratification / population structure | Relatives in the same family share the same family ancestry background |
+| Passive rGE / parental genetic nurture | Parental genotypes and much of the rearing environment are common within families |
+| Assortative mating background | The parental genomes are the same for the compared relatives |
+| Shared family environment | The family intercept absorbs what relatives share |
+
+::: {.callout-note}
+So $\tilde{\beta}_j^{F}$ is often **closer to the direct effect** than the population-level marginal coefficient.
+:::
+
+## What it does not fully solve
+
+Family GWAS solves **a lot**, but not everything.
+
+| Remaining issue | Why it can remain |
+|---|---|
+| Local LD | Relatives still inherit correlated nearby variants |
+| Indirect genetic effects | One relative's genotype can affect another relative's environment |
+| Within-family environmental differences | Family members do not experience identical environments |
+| Lower power | Within-family genotype differences are smaller than population-wide variation |
+
+::: {.callout-important}
+Family GWAS is best thought of as a design that removes much of the **between-family confounding** around $\tilde{\beta}_j$. It does not magically make every estimate equal the direct causal effect.
+:::
+
+## Summary: family GWAS gets closer to direct effects
+
+| Comparison | Main source of identifying variation |
+|---|---|
+| Population GWAS | Differences across people, families, and environments |
+| Family GWAS | Mendelian segregation across relatives within the same family |
+
+::: {.callout-note}
+This is why family GWAS is such a useful complement to the rest of the lecture: it directly targets many of the confounding mechanisms we have been discussing, and tomorrow's session will go deeper into the design details.
+:::
+
+# Part 5: Practical {background-color="#2c3e50" style="color: white;"}
+
+## Practical placeholder
+
+Future practical material will return to:
+
+- local LD and tagged marginal effects
+- assortative mating and long-range LD
+- gene-environment correlation in SNP associations and variance decomposition
+- family GWAS and within-family effect estimation
+
+The practical can later add simulations and worked examples in R or Julia, following the same structure as Session 1 and explicitly linking sibling contrasts back to the segregation variance introduced there.
