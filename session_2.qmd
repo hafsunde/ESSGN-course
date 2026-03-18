@@ -202,10 +202,12 @@ $$
 This is the local-LD version of the master decomposition: **nearby correlated genotypes make a marginal coefficient absorb tagged effects from other loci**.
 :::
 
-## Marginal effects as a projection through LD
+## Marginal effects as a projection through LD {.smaller}
 
 Collect the marginal coefficients into a vector. Then the same idea can be written compactly as:
 
+:::: {.columns}
+::: {.column width="42%"}
 $$
 \hat{\boldsymbol{\beta}}_{\text{marg}} \approx \mathbf{R}\boldsymbol{\beta}
 $$
@@ -214,15 +216,74 @@ where $\mathbf{R}$ is the LD matrix with entries
 
 $$
 R_{jk} = \frac{\text{Cov}(x_j, x_k)}{\sqrt{\text{Var}(x_j)\text{Var}(x_k)}}
-\qquad
-\mathbf{R} \approx
-\begin{pmatrix}
-1 & .82 & .51 & .03 \\
-.82 & 1 & .63 & .05 \\
-.51 & .63 & 1 & .12 \\
-.03 & .05 & .12 & 1
-\end{pmatrix}
 $$
+:::
+::: {.column width="58%"}
+```{r}
+#| echo: false
+#| fig-width: 5.4
+#| fig-height: 3.8
+#| out-width: "100%"
+library(ggplot2)
+
+n <- 12
+
+ld_mat <- matrix(c(
+  1.00, 0.78, 0.61, 0.34, 0.08, 0.03, 0.01, 0.00, 0.00, 0.00, 0.00, 0.00,
+  0.78, 1.00, 0.74, 0.46, 0.10, 0.05, 0.02, 0.01, 0.00, 0.00, 0.00, 0.00,
+  0.61, 0.74, 1.00, 0.67, 0.14, 0.08, 0.03, 0.02, 0.00, 0.00, 0.00, 0.00,
+  0.34, 0.46, 0.67, 1.00, 0.18, 0.10, 0.05, 0.03, 0.01, 0.00, 0.00, 0.00,
+  0.08, 0.10, 0.14, 0.18, 1.00, 0.83, 0.57, 0.29, 0.05, 0.02, 0.00, 0.00,
+  0.03, 0.05, 0.08, 0.10, 0.83, 1.00, 0.71, 0.41, 0.08, 0.03, 0.01, 0.00,
+  0.01, 0.02, 0.03, 0.05, 0.57, 0.71, 1.00, 0.76, 0.16, 0.07, 0.03, 0.01,
+  0.00, 0.01, 0.02, 0.03, 0.29, 0.41, 0.76, 1.00, 0.23, 0.10, 0.04, 0.02,
+  0.00, 0.00, 0.00, 0.01, 0.05, 0.08, 0.16, 0.23, 1.00, 0.72, 0.44, 0.19,
+  0.00, 0.00, 0.00, 0.00, 0.02, 0.03, 0.07, 0.10, 0.72, 1.00, 0.69, 0.37,
+  0.00, 0.00, 0.00, 0.00, 0.00, 0.01, 0.03, 0.04, 0.44, 0.69, 1.00, 0.74,
+  0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.01, 0.02, 0.19, 0.37, 0.74, 1.00
+), nrow = n, byrow = TRUE)
+
+ld_df <- expand.grid(
+  snp_x = seq_len(n),
+  snp_y = seq_len(n)
+)
+ld_df$ld <- as.vector(ld_mat)
+ld_df$label <- sub("^(-?)0\\.", "\\1.", sprintf("%.2f", ld_df$ld))
+ld_df$text_col <- ifelse(ld_df$ld > 0.55, "white", "#1f2d3d")
+ld_df$snp_y <- n + 1 - ld_df$snp_y
+
+ggplot(ld_df, aes(x = snp_x, y = snp_y, fill = ld)) +
+  geom_tile(color = "white", linewidth = 0.4) +
+  geom_text(aes(label = label, color = text_col), size = 2.6, family = "sans") +
+  geom_vline(xintercept = c(4.5, 8.5), color = "#2c3e50", linewidth = 0.7) +
+  geom_hline(yintercept = c(4.5, 8.5), color = "#2c3e50", linewidth = 0.7) +
+  coord_equal() +
+  scale_x_continuous(breaks = c(1, 4, 8, 12), expand = c(0, 0)) +
+  scale_y_continuous(
+    breaks = c(1, 4, 8, 12),
+    labels = c(12, 9, 5, 1),
+    expand = c(0, 0)
+  ) +
+  scale_fill_gradientn(
+    colours = c("#f7fbff", "#9ecae1", "#4292c6", "#084594"),
+    limits = c(0, 1),
+    name = "LD"
+  ) +
+  scale_color_identity() +
+  labs(x = "SNP", y = "SNP") +
+  theme_minimal(base_size = 10) +
+  theme(
+    panel.grid = element_blank(),
+    axis.title = element_text(size = 9),
+    axis.text = element_text(size = 8),
+    legend.title = element_text(size = 8),
+    legend.text = element_text(size = 7),
+    legend.key.height = unit(0.45, "cm"),
+    plot.margin = margin(2, 2, 2, 2)
+  )
+```
+:::
+::::
 
 ::: {.callout-note}
 ## Interpretation
