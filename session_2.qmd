@@ -147,47 +147,38 @@ digraph haplotypes {
 ## A two-SNP toy example
 
 
-:::: {.columns}
-::: {.column width="55%"}
-Suppose the true model is:
+Assume the true model is:
 
 $$
-y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + e_i
+y_i = \beta_1 x_{i1} + e_i
 $$
 
-and $\text{Cov}(x_1,x_2) \neq 0$ and $\text{Cov}(x_1,e)=0$. 
-
-Even if $\beta_1 = 0$, $x_1$ still appears associated with the phenotype ($\tilde{\beta}_1 \neq 0$):
+where SNP 1 is causal, SNP 2 is non-causal, and SNP 1 and SNP 2 are in LD:
 
 $$
-\tilde{\beta}_1
-= \beta_1 + \beta_2\frac{\text{Cov}(x_1,x_2)}{\text{Var}(x_1)}
+\beta_1 \neq 0, \qquad \beta_2 = 0, \qquad \text{Cov}(x_1,x_2) \neq 0
 $$
 
-:::
-::: {.column width="45%"}
-```{dot}
-//| fig-width: 4.4
-//| fig-height: 2.8
-//| echo: false
-digraph twosnp {
-  rankdir=TB;
-  graph [margin=0.1, nodesep=0.5, ranksep=0.8];
-  node [shape=circle, style=filled, fixedsize=true, width=0.8, height=0.8,
-        fontsize=18, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
-  edge [penwidth=2, fontsize=16, fontname="Helvetica-Bold"];
+A GWAS tests each SNP separately. For SNP 2, the marginal coefficient is:
 
-  x1 [label="x1", fillcolor="#3498db", color="#2980b9"];
-  x2 [label="x2", fillcolor="#e74c3c", color="#c0392b"];
-  y  [label="y", fillcolor="#7f8c8d", color="#707b7c"];
+$$
+\tilde{\beta}_2
+=
+\beta_2
++
+\beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
+$$
 
-  x2 -> y [label=" beta2"];
-  x1 -> x2 [dir=none, style=dashed, color="#27ae60", label=" LD"];
-  x1 -> y [style=dotted, color="#3498db", label=" marginal"];
-}
-```
-:::
-::::
+Since $\beta_2 = 0$, this becomes:
+
+$$
+\tilde{\beta}_2
+=
+\beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
+$$
+
+So SNP 2 can look associated with the phenotype even though it has **no direct causal effect**.
+
 
 ## General local-LD decomposition {.smaller}
 

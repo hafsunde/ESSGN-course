@@ -1159,74 +1159,29 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \varepsilon_{ij}
 </section>
 <section id="a-two-snp-toy-example" class="slide level2">
 <h2>A two-SNP toy example</h2>
-<div class="columns">
-<div class="column" style="width:55%;">
-<p>Suppose the true model is:</p>
+<p>Assume the true model is:</p>
 <p><span class="math display">\[
-y_i = \beta_1 x_{i1} + \beta_2 x_{i2} + e_i
+y_i = \beta_1 x_{i1} + e_i
 \]</span></p>
-<p>and <span class="math inline">\(\text{Cov}(x_1,x_2) \neq 0\)</span> and <span class="math inline">\(\text{Cov}(x_1,e)=0\)</span>.</p>
-<p>Even if <span class="math inline">\(\beta_1 = 0\)</span>, <span class="math inline">\(x_1\)</span> still appears associated with the phenotype (<span class="math inline">\(\tilde{\beta}_1 \neq 0\)</span>):</p>
+<p>where SNP 1 is causal, SNP 2 is non-causal, and SNP 1 and SNP 2 are in LD:</p>
 <p><span class="math display">\[
-\tilde{\beta}_1
-= \beta_1 + \beta_2\frac{\text{Cov}(x_1,x_2)}{\text{Var}(x_1)}
+\beta_1 \neq 0, \qquad \beta_2 = 0, \qquad \text{Cov}(x_1,x_2) \neq 0
 \]</span></p>
-</div><div class="column" style="width:45%;">
-<div class="cell" data-fig-width="4.4" data-fig-height="2.8" data-layout-align="center">
-<div class="cell-output-display">
-<div>
-<p></p><figure class><p></p>
-<div>
-<svg width="422" height="269" viewbox="7.20 7.20 187.07 343.60" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(11.2 339.6)">
-<title>twosnp</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-332.4 175.87,-332.4 175.87,4 -4,4"></polygon>
-<!-- x1 -->
-<g id="node1" class="node">
-<title>x1</title>
-<ellipse fill="#3498db" stroke="#2980b9" stroke-width="2" cx="79" cy="-299.4" rx="29" ry="29"></ellipse>
-<text text-anchor="middle" x="79" y="-294" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="18.00" fill="white">x1</text>
-</g>
-<!-- x2 -->
-<g id="node2" class="node">
-<title>x2</title>
-<ellipse fill="#e74c3c" stroke="#c0392b" stroke-width="2" cx="29" cy="-164.2" rx="29" ry="29"></ellipse>
-<text text-anchor="middle" x="29" y="-158.8" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="18.00" fill="white">x2</text>
-</g>
-<!-- x1&#45;&gt;x2 -->
-<g id="edge2" class="edge">
-<title>x1-&gt;x2</title>
-<path fill="none" stroke="#27ae60" stroke-width="2" stroke-dasharray="5,2" d="M69.12,-272.08C60.41,-248.88 47.78,-215.24 39.03,-191.92" />
-<text text-anchor="middle" x="69.66" y="-227" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00"> LD</text>
-</g>
-<!-- y -->
-<g id="node3" class="node">
-<title>y</title>
-<ellipse fill="#7f8c8d" stroke="#707b7c" stroke-width="2" cx="79" cy="-29" rx="29" ry="29"></ellipse>
-<text text-anchor="middle" x="79" y="-23.6" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="18.00" fill="white">y</text>
-</g>
-<!-- x1&#45;&gt;y -->
-<g id="edge3" class="edge">
-<title>x1-&gt;y</title>
-<path fill="none" stroke="#3498db" stroke-width="2" stroke-dasharray="1,5" d="M87.95,-271.77C100.23,-231.43 119.25,-152.58 105,-87 103.29,-79.15 100.41,-71.09 97.17,-63.59" />
-<polygon fill="#3498db" stroke="#3498db" stroke-width="2" points="100.31,-62.05 92.94,-54.45 93.96,-65 100.31,-62.05"></polygon>
-<text text-anchor="middle" x="141.43" y="-159.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00"> marginal</text>
-</g>
-<!-- x2&#45;&gt;y -->
-<g id="edge1" class="edge">
-<title>x2-&gt;y</title>
-<path fill="none" stroke="black" stroke-width="2" d="M38.88,-136.88C46.46,-116.67 57.03,-88.54 65.41,-66.21" />
-<polygon fill="black" stroke="black" stroke-width="2" points="68.73,-67.31 68.97,-56.72 62.18,-64.85 68.73,-67.31"></polygon>
-<text text-anchor="middle" x="76.32" y="-91.8" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="16.00"> beta2</text>
-</g>
-</g>
-</svg>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</div></div>
+<p>A GWAS tests each SNP separately. For SNP 2, the marginal coefficient is:</p>
+<p><span class="math display">\[
+\tilde{\beta}_2
+=
+\beta_2
++
+\beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
+\]</span></p>
+<p>Since <span class="math inline">\(\beta_2 = 0\)</span>, this becomes:</p>
+<p><span class="math display">\[
+\tilde{\beta}_2
+=
+\beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
+\]</span></p>
+<p>So SNP 2 can look associated with the phenotype even though it has <strong>no direct causal effect</strong>.</p>
 </section>
 <section id="general-local-ld-decomposition" class="slide level2 smaller">
 <h2>General local-LD decomposition</h2>
