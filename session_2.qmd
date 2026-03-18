@@ -359,75 +359,116 @@ $$
 The matching is on **$y$**, not directly on $g$. The question is how phenotype assortment gets translated into genetic covariance.
 :::
 
-## Expand $\text{Cov}(y_m,y_f)$ when $y=g+e$ {.smaller}
+## Assortment makes correlation flow "backwards"
 
-Start from the same decomposition as in Session 1:
+Under ordinary family resemblance, covariance starts in the **causes** and is diluted as it shows up in the phenotype.
 
-$$
-y_i = g_i + e_i
-$$
-
-Then the covariance-of-sums law gives:
+Under assortative mating, the matching starts on the **outcome**. If partners are similar in $y$, then some of that covariance feeds back into their genetic values:
 
 $$
-\text{Cov}(y_m, y_f)
-= \text{Cov}(g_m, g_f)
-+ \text{Cov}(g_m, e_f)
-+ \text{Cov}(e_m, g_f)
-+ \text{Cov}(e_m, e_f)
+\text{Cov}(y_m, y_f) > 0
+\qquad \Longrightarrow \qquad
+\text{Cov}(g_m, g_f) > 0
 $$
 
 ::: {.callout-note}
-To focus on genetic assortment, we will often illustrate the case where the cross-terms are small. But matching on phenotype does **not** automatically imply a purely genetic pathway.
+This is the key reversal: normally correlation flows from **$g$ to $y$**. Under assortative mating, partner matching begins on **$y$**, and part of that covariance gets projected back into **$g$**.
+
+So, to quantify the feedback, we temporarily place ourselves at the **outcome** and ask: if we observe someone's phenotype $y$, how much genetic value $g$ would we predict? That is why the next step regresses **$g$ on $y$**, not the other way around.
 :::
 
-## From phenotype assortment to genetic assortment
+## Why regressing $g$ on $y$ gives $h^2$ {.smaller}
 
-If the phenotype is partly genetic, then positive $\text{Cov}(y_m,y_f)$ tends to induce positive $\text{Cov}(g_m,g_f)$.
-
-Because
+Assume the simple additive model
 
 $$
-g_i = \sum_{j=1}^{M} \beta_j x_{ij},
+y_i = g_i + e_i,
+\qquad
+\text{Cov}(g_i,e_i)=0
 $$
 
-trait-increasing alleles begin to align across mates.
+Then
 
-:::: {.columns}
-::: {.column width="50%"}
-```{dot}
-//| fig-width: 5
-//| fig-height: 3.4
-//| echo: false
-digraph am_flow {
-  rankdir=TB;
-  graph [margin=0.08, nodesep=0.4, ranksep=0.6];
-  node [shape=circle, style=filled, fixedsize=true, width=0.9, height=0.9,
-        fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
-  edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
+$$
+\text{Cov}(g_i,y_i)
+= \text{Cov}(g_i,g_i+e_i)
+= \text{Var}(g_i)
+= \sigma_g^2
+$$
 
-  ym [label="y_m", fillcolor="#3498db", color="#2980b9"];
-  yf [label="y_f", fillcolor="#e74c3c", color="#c0392b"];
-  gm [label="g_m", fillcolor="#5dade2", color="#2e86c1"];
-  gf [label="g_f", fillcolor="#f1948a", color="#cb4335"];
-  off [label="offspring", fillcolor="#7f8c8d", color="#707b7c"];
+So the linear projection of $g$ on $y$ has slope
 
-  ym -> gm;
-  yf -> gf;
-  ym -> yf [dir=none, style=dashed, color="#27ae60", label=" assortment on y"];
-  gm -> off;
-  gf -> off;
-}
-```
+$$
+b_{g \mid y}
+= \frac{\text{Cov}(g,y)}{\text{Var}(y)}
+= \frac{\sigma_g^2}{\sigma_y^2}
+= h^2
+$$
+
+::: {.callout-note}
+If there is rGE, this projection coefficient is still $\text{Cov}(g,y)/\text{Var}(y)$, but it is no longer exactly narrow-sense heritability. We set that complication aside here.
 :::
-::: {.column width="50%"}
 
-- Similar phenotypes imply more similar genetic values among mates
-- Offspring inherit combinations of alleles that are more aligned than under random mating
-- The induced covariance can accumulate across many loci
+## Matching on $y$ induces covariance in $g$ {.smaller}
 
+If partners match on phenotype, then project back into $g$ on **both** sides:
+
+$$
+\hat{g}_m \approx \frac{\sigma_g^2}{\sigma_y^2} y_m,
+\qquad
+\hat{g}_f \approx \frac{\sigma_g^2}{\sigma_y^2} y_f
+$$
+
+Therefore
+
+$$
+\text{Cov}(g_m,g_f)
+\approx
+\left(\frac{\sigma_g^2}{\sigma_y^2}\right)^2
+\text{Cov}(y_m,y_f)
+$$
+
+Divide both sides by $\sigma_g^2$ to convert the left-hand side to a genetic correlation:
+
+$$
+r_g^{\mathrm{mates}}
+=
+\approx
+\frac{(\sigma_g^2/\sigma_y^2)^2\text{Cov}(y_m,y_f)}{\sigma_g^2}
+=
+\frac{\sigma_g^2}{\sigma_y^2}
+\frac{\text{Cov}(y_m,y_f)}{\sigma_y^2}
+= h^2 r_y^{\mathrm{mates}}
+$$
+
+::: {.callout-note}
+The $h^4$ appears on the covariance scale because the phenotype-to-genotype attenuation ($\sigma_g^2/\sigma_y^2 = h^2$) happens **once for each mate**. When we convert covariance to correlation, one power of $\sigma_g^2$ is divided back out, leaving the simpler result $r_g^{\mathrm{mates}} \approx h^2 r_y^{\mathrm{mates}}$. If assortment is indirect, through a correlated trait or signal, the same logic applies but with a different projection factor.
 :::
-::::
+
+## Mate-level genetic covariance is a sum of SNP-level covariance {.smaller}
+
+Write the genetic value as a weighted sum of SNPs:
+
+$$
+g_i = \sum_{j=1}^{M} \beta_j x_{ij}
+$$
+
+Then partner genetic covariance expands as
+
+$$
+\text{Cov}(g_m,g_f)
+=
+\text{Cov}\!\left(\sum_{j=1}^{M} \beta_j x_{mj}, \sum_{k=1}^{M} \beta_k x_{fk}\right)
+=
+\sum_{j=1}^{M}\sum_{k=1}^{M}
+\beta_j \beta_k \,\text{Cov}(x_{mj},x_{fk})
+$$
+
+So mate-level genetic covariance is the weighted sum of many cross-mate SNP covariances. Phenotype assortment can therefore induce many small SNP-level correlations across partners.
+
+::: {.callout-note}
+This is the bridge to long-range LD: once partner genomes become correlated, transmission and recombination can move that covariance into the next generation.
+:::
 
 ## One generation creates trans covariance first
 
@@ -437,7 +478,7 @@ $$
 g_i = g_i^{(m)} + g_i^{(f)}
 $$
 
-After **one generation** of positive assortment, the first new covariance is primarily:
+Once mate genetic values covary, the first new covariance in the next generation is primarily:
 
 $$
 \text{Cov}\!\left(g^{(m)}, g^{(f)}\right) > 0

@@ -308,6 +308,10 @@ $$
 - What differs across traits are the weights $\beta_{1j}$ and $\beta_{2j}$
 - The environmental parts $e_1$ and $e_2$ can also be correlated
 
+::: {.callout-note}
+$y_1$ and $y_2$ can be different phenotypes (for example, depression and anxiety), but they can also be the same trait measured across ages, cohorts, or populations.
+:::
+
 ## Covariance across traits {.smaller}
 
 The phenotypic correlation is
