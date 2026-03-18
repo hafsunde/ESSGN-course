@@ -112,7 +112,11 @@ $$\text{Cov}(X, Y) = E\!\left[(X - \mu_X)(Y - \mu_Y)\right]$$
 
 The **correlation** is the standardized version:
 
-$$r_{XY} = \frac{\text{Cov}(X, Y)}{\sigma_X \, \sigma_Y} \in [-1, 1]$$
+$$r_{XY} = \frac{\text{Cov}(X, Y)}{\sqrt{\text{Var}(X)\text{Var}(Y)}} \in [-1, 1]$$
+
+The **regression slope** of $Y$ on $X$ is:
+
+$$b_{XY} = \frac{\text{Cov}(X, Y)}{\text{Var}(X)}$$
 
 ::: {.callout-note}
 ## Two useful rules
@@ -221,6 +225,7 @@ We'll see these concepts in action later, but here is an example of how they com
 | Variance of a sum | $\text{Var}(X+Y) = \text{Var}(X) + \text{Var}(Y)$ if uncorrelated | Heritability |
 | Covariance | $\text{Cov}(X,Y)$: how two variables move together | Resemblance between relatives |
 | Correlation | Standardized covariance, $\in [-1,1]$ | $r_g$, $r_e$ |
+| Regression slope | $b_{XY} = \text{Cov}(X,Y)/\text{Var}(X)$ | Parent-offspring regression |
 | Central limit theorem | Sum of many small effects $\to$ Normal | Infinitesimal model: $M$ loci produce a normal distribution of genetic values with variance $\sigma^2_g$ |
 
 # Part 1: Quantitative Genetics and The Infinitesimal Model {background-color="#2c3e50" style="color: white;"}
