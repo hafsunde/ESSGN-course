@@ -118,28 +118,28 @@ download_with_fallback <- function(urls, destfile) {
   )
 
   for (url in urls) {
-    message("Downloading ", basename(destfile), " from ", url)
-    safe_unlink(destfile)
+  message("Downloading ", basename(destfile), " from ", url)
+  safe_unlink(destfile)
 
     ok <- tryCatch({
       utils::download.file(
         url,
         destfile,
-        mode = "wb",
+    mode = "wb",
         quiet = FALSE,
         method = if (capabilities("libcurl")) "libcurl" else "auto",
         headers = headers
-      )
-      TRUE
-    }, error = function(e) {
-      message("  failed: ", conditionMessage(e))
-      FALSE
-    })
+  )
+    TRUE
+  }, error = function(e) {
+    message("  failed: ", conditionMessage(e))
+    FALSE
+  })
 
-    if (ok && file.exists(destfile) && file.info(destfile)$size > 0) {
-      return(invisible(destfile))
-    }
+  if (ok && file.exists(destfile) && file.info(destfile)$size > 0) {
+    return(invisible(destfile))
   }
+}
 
   stop("All download attempts failed for ", basename(destfile))
 }
@@ -340,8 +340,8 @@ trait_specs <- function(raw_sumstats_dir, course_dir) {
     ),
     p_factor = list(
       label = "p_factor",
-      download = file.path(raw_sumstats_dir, "p_factor_sumstats"),
-      urls = c("https://figshare.com/ndownloader/files/58731898"),
+      download = file.path(raw_sumstats_dir, "p_factor_sumstats.gz"),
+      urls = c("https://ndownloader.figshare.com/files/58731898"),
       preferred_patterns = c("p[_ -]?factor", "pfactor", "transdiagnostic", "sumstat", "gwas"),
       default_n = 272757,
       output = file.path(course_dir, "p_factor.tsv.gz")
