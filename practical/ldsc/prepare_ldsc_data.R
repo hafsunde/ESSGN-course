@@ -36,13 +36,23 @@ pick_column <- function(df, aliases, required = TRUE) {
 
 download_with_fallback <- function(urls, destfile) {
   dir.create(dirname(destfile), recursive = TRUE, showWarnings = FALSE)
+  options(timeout = max(600, getOption("timeout")))
 
   for (url in urls) {
     message("Downloading ", basename(destfile), " from ", url)
     ok <- tryCatch({
-      utils::download.file(url, destfile, mode = "wb", quiet = FALSE)
+      utils::download.file(
+        url,
+        destfile,
+        mode = "wb",
+        quiet = FALSE,
+        method = if (capabilities("libcurl")) "libcurl" else "auto"
+      )
       TRUE
     }, error = function(e) {
+      if (file.exists(destfile)) {
+        unlink(destfile, force = TRUE)
+      }
       message("  failed: ", conditionMessage(e))
       FALSE
     })
@@ -90,7 +100,7 @@ decompress_single_file <- function(src, destfile) {
   invisible(destfile)
 }
 
-copy_matching_files <- function(from_dir, to_dir, pattern = NULL) {
+copy_matching_files <- function(from_dir, to_dir, pattern = NULL, rename_basename = identity) {
   dir.create(to_dir, recursive = TRUE, showWarnings = FALSE)
   files <- list.files(from_dir, recursive = TRUE, full.names = TRUE, all.files = FALSE, no.. = TRUE)
   files <- files[file.info(files)$isdir %in% FALSE]
@@ -103,12 +113,31 @@ copy_matching_files <- function(from_dir, to_dir, pattern = NULL) {
     stop("No files matched in ", from_dir)
   }
 
-  ok <- file.copy(files, file.path(to_dir, basename(files)), overwrite = TRUE)
+  target_names <- vapply(basename(files), rename_basename, character(1))
+  if (anyDuplicated(target_names)) {
+    stop("Staged files would collide in ", to_dir)
+  }
+
+  ok <- file.copy(files, file.path(to_dir, target_names), overwrite = TRUE)
   if (!all(ok)) {
     stop("Failed to stage some extracted files in ", to_dir)
   }
 
-  invisible(file.path(to_dir, basename(files)))
+  invisible(file.path(to_dir, target_names))
+}
+
+assert_expected_chr_files <- function(dir, stem = "", suffixes, label) {
+  expected <- unlist(lapply(1:22, function(chr) {
+    file.path(dir, paste0(stem, chr, suffixes))
+  }))
+
+  missing <- expected[!file.exists(expected)]
+  if (length(missing) > 0) {
+    stop(
+      "Missing expected files in ", label, " after extraction, for example ",
+      basename(missing[[1]])
+    )
+  }
 }
 
 read_sumstats_table <- function(path) {
@@ -211,8 +240,8 @@ prepare_ldsc_data <- function(force = FALSE) {
 
   intelligence_zip <- file.path(raw_sumstats_dir, "SavageJansen_IntMeta_sumstats.zip")
   depression_gz <- file.path(raw_sumstats_dir, "sumstats_depression_ctg_format.txt.gz")
-  hm3_archive <- file.path(raw_ref_dir, "w_hm3.snplist.bz2")
-  eur_archive <- file.path(raw_ref_dir, "eur_w_ld_chr.tar.bz2")
+  hm3_archive <- file.path(raw_ref_dir, "w_hm3.snplist.gz")
+  eur_archive <- file.path(raw_ref_dir, "1000G_Phase3_ldscores.tgz")
   weights_archive <- file.path(raw_ref_dir, "1000G_Phase3_weights_hm3_no_MHC.tgz")
 
   if (force || !file.exists(intelligence_zip)) {
@@ -236,6 +265,7 @@ prepare_ldsc_data <- function(force = FALSE) {
   if (force || !file.exists(hm3_archive)) {
     download_with_fallback(
       c(
+        "https://zenodo.org/records/7773502/files/w_hm3.snplist.gz?download=1",
         "https://storage.googleapis.com/broad-alkesgroup-public/LDSCORE/w_hm3.snplist.bz2",
         "https://data.broadinstitute.org/alkesgroup/LDSCORE/w_hm3.snplist.bz2"
       ),
@@ -246,6 +276,8 @@ prepare_ldsc_data <- function(force = FALSE) {
   if (force || !file.exists(eur_archive)) {
     download_with_fallback(
       c(
+        "https://zenodo.org/records/10515792/files/1000G_Phase3_ldscores.tgz?download=1",
+        "https://zenodo.org/records/7768714/files/1000G_Phase3_ldscores.tgz?download=1",
         "https://storage.googleapis.com/broad-alkesgroup-public/LDSCORE/eur_w_ld_chr.tar.bz2",
         "https://data.broadinstitute.org/alkesgroup/LDSCORE/eur_w_ld_chr.tar.bz2"
       ),
@@ -256,6 +288,8 @@ prepare_ldsc_data <- function(force = FALSE) {
   if (force || !file.exists(weights_archive)) {
     download_with_fallback(
       c(
+        "https://zenodo.org/records/10515792/files/1000G_Phase3_weights_hm3_no_MHC.tgz?download=1",
+        "https://zenodo.org/records/7768714/files/1000G_Phase3_weights_hm3_no_MHC.tgz?download=1",
         "https://storage.googleapis.com/broad-alkesgroup-public/LDSCORE/1000G_Phase3_weights_hm3_no_MHC.tgz",
         "https://data.broadinstitute.org/alkesgroup/LDSCORE/1000G_Phase3_weights_hm3_no_MHC.tgz"
       ),
@@ -276,7 +310,17 @@ prepare_ldsc_data <- function(force = FALSE) {
     extract_tar_archive(eur_archive, tmp_extract)
     unlink(eur_ref_dir, recursive = TRUE, force = TRUE)
     dir.create(eur_ref_dir, recursive = TRUE, showWarnings = FALSE)
-    copy_matching_files(tmp_extract, eur_ref_dir)
+    copy_matching_files(
+      tmp_extract,
+      eur_ref_dir,
+      pattern = "\\.(l2\\.ldscore\\.gz|l2\\.M|l2\\.M_5_50)$",
+      rename_basename = function(x) sub("^1000G\\.EUR\\.QC\\.", "", x)
+    )
+    assert_expected_chr_files(
+      eur_ref_dir,
+      suffixes = c(".l2.ldscore.gz", ".l2.M", ".l2.M_5_50"),
+      label = eur_ref_dir
+    )
   }
 
   weights_ref_dir <- file.path(ref_dir, "weights_hm3_no_hla")
@@ -288,10 +332,17 @@ prepare_ldsc_data <- function(force = FALSE) {
     unlink(weights_ref_dir, recursive = TRUE, force = TRUE)
     dir.create(weights_ref_dir, recursive = TRUE, showWarnings = FALSE)
     copy_matching_files(tmp_extract, weights_ref_dir, pattern = "^weights\\.hm3_noMHC\\.")
+    assert_expected_chr_files(
+      weights_ref_dir,
+      stem = "weights.hm3_noMHC.",
+      suffixes = ".l2.ldscore.gz",
+      label = weights_ref_dir
+    )
   }
 
-  hm3 <- read.delim(hm3_path, stringsAsFactors = FALSE)
+  hm3 <- read.delim(hm3_path, header = FALSE, stringsAsFactors = FALSE)
   hm3_snps <- unique(as.character(hm3[[1]]))
+  hm3_snps <- hm3_snps[grepl("^rs", hm3_snps, ignore.case = TRUE)]
 
   intelligence_stage <- file.path(raw_sumstats_dir, "intelligence_unzipped")
   dir.create(intelligence_stage, recursive = TRUE, showWarnings = FALSE)
@@ -343,3 +394,4 @@ prepare_ldsc_data <- function(force = FALSE) {
 if (sys.nframe() == 0) {
   prepare_ldsc_data()
 }
+
