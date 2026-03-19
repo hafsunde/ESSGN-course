@@ -47,42 +47,14 @@ dis_valid_download <- function(path) {
   is_zip || is_gz
 }
 
-download_with_fallback <- function(urls, destfile) {
-  dir.create(dirname(destfile), recursive = TRUE, showWarnings = FALSE)
-  options(timeout = max(600, getOption("timeout")))
+looks_like_archive <- function(path) {
+  grepl("\\.(zip|tgz|tar|tar\\.gz|tar\\.bz2|gz|bz2)$", basename(path), ignore.case = TRUE)
+}
 
-  for (url in urls) {
-    message("Downloading ", basename(destfile), " from ", url)
-
-    ok <- tryCatch({
-      utils::download.file(
-        url,
-        destfile,
-        mode = "wb",
-        quiet = FALSE,
-        method = if (capabilities("libcurl")) "libcurl" else "auto"
-      )
-      TRUE
-    }, error = function(e) {
-      if (file.exists(destfile)) {
-        unlink(destfile, force = TRUE)
-      }
-      message("  failed: ", conditionMessage(e))
-      FALSE
-    })
-
-    if (ok && is_valid_download(destfile)) {
-      return(invisible(destfile))
-    }
-
-    if (file.exists(destfile)) {
-      unlink(destfile, force = TRUE)
-    }
-
-    message("  failed: downloaded file is not a valid .zip or .gz archive")
+safe_unlink <- function(path) {
+  if (file.exists(path) || dir.exists(path)) {
+    unlink(path, recursive = TRUE, force = TRUE)
   }
-
-  stop("All download attempts failed for ", basename(destfile))
 }
 
 extract_tar_archive <- function(archive, exdir) {
@@ -136,6 +108,42 @@ decompress_single_file <- function(src, destfile) {
   invisible(destfile)
 }
 
+download_with_fallback <- function(urls, destfile) {
+  dir.create(dirname(destfile), recursive = TRUE, showWarnings = FALSE)
+  options(timeout = max(600, getOption("timeout")))
+
+  headers <- c(
+    "User-Agent" = "Mozilla/5.0 (compatible; ESSGN-course/1.0)",
+    "Accept" = "*/*"
+  )
+
+  for (url in urls) {
+    message("Downloading ", basename(destfile), " from ", url)
+    safe_unlink(destfile)
+
+    ok <- tryCatch({
+      utils::download.file(
+        url,
+        destfile,
+        mode = "wb",
+        quiet = FALSE,
+        method = if (capabilities("libcurl")) "libcurl" else "auto",
+        headers = headers
+      )
+      TRUE
+    }, error = function(e) {
+      message("  failed: ", conditionMessage(e))
+      FALSE
+    })
+
+    if (ok && file.exists(destfile) && file.info(destfile)$size > 0) {
+      return(invisible(destfile))
+    }
+  }
+
+  stop("All download attempts failed for ", basename(destfile))
+}
+
 copy_matching_files <- function(from_dir, to_dir, pattern = NULL, rename_basename = identity) {
   dir.create(to_dir, recursive = TRUE, showWarnings = FALSE)
   files <- list.files(from_dir, recursive = TRUE, full.names = TRUE, all.files = FALSE, no.. = TRUE)
@@ -176,6 +184,25 @@ assert_expected_chr_files <- function(dir, stem = "", suffixes, label) {
   }
 }
 
+extract_archive_if_needed <- function(path, exdir) {
+  safe_unlink(exdir)
+  dir.create(exdir, recursive = TRUE, showWarnings = FALSE)
+
+  lower <- tolower(basename(path))
+  if (grepl("\\.zip$", lower)) {
+    utils::unzip(path, exdir = exdir, overwrite = TRUE)
+  } else if (grepl("\\.(tgz|tar|tar\\.gz|tar\\.bz2)$", lower)) {
+    extract_tar_archive(path, exdir)
+  } else if (grepl("\\.(gz|bz2)$", lower)) {
+    out_name <- sub("\\.(gz|bz2)$", "", basename(path), ignore.case = TRUE)
+    decompress_single_file(path, file.path(exdir, out_name))
+  } else {
+    file.copy(path, file.path(exdir, basename(path)), overwrite = TRUE)
+  }
+
+  invisible(exdir)
+}
+
 read_sumstats_table <- function(path) {
   if (requireNamespace("data.table", quietly = TRUE)) {
     return(data.table::fread(path, data.table = FALSE, showProgress = TRUE))
@@ -189,16 +216,58 @@ read_sumstats_table <- function(path) {
   )
 }
 
+score_sumstats_candidate <- function(path, preferred_patterns = character()) {
+  name <- tolower(basename(path))
+  score <- 0
+
+  if (grepl("\\.(txt|tsv|sumstats|ma)$", name)) score <- score + 5
+  if (grepl("\\.(txt|tsv|sumstats|ma)\\.(gz|bz2)$", name)) score <- score + 5
+  if (grepl("harmon|munge|readme|supp|metadata|example", name)) score <- score - 10
+  if (grepl("chr[0-9xy]+", name)) score <- score - 5
+
+  for (i in seq_along(preferred_patterns)) {
+    if (grepl(preferred_patterns[[i]], name, perl = TRUE)) {
+      score <- score + (50 - i)
+    }
+  }
+
+  score
+}
+
+find_sumstats_file <- function(path, stage_dir, preferred_patterns = character()) {
+  lower <- tolower(basename(path))
+  if (!looks_like_archive(path) && grepl("\\.(txt|tsv|sumstats|ma)(\\.(gz|bz2))?$", lower)) {
+    return(path)
+  }
+
+  extract_archive_if_needed(path, stage_dir)
+  files <- list.files(stage_dir, recursive = TRUE, full.names = TRUE, all.files = FALSE, no.. = TRUE)
+  files <- files[file.info(files)$isdir %in% FALSE]
+
+  if (length(files) == 0) {
+    stop("No files found after extracting ", basename(path))
+  }
+
+  candidate_mask <- grepl("\\.(txt|tsv|sumstats|ma)(\\.(gz|bz2))?$", files, ignore.case = TRUE)
+  candidates <- files[candidate_mask]
+  if (length(candidates) == 0) {
+    stop("Could not identify a summary statistics table inside ", basename(path))
+  }
+
+  scores <- vapply(candidates, score_sumstats_candidate, numeric(1), preferred_patterns = preferred_patterns)
+  candidates[[order(scores, decreasing = TRUE)[[1]]]]
+}
+
 standardize_sumstats <- function(df, trait_label, default_n) {
-  snp_col <- pick_column(df, c("SNP", "RSID", "MarkerName", "SNPID"))
-  a1_col <- pick_column(df, c("A1", "Allele1", "EffectAllele", "EA"))
-  a2_col <- pick_column(df, c("A2", "Allele2", "OtherAllele", "NEA"))
-  p_col <- pick_column(df, c("P", "Pval", "PValue", "PVAL"))
-  n_col <- pick_column(df, c("N", "Neff", "TotalSampleSize", "SampleSize"), required = FALSE)
-  z_col <- pick_column(df, c("Z", "Zscore", "ZScore", "ZStat"), required = FALSE)
-  beta_col <- pick_column(df, c("BETA", "Beta", "Effect"), required = FALSE)
-  se_col <- pick_column(df, c("SE", "StdErr", "StandardError"), required = FALSE)
-  or_col <- pick_column(df, c("OR", "OddsRatio"), required = FALSE)
+  snp_col <- pick_column(df, c("SNP", "RSID", "MarkerName", "SNPID", "rsid"))
+  a1_col <- pick_column(df, c("A1", "Allele1", "EffectAllele", "EA", "ALT", "effect_allele"))
+  a2_col <- pick_column(df, c("A2", "Allele2", "OtherAllele", "NEA", "REF", "other_allele"))
+  p_col <- pick_column(df, c("P", "Pval", "PValue", "PVAL", "p_value", "pval"))
+  n_col <- pick_column(df, c("N", "Neff", "TotalSampleSize", "SampleSize", "N_eff", "n_total"), required = FALSE)
+  z_col <- pick_column(df, c("Z", "Zscore", "ZScore", "ZStat", "zscore", "ZSCORE"), required = FALSE)
+  beta_col <- pick_column(df, c("BETA", "Beta", "Effect", "beta", "B"), required = FALSE)
+  se_col <- pick_column(df, c("SE", "StdErr", "StandardError", "se", "SEbeta"), required = FALSE)
+  or_col <- pick_column(df, c("OR", "OddsRatio", "odds_ratio"), required = FALSE)
 
   out <- data.frame(
     SNP = as.character(df[[snp_col]]),
@@ -259,6 +328,27 @@ write_tsv_gz <- function(df, path) {
   )
 }
 
+trait_specs <- function(raw_sumstats_dir, course_dir) {
+  list(
+    intelligence = list(
+      label = "intelligence",
+      download = file.path(raw_sumstats_dir, "intelligence_sumstats.zip"),
+      urls = c("https://vu.data.surf.nl/public.php/dav/files/9tgwxmO5yosQkmb/?accept=zip"),
+      preferred_patterns = c("intelligence", "iq", "cognitive", "gwas", "sumstat"),
+      default_n = 269867,
+      output = file.path(course_dir, "intelligence_ctg.tsv.gz")
+    ),
+    p_factor = list(
+      label = "p_factor",
+      download = file.path(raw_sumstats_dir, "p_factor_sumstats"),
+      urls = c("https://figshare.com/ndownloader/files/58731898"),
+      preferred_patterns = c("p[_ -]?factor", "pfactor", "transdiagnostic", "sumstat", "gwas"),
+      default_n = 272757,
+      output = file.path(course_dir, "p_factor.tsv.gz")
+    )
+  )
+}
+
 prepare_ldsc_data <- function(force = FALSE) {
   script_dir <- dirname(get_script_path())
   ldsc_dir <- normalizePath(script_dir, winslash = "/", mustWork = TRUE)
@@ -274,28 +364,15 @@ prepare_ldsc_data <- function(force = FALSE) {
   dir.create(ref_dir, recursive = TRUE, showWarnings = FALSE)
   dir.create(course_dir, recursive = TRUE, showWarnings = FALSE)
 
-  intelligence_zip <- file.path(raw_sumstats_dir, "SavageJansen_IntMeta_sumstats.zip")
-  depression_gz <- file.path(raw_sumstats_dir, "sumstats_depression_ctg_format.txt.gz")
   hm3_archive <- file.path(raw_ref_dir, "w_hm3.snplist.gz")
   eur_archive <- file.path(raw_ref_dir, "1000G_Phase3_ldscores.tgz")
   weights_archive <- file.path(raw_ref_dir, "1000G_Phase3_weights_hm3_no_MHC.tgz")
 
-  if (force || !file.exists(intelligence_zip)) {
-    download_with_fallback(
-      c(
-        "https://ctg.cncr.nl/documents/p1651/SavageJansen_IntMeta_sumstats.zip"
-      ),
-      intelligence_zip
-    )
-  }
-
-  if (force || !file.exists(depression_gz)) {
-    download_with_fallback(
-      c(
-        "https://ctg.cncr.nl/documents/p1651/sumstats_depression_ctg_format.txt.gz"
-      ),
-      depression_gz
-    )
+  specs <- trait_specs(raw_sumstats_dir, course_dir)
+  for (spec in specs) {
+    if (force || !file.exists(spec$download)) {
+      download_with_fallback(spec$urls, spec$download)
+    }
   }
 
   if (force || !file.exists(hm3_archive)) {
@@ -341,10 +418,10 @@ prepare_ldsc_data <- function(force = FALSE) {
   eur_ref_dir <- file.path(ref_dir, "eur_w_ld_chr")
   if (force || !dir.exists(eur_ref_dir) || length(list.files(eur_ref_dir)) == 0) {
     tmp_extract <- file.path(tempdir(), "ldsc_eur_extract")
-    unlink(tmp_extract, recursive = TRUE, force = TRUE)
+    safe_unlink(tmp_extract)
     dir.create(tmp_extract, recursive = TRUE, showWarnings = FALSE)
     extract_tar_archive(eur_archive, tmp_extract)
-    unlink(eur_ref_dir, recursive = TRUE, force = TRUE)
+    safe_unlink(eur_ref_dir)
     dir.create(eur_ref_dir, recursive = TRUE, showWarnings = FALSE)
     copy_matching_files(
       tmp_extract,
@@ -364,10 +441,10 @@ prepare_ldsc_data <- function(force = FALSE) {
   weights_ref_dir <- file.path(ref_dir, "weights_hm3_no_hla")
   if (force || !dir.exists(weights_ref_dir) || length(list.files(weights_ref_dir)) == 0) {
     tmp_extract <- file.path(tempdir(), "ldsc_weights_extract")
-    unlink(tmp_extract, recursive = TRUE, force = TRUE)
+    safe_unlink(tmp_extract)
     dir.create(tmp_extract, recursive = TRUE, showWarnings = FALSE)
     extract_tar_archive(weights_archive, tmp_extract)
-    unlink(weights_ref_dir, recursive = TRUE, force = TRUE)
+    safe_unlink(weights_ref_dir)
     dir.create(weights_ref_dir, recursive = TRUE, showWarnings = FALSE)
     copy_matching_files(tmp_extract, weights_ref_dir, pattern = "^weights\\.hm3_noMHC\\.")
     assert_expected_chr_files(
@@ -382,54 +459,34 @@ prepare_ldsc_data <- function(force = FALSE) {
   hm3_snps <- unique(as.character(hm3[[1]]))
   hm3_snps <- hm3_snps[grepl("^rs", hm3_snps, ignore.case = TRUE)]
 
-  intelligence_stage <- file.path(raw_sumstats_dir, "intelligence_unzipped")
-  dir.create(intelligence_stage, recursive = TRUE, showWarnings = FALSE)
-  unzip(intelligence_zip, exdir = intelligence_stage, overwrite = TRUE)
-  intelligence_candidates <- list.files(intelligence_stage,
-    pattern = "\\.(txt|tsv|sumstats)$",
-    recursive = TRUE,
-    full.names = TRUE,
-    ignore.case = TRUE
-  )
-
-  if (length(intelligence_candidates) == 0) {
-    stop("Could not find the extracted intelligence summary statistics file")
+  outputs <- list()
+  for (trait_name in names(specs)) {
+    spec <- specs[[trait_name]]
+    stage_dir <- file.path(raw_sumstats_dir, paste0(trait_name, "_staged"))
+    source_file <- find_sumstats_file(spec$download, stage_dir, spec$preferred_patterns)
+    message("Using ", source_file, " for trait ", spec$label)
+    df <- read_sumstats_table(source_file)
+    std <- standardize_sumstats(df, trait_label = spec$label, default_n = spec$default_n)
+    std <- std[std$SNP %in% hm3_snps, ]
+    message(spec$label, ": retained ", format(nrow(std), big.mark = ","), " HapMap3 SNPs")
+    write_tsv_gz(std, spec$output)
+    outputs[[trait_name]] <- spec$output
   }
 
-  intelligence_df <- read_sumstats_table(intelligence_candidates[[1]])
-  depression_df <- read_sumstats_table(depression_gz)
-
-  intelligence_std <- standardize_sumstats(
-    intelligence_df,
-    trait_label = "intelligence",
-    default_n = 269867
-  )
-  depression_std <- standardize_sumstats(
-    depression_df,
-    trait_label = "depression",
-    default_n = 449484
-  )
-
-  intelligence_std <- intelligence_std[intelligence_std$SNP %in% hm3_snps, ]
-  depression_std <- depression_std[depression_std$SNP %in% hm3_snps, ]
-
-  message("intelligence: retained ", format(nrow(intelligence_std), big.mark = ","), " HapMap3 SNPs")
-  message("depression: retained ", format(nrow(depression_std), big.mark = ","), " HapMap3 SNPs")
-
-  write_tsv_gz(intelligence_std, file.path(course_dir, "intelligence_ctg.tsv.gz"))
-  write_tsv_gz(depression_std, file.path(course_dir, "depression_ctg.tsv.gz"))
-
   message("Prepared files written to ", normalizePath(course_dir, winslash = "/", mustWork = TRUE))
-  invisible(list(
-    intelligence = file.path(course_dir, "intelligence_ctg.tsv.gz"),
-    depression = file.path(course_dir, "depression_ctg.tsv.gz"),
-    hm3 = hm3_path,
-    eur_ld = eur_ref_dir,
-    weights = weights_ref_dir
+  invisible(c(
+    outputs,
+    list(
+      hm3 = hm3_path,
+      eur_ld = eur_ref_dir,
+      weights = weights_ref_dir
+    )
   ))
 }
 
-if (sys.nframe() == 0) {
-  prepare_ldsc_data()
-}
+args <- commandArgs(trailingOnly = TRUE)
+force <- any(args %in% c("--force", "force"))
 
+if (sys.nframe() == 0) {
+  prepare_ldsc_data(force = force)
+}
