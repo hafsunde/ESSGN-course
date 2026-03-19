@@ -55,7 +55,7 @@ $$
 In a GWAS, each SNP $j$ is tested separately in a linear model:
 
 $$
-y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \varepsilon_{ij}
+y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 $$
 
 
@@ -83,67 +83,55 @@ $$
 
 ## Nearby SNPs correlate
 
-Recombination shuffles **chromosome segments**, not isolated SNPs. So loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together.
-
-```{dot}
-//| fig-width: 6.8
-//| fig-height: 3.2
-//| echo: false
-digraph haplotypes {
-  rankdir=TB;
-  graph [margin=0.08, fontname="Lato"];
-  node [shape=plain, fontname="Lato", fontsize=12];
-
-  haplos [label=<
-    <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="1" CELLPADDING="6">
-      <TR>
-        <TD BORDER="0" ALIGN="RIGHT"><B>Parent haplotype 1</B></TD>
-        <TD BGCOLOR="#d6eaf8">1</TD>
-        <TD BGCOLOR="#d6eaf8">0</TD>
-        <TD BGCOLOR="#d6eaf8">1</TD>
-        <TD BGCOLOR="#d6eaf8">1</TD>
-        <TD BGCOLOR="#d6eaf8">0</TD>
-        <TD BGCOLOR="#d6eaf8">1</TD>
-        <TD>0</TD>
-        <TD>0</TD>
-        <TD>1</TD>
-        <TD>1</TD>
-      </TR>
-      <TR>
-        <TD BORDER="0" ALIGN="RIGHT"><B>Parent haplotype 2</B></TD>
-        <TD>0</TD>
-        <TD>1</TD>
-        <TD>0</TD>
-        <TD>0</TD>
-        <TD>1</TD>
-        <TD>0</TD>
-        <TD BGCOLOR="#fadbd8">1</TD>
-        <TD BGCOLOR="#fadbd8">1</TD>
-        <TD BGCOLOR="#fadbd8">0</TD>
-        <TD BGCOLOR="#fadbd8">0</TD>
-      </TR>
-      <TR>
-        <TD BORDER="0" COLSPAN="11" HEIGHT="10"></TD>
-      </TR>
-      <TR>
-        <TD BORDER="0" ALIGN="RIGHT"><B>Transmitted haplotype</B></TD>
-        <TD BGCOLOR="#d6eaf8"><B>1</B></TD>
-        <TD BGCOLOR="#d6eaf8"><B>0</B></TD>
-        <TD BGCOLOR="#d6eaf8"><B>1</B></TD>
-        <TD BGCOLOR="#d6eaf8"><B>1</B></TD>
-        <TD BGCOLOR="#d6eaf8"><B>0</B></TD>
-        <TD BGCOLOR="#d6eaf8"><B>1</B></TD>
-        <TD BGCOLOR="#fadbd8"><B>1</B></TD>
-        <TD BGCOLOR="#fadbd8"><B>1</B></TD>
-        <TD BGCOLOR="#fadbd8"><B>0</B></TD>
-        <TD BGCOLOR="#fadbd8"><B>0</B></TD>
-      </TR>
-    </TABLE>
-  >];
-}
-```
+Recombination shuffles **chromosome segments**, not isolated SNPs. So loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together. This makes nearby SNPs correlated in the population, a phenomenon called (local) **linkage disequilibrium (LD)**.
 
 
+
+<table style="border-collapse: collapse; font-family: Lato;">
+  <tr>
+    <td style="border: none; text-align: right;"><b>$t_{gm}$</b></td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;">1</td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;">0</td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;">1</td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;">1</td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;">0</td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;">1</td>
+    <td style="border:1px solid #ccc;">0</td>
+    <td style="border:1px solid #ccc;">0</td>
+    <td style="border:1px solid #ccc;">1</td>
+    <td style="border:1px solid #ccc;">1</td>
+  </tr>
+
+  <tr>
+    <td style="border: none; text-align: right;"><b>$t_{gp}$</b></td>
+    <td style="border:1px solid #ccc;">0</td>
+    <td style="border:1px solid #ccc;">1</td>
+    <td style="border:1px solid #ccc;">0</td>
+    <td style="border:1px solid #ccc;">0</td>
+    <td style="border:1px solid #ccc;">1</td>
+    <td style="border:1px solid #ccc;">0</td>
+    <td style="background:#fadbd8; border:1px solid #ccc;">1</td>
+    <td style="background:#fadbd8; border:1px solid #ccc;">1</td>
+    <td style="background:#fadbd8; border:1px solid #ccc;">0</td>
+    <td style="background:#fadbd8; border:1px solid #ccc;">0</td>
+  </tr>
+
+  <tr><td colspan="11" style="height:10px;"></td></tr>
+
+  <tr>
+    <td style="border: none; text-align: right;"><b>$t_p$</b></td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;"><b>1</b></td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;"><b>0</b></td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;"><b>1</b></td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;"><b>1</b></td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;"><b>0</b></td>
+    <td style="background:#d6eaf8; border:1px solid #ccc;"><b>1</b></td>
+    <td style="background:#fadbd8; border:1px solid #ccc;"><b>1</b></td>
+    <td style="background:#fadbd8; border:1px solid #ccc;"><b>1</b></td>
+    <td style="background:#fadbd8; border:1px solid #ccc;"><b>0</b></td>
+    <td style="background:#fadbd8; border:1px solid #ccc;"><b>0</b></td>
+  </tr>
+</table>
 ## A two-SNP toy example
 
 
@@ -153,31 +141,23 @@ $$
 y_i = \beta_1 x_{i1} + e_i
 $$
 
-where SNP 1 is causal, SNP 2 is non-causal, and SNP 1 and SNP 2 are in LD:
+where $x_1$ is causal and is in LD with $x_2$, a non-causal SNP:
 
 $$
 \beta_1 \neq 0, \qquad \beta_2 = 0, \qquad \text{Cov}(x_1,x_2) \neq 0
 $$
 
-A GWAS tests each SNP separately. For SNP 2, the marginal coefficient is:
+A GWAS tests each SNP separately. For $x_2$, the marginal coefficient is:
 
 $$
 \tilde{\beta}_2
 =
-\beta_2
-+
+\color{grey}{\beta_2}
+\color{grey}{+}
 \beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
 $$
 
-Since $\beta_2 = 0$, this becomes:
-
-$$
-\tilde{\beta}_2
-=
-\beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
-$$
-
-So SNP 2 can look associated with the phenotype even though it has **no direct causal effect**.
+In other wrods, $x_2$ will be associated with the phenotype even though it has **no direct causal effect**.
 
 
 ## General local-LD decomposition {.smaller}
@@ -299,7 +279,7 @@ Here $\mathcal{N}(j)$ is a local window around SNP $j$, and the square matters b
 | High-LD SNP | Many strong local correlations | Large $\ell_j$ |
 
 ::: {.callout-note}
-A high LD score does **not** mean a SNP is more causal. It means the SNP tags more nearby variation.
+A high LD score means the SNP is highly correlated with many nearby variants, and is more likely to tag causal variation in the region. A low LD score means the SNP is more isolated and less likely to tag nearby causal effects.
 :::
 
 ## LD score regression

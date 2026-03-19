@@ -1090,7 +1090,7 @@ y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
 \]</span></p>
 <p>In a GWAS, each SNP <span class="math inline">\(j\)</span> is tested separately in a linear model:</p>
 <p><span class="math display">\[
-y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \varepsilon_{ij}
+y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 \]</span></p>
 <p><span class="math inline">\(\tilde{\beta}_j\)</span> is the <strong>marginal coefficient</strong> measuring the <strong><em>association</em></strong> between <span class="math inline">\(x_{ij}\)</span> and <span class="math inline">\(y_i\)</span>:</p>
 <p><span class="math display">\[
@@ -1118,110 +1118,118 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \varepsilon_{ij}
 </section>
 <section id="nearby-snps-correlate" class="slide level2">
 <h2>Nearby SNPs correlate</h2>
-<p>Recombination shuffles <strong>chromosome segments</strong>, not isolated SNPs. So loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together.</p>
-<div class="cell" data-fig-width="6.8" data-fig-height="3.2" data-layout-align="center">
-<div class="cell-output-display">
-<div>
-<p></p><figure class><p></p>
-<div>
-<svg width="653" height="307" viewbox="5.76 5.76 354.76 114.76" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(9.76 110.76)">
-<title>haplotypes</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-105 345,-105 345,4 -4,4"></polygon>
-<!-- haplos -->
-<g id="node1" class="node">
-<title>haplos</title>
-<text text-anchor="start" x="27.17" y="-82.9" font-family="Lato" font-weight="bold" font-size="12.00">Parent haplotype 1</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="131.5,-71.5 131.5,-99.5 151.5,-99.5 151.5,-71.5 131.5,-71.5"></polygon>
-<polygon fill="none" stroke="black" points="131.5,-71.5 131.5,-99.5 151.5,-99.5 151.5,-71.5 131.5,-71.5"></polygon>
-<text text-anchor="start" x="138.5" y="-81.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="152.5,-71.5 152.5,-99.5 172.5,-99.5 172.5,-71.5 152.5,-71.5"></polygon>
-<polygon fill="none" stroke="black" points="152.5,-71.5 152.5,-99.5 172.5,-99.5 172.5,-71.5 152.5,-71.5"></polygon>
-<text text-anchor="start" x="159.5" y="-81.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="173.5,-71.5 173.5,-99.5 193.5,-99.5 193.5,-71.5 173.5,-71.5"></polygon>
-<polygon fill="none" stroke="black" points="173.5,-71.5 173.5,-99.5 193.5,-99.5 193.5,-71.5 173.5,-71.5"></polygon>
-<text text-anchor="start" x="180.5" y="-81.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="194.5,-71.5 194.5,-99.5 214.5,-99.5 214.5,-71.5 194.5,-71.5"></polygon>
-<polygon fill="none" stroke="black" points="194.5,-71.5 194.5,-99.5 214.5,-99.5 214.5,-71.5 194.5,-71.5"></polygon>
-<text text-anchor="start" x="201.5" y="-81.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="215.5,-71.5 215.5,-99.5 235.5,-99.5 235.5,-71.5 215.5,-71.5"></polygon>
-<polygon fill="none" stroke="black" points="215.5,-71.5 215.5,-99.5 235.5,-99.5 235.5,-71.5 215.5,-71.5"></polygon>
-<text text-anchor="start" x="222.5" y="-81.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="236.5,-71.5 236.5,-99.5 256.5,-99.5 256.5,-71.5 236.5,-71.5"></polygon>
-<polygon fill="none" stroke="black" points="236.5,-71.5 236.5,-99.5 256.5,-99.5 256.5,-71.5 236.5,-71.5"></polygon>
-<text text-anchor="start" x="243.5" y="-81.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="none" stroke="black" points="257.5,-71.5 257.5,-99.5 277.5,-99.5 277.5,-71.5 257.5,-71.5"></polygon>
-<text text-anchor="start" x="264.5" y="-81.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="none" stroke="black" points="278.5,-71.5 278.5,-99.5 298.5,-99.5 298.5,-71.5 278.5,-71.5"></polygon>
-<text text-anchor="start" x="285.5" y="-81.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="none" stroke="black" points="299.5,-71.5 299.5,-99.5 319.5,-99.5 319.5,-71.5 299.5,-71.5"></polygon>
-<text text-anchor="start" x="306.5" y="-81.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="none" stroke="black" points="320.5,-71.5 320.5,-99.5 340.5,-99.5 340.5,-71.5 320.5,-71.5"></polygon>
-<text text-anchor="start" x="327.5" y="-81.7" font-family="Lato" font-size="12.00">1</text>
-<text text-anchor="start" x="27.17" y="-53.9" font-family="Lato" font-weight="bold" font-size="12.00">Parent haplotype 2</text>
-<polygon fill="none" stroke="black" points="131.5,-42.5 131.5,-70.5 151.5,-70.5 151.5,-42.5 131.5,-42.5"></polygon>
-<text text-anchor="start" x="138.5" y="-52.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="none" stroke="black" points="152.5,-42.5 152.5,-70.5 172.5,-70.5 172.5,-42.5 152.5,-42.5"></polygon>
-<text text-anchor="start" x="159.5" y="-52.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="none" stroke="black" points="173.5,-42.5 173.5,-70.5 193.5,-70.5 193.5,-42.5 173.5,-42.5"></polygon>
-<text text-anchor="start" x="180.5" y="-52.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="none" stroke="black" points="194.5,-42.5 194.5,-70.5 214.5,-70.5 214.5,-42.5 194.5,-42.5"></polygon>
-<text text-anchor="start" x="201.5" y="-52.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="none" stroke="black" points="215.5,-42.5 215.5,-70.5 235.5,-70.5 235.5,-42.5 215.5,-42.5"></polygon>
-<text text-anchor="start" x="222.5" y="-52.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="none" stroke="black" points="236.5,-42.5 236.5,-70.5 256.5,-70.5 256.5,-42.5 236.5,-42.5"></polygon>
-<text text-anchor="start" x="243.5" y="-52.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="#fadbd8" stroke="transparent" points="257.5,-42.5 257.5,-70.5 277.5,-70.5 277.5,-42.5 257.5,-42.5"></polygon>
-<polygon fill="none" stroke="black" points="257.5,-42.5 257.5,-70.5 277.5,-70.5 277.5,-42.5 257.5,-42.5"></polygon>
-<text text-anchor="start" x="264.5" y="-52.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="#fadbd8" stroke="transparent" points="278.5,-42.5 278.5,-70.5 298.5,-70.5 298.5,-42.5 278.5,-42.5"></polygon>
-<polygon fill="none" stroke="black" points="278.5,-42.5 278.5,-70.5 298.5,-70.5 298.5,-42.5 278.5,-42.5"></polygon>
-<text text-anchor="start" x="285.5" y="-52.7" font-family="Lato" font-size="12.00">1</text>
-<polygon fill="#fadbd8" stroke="transparent" points="299.5,-42.5 299.5,-70.5 319.5,-70.5 319.5,-42.5 299.5,-42.5"></polygon>
-<polygon fill="none" stroke="black" points="299.5,-42.5 299.5,-70.5 319.5,-70.5 319.5,-42.5 299.5,-42.5"></polygon>
-<text text-anchor="start" x="306.5" y="-52.7" font-family="Lato" font-size="12.00">0</text>
-<polygon fill="#fadbd8" stroke="transparent" points="320.5,-42.5 320.5,-70.5 340.5,-70.5 340.5,-42.5 320.5,-42.5"></polygon>
-<polygon fill="none" stroke="black" points="320.5,-42.5 320.5,-70.5 340.5,-70.5 340.5,-42.5 320.5,-42.5"></polygon>
-<text text-anchor="start" x="327.5" y="-52.7" font-family="Lato" font-size="12.00">0</text>
-<text text-anchor="start" x="7.16" y="-11.9" font-family="Lato" font-weight="bold" font-size="12.00">Transmitted haplotype</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="131.5,-0.5 131.5,-28.5 151.5,-28.5 151.5,-0.5 131.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="131.5,-0.5 131.5,-28.5 151.5,-28.5 151.5,-0.5 131.5,-0.5"></polygon>
-<text text-anchor="start" x="138.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">1</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="152.5,-0.5 152.5,-28.5 172.5,-28.5 172.5,-0.5 152.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="152.5,-0.5 152.5,-28.5 172.5,-28.5 172.5,-0.5 152.5,-0.5"></polygon>
-<text text-anchor="start" x="159.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">0</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="173.5,-0.5 173.5,-28.5 193.5,-28.5 193.5,-0.5 173.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="173.5,-0.5 173.5,-28.5 193.5,-28.5 193.5,-0.5 173.5,-0.5"></polygon>
-<text text-anchor="start" x="180.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">1</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="194.5,-0.5 194.5,-28.5 214.5,-28.5 214.5,-0.5 194.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="194.5,-0.5 194.5,-28.5 214.5,-28.5 214.5,-0.5 194.5,-0.5"></polygon>
-<text text-anchor="start" x="201.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">1</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="215.5,-0.5 215.5,-28.5 235.5,-28.5 235.5,-0.5 215.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="215.5,-0.5 215.5,-28.5 235.5,-28.5 235.5,-0.5 215.5,-0.5"></polygon>
-<text text-anchor="start" x="222.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">0</text>
-<polygon fill="#d6eaf8" stroke="transparent" points="236.5,-0.5 236.5,-28.5 256.5,-28.5 256.5,-0.5 236.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="236.5,-0.5 236.5,-28.5 256.5,-28.5 256.5,-0.5 236.5,-0.5"></polygon>
-<text text-anchor="start" x="243.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">1</text>
-<polygon fill="#fadbd8" stroke="transparent" points="257.5,-0.5 257.5,-28.5 277.5,-28.5 277.5,-0.5 257.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="257.5,-0.5 257.5,-28.5 277.5,-28.5 277.5,-0.5 257.5,-0.5"></polygon>
-<text text-anchor="start" x="264.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">1</text>
-<polygon fill="#fadbd8" stroke="transparent" points="278.5,-0.5 278.5,-28.5 298.5,-28.5 298.5,-0.5 278.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="278.5,-0.5 278.5,-28.5 298.5,-28.5 298.5,-0.5 278.5,-0.5"></polygon>
-<text text-anchor="start" x="285.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">1</text>
-<polygon fill="#fadbd8" stroke="transparent" points="299.5,-0.5 299.5,-28.5 319.5,-28.5 319.5,-0.5 299.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="299.5,-0.5 299.5,-28.5 319.5,-28.5 319.5,-0.5 299.5,-0.5"></polygon>
-<text text-anchor="start" x="306.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">0</text>
-<polygon fill="#fadbd8" stroke="transparent" points="320.5,-0.5 320.5,-28.5 340.5,-28.5 340.5,-0.5 320.5,-0.5"></polygon>
-<polygon fill="none" stroke="black" points="320.5,-0.5 320.5,-28.5 340.5,-28.5 340.5,-0.5 320.5,-0.5"></polygon>
-<text text-anchor="start" x="327.5" y="-11.7" font-family="Lato" font-weight="bold" font-size="12.00">0</text>
-</g>
-</g>
-</svg>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
+<p>Recombination shuffles <strong>chromosome segments</strong>, not isolated SNPs. So loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together. This makes nearby SNPs correlated in the population, a phenomenon called (local) <strong>linkage disequilibrium (LD)</strong>.</p>
+<table style="border-collapse: collapse; font-family: Lato;">
+<tbody><tr>
+<td style="border: none; text-align: right;">
+<b><span class="math inline">\(t_{gm}\)</span></b>
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+1
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+0
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+1
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+1
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+0
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+1
+</td>
+<td style="border:1px solid #ccc;">
+0
+</td>
+<td style="border:1px solid #ccc;">
+0
+</td>
+<td style="border:1px solid #ccc;">
+1
+</td>
+<td style="border:1px solid #ccc;">
+1
+</td>
+</tr>
+<tr>
+<td style="border: none; text-align: right;">
+<b><span class="math inline">\(t_{gp}\)</span></b>
+</td>
+<td style="border:1px solid #ccc;">
+0
+</td>
+<td style="border:1px solid #ccc;">
+1
+</td>
+<td style="border:1px solid #ccc;">
+0
+</td>
+<td style="border:1px solid #ccc;">
+0
+</td>
+<td style="border:1px solid #ccc;">
+1
+</td>
+<td style="border:1px solid #ccc;">
+0
+</td>
+<td style="background:#fadbd8; border:1px solid #ccc;">
+1
+</td>
+<td style="background:#fadbd8; border:1px solid #ccc;">
+1
+</td>
+<td style="background:#fadbd8; border:1px solid #ccc;">
+0
+</td>
+<td style="background:#fadbd8; border:1px solid #ccc;">
+0
+</td>
+</tr>
+<tr>
+<td colspan="11" style="height:10px;">
+</td>
+</tr>
+<tr>
+<td style="border: none; text-align: right;">
+<b><span class="math inline">\(t_p\)</span></b>
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+<b>1</b>
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+<b>0</b>
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+<b>1</b>
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+<b>1</b>
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+<b>0</b>
+</td>
+<td style="background:#d6eaf8; border:1px solid #ccc;">
+<b>1</b>
+</td>
+<td style="background:#fadbd8; border:1px solid #ccc;">
+<b>1</b>
+</td>
+<td style="background:#fadbd8; border:1px solid #ccc;">
+<b>1</b>
+</td>
+<td style="background:#fadbd8; border:1px solid #ccc;">
+<b>0</b>
+</td>
+<td style="background:#fadbd8; border:1px solid #ccc;">
+<b>0</b>
+</td>
+</tr>
+</tbody></table>
 </section>
 <section id="a-two-snp-toy-example" class="slide level2">
 <h2>A two-SNP toy example</h2>
@@ -1229,25 +1237,19 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \varepsilon_{ij}
 <p><span class="math display">\[
 y_i = \beta_1 x_{i1} + e_i
 \]</span></p>
-<p>where SNP 1 is causal, SNP 2 is non-causal, and SNP 1 and SNP 2 are in LD:</p>
+<p>where <span class="math inline">\(x_1\)</span> is causal and is in LD with <span class="math inline">\(x_2\)</span>, a non-causal SNP:</p>
 <p><span class="math display">\[
 \beta_1 \neq 0, \qquad \beta_2 = 0, \qquad \text{Cov}(x_1,x_2) \neq 0
 \]</span></p>
-<p>A GWAS tests each SNP separately. For SNP 2, the marginal coefficient is:</p>
+<p>A GWAS tests each SNP separately. For <span class="math inline">\(x_2\)</span>, the marginal coefficient is:</p>
 <p><span class="math display">\[
 \tilde{\beta}_2
 =
-\beta_2
-+
+\color{grey}{\beta_2}
+\color{grey}{+}
 \beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
 \]</span></p>
-<p>Since <span class="math inline">\(\beta_2 = 0\)</span>, this becomes:</p>
-<p><span class="math display">\[
-\tilde{\beta}_2
-=
-\beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
-\]</span></p>
-<p>So SNP 2 can look associated with the phenotype even though it has <strong>no direct causal effect</strong>.</p>
+<p>In other wrods, <span class="math inline">\(x_2\)</span> will be associated with the phenotype even though it has <strong>no direct causal effect</strong>.</p>
 </section>
 <section id="general-local-ld-decomposition" class="slide level2 smaller">
 <h2>General local-LD decomposition</h2>
@@ -1348,7 +1350,7 @@ R_{jk} = \frac{\text{Cov}(x_j, x_k)}{\sqrt{\text{Var}(x_j)\text{Var}(x_k)}}
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>A high LD score does <strong>not</strong> mean a SNP is more causal. It means the SNP tags more nearby variation.</p>
+<p>A high LD score means the SNP is highly correlated with many nearby variants, and is more likely to tag causal variation in the region. A low LD score means the SNP is more isolated and less likely to tag nearby causal effects.</p>
 </div>
 </div>
 </div>
