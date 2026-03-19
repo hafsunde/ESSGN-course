@@ -348,6 +348,7 @@ This is the key reversal: normally correlation flows from **$g$ to $y$**. Under 
 So, to quantify the feedback, we temporarily place ourselves at the **outcome** and ask: if we observe someone's phenotype $y$, how much genetic value $g$ would we predict? That is why the next step regresses **$g$ on $y$**, not the other way around.
 :::
 
+
 ## Why regressing $g$ on $y$ gives $h^2$ {.smaller}
 
 Assume the simple additive model
@@ -413,7 +414,23 @@ r_g^{\mathrm{mates}}
 $$
 
 ::: {.callout-note}
-The $h^4$ appears on the covariance scale because the phenotype-to-genotype attenuation ($\sigma_g^2/\sigma_y^2 = h^2$) happens **once for each mate**. When we convert covariance to correlation, one power of $\sigma_g^2$ is divided back out, leaving the simpler result $r_g^{\mathrm{mates}} \approx h^2 r_y^{\mathrm{mates}}$. If assortment is indirect, through a correlated trait or signal, the same logic applies but with a different projection factor.
+The $h^4$ appears on the covariance scale because the phenotype-to-genotype attenuation ($\sigma_g^2/\sigma_y^2 = h^2$) happens **once for each mate**. When we convert covariance to correlation, one power of $\sigma_g^2$ is divided back out, leaving the simpler result $r_g^{\mathrm{mates}} \approx h^2 r_y^{\mathrm{mates}}$. 
+:::
+
+
+## Direct versus indirect assortment {.smaller}
+
+Following Sunde et al. (2025), it helps to distinguish the **focal phenotype** $y$ from the **sorting factor** $S$ that partners actually match on.
+
+| Case | What partners sort on | Induced genotypic correlation between partners |
+|---|---|---|
+| **Direct assortment** | The focal phenotype itself: $S = y$ | $r_g^{\mathrm{mates}} \approx \mathrm{Corr}(g,y)^2 r_y^{\mathrm{mates}} \approx h^2 r_y^{\mathrm{mates}}$ |
+| **Indirect assortment** | A related signal or bundle of traits: $S \neq y$, but $\mathrm{Corr}(S,y) \neq 0$ | $r_g^{\mathrm{mates}} \approx \mathrm{Corr}(g,S)^2 r_S^{\mathrm{mates}}$ |
+
+::: {.callout-note}
+The key point is that partner **genotypic** similarity depends on how strongly the sorting factor $S$ captures the genetic causes of the focal phenotype. So indirect assortment can imply **more or less** genetic resemblance between partners than you would expect from the observed partner correlation in $y$ alone.
+
+In this lecture, we will assume **direct-assortment** where $S=y$, but note that assortative mating is indirect for many social traits (e.g., educational attainment).
 :::
 
 ## Mate-level genetic covariance is a sum of SNP-level covariance {.smaller}
