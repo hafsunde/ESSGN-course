@@ -344,7 +344,7 @@ $$
 h^4 \text{Cov}(y_m,y_f)
 $$
 
-Divide both sides by $\sigma_g^2$ to convert the left-hand side to a genetic correlation:
+Divide both sides by $\sigma_g^2$ to convert the left-hand side to a genotypic correlation:
 
 $$
 r_g^{\mathrm{mates}}
@@ -869,17 +869,18 @@ This is why family GWAS is such a useful complement to the rest of the lecture: 
 In this practical, we will use **LD score regression (LDSC)** to estimate:
 
 1. observed-scale SNP heritability for **intelligence**
-2. observed-scale SNP heritability for **depression**
+2. observed-scale SNP heritability for **p_factor**
 3. the genetic correlation between the two traits
 
-The summary statistics come from the **CTG summary statistics archive** and the software is the canonical **LDSC** pipeline used in many real analyses:
+The summary statistics come from the **CTG summary statistics archive** and the practical uses a local course installer around the newer Python 3 LDSC workflow from **CBIIT/ldsc**. LDSC itself remains the canonical method originally associated with the **bulik/ldsc** project.
 
 - [CTG GWAS summary statistics](https://ctg.thebluebus.nl/software/summary_statistics/)
-- [LDSC repository](https://github.com/bulik/ldsc)
+- [CBIIT/ldsc repository](https://github.com/CBIIT/ldsc)
+- [Original bulik/ldsc repository](https://github.com/bulik/ldsc)
 - [LDSC heritability and genetic correlation tutorial](https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
 
 ::: {.callout-note}
-To keep the exercise focused, the instructor has already downloaded the public files, standardized the columns, and prepared course-ready inputs. You will still run the same LDSC commands used in practice: `munge_sumstats.py`, single-trait `--h2`, and cross-trait `--rg`.
+To keep the exercise focused, the instructor has already prepared helper scripts for the repetitive setup work. You will still run the same main LDSC steps used in practice: `munge_sumstats.py`, single-trait `--h2`, and cross-trait `--rg`, but the course scripts handle the local installation and platform details.
 :::
 
 ## Setup and inputs {.smaller}
@@ -887,7 +888,7 @@ To keep the exercise focused, the instructor has already downloaded the public f
 We will work with two pre-harmonized files prepared from the public CTG releases:
 
 - `practical/ldsc/data/course/intelligence_ctg.tsv.gz`
-- `practical/ldsc/data/course/depression_ctg.tsv.gz`
+- `practical/ldsc/data/course/p_factor.tsv.gz`
 
 Each file has the same minimal schema:
 
@@ -899,9 +900,12 @@ We also need the LDSC reference files:
 - `practical/ldsc/data/ref/eur_w_ld_chr/`
 - `practical/ldsc/data/ref/weights_hm3_no_hla/`
 
+Run the course workflow in this order from the repository root. The practical is intended to work in **Git Bash on Windows**, with the scripts handling the local Python and LDSC setup.
+
 ```bash
-export LDSC_DIR=/path/to/ldsc
-mkdir -p practical/ldsc/data/results
+Rscript practical/ldsc/prepare_ldsc_data.R --force
+bash practical/ldsc/install_ldsc.sh
+bash practical/ldsc/ldsc_pipeline.sh
 ```
 
 ::: {.callout-note}
@@ -910,43 +914,17 @@ These LD scores are based on **1000 Genomes Europeans**, so the exercise assumes
 
 ## Part 1: Munge the summary statistics {.smaller}
 
-First convert the prepared text files into LDSC's `.sumstats.gz` format.
-
-```bash
-python "$LDSC_DIR/munge_sumstats.py" \
-  --sumstats practical/ldsc/data/course/intelligence_ctg.tsv.gz \
-  --out practical/ldsc/data/results/intelligence_ctg \
-  --merge-alleles practical/ldsc/data/ref/w_hm3.snplist
-
-python "$LDSC_DIR/munge_sumstats.py" \
-  --sumstats practical/ldsc/data/course/depression_ctg.tsv.gz \
-  --out practical/ldsc/data/results/depression_ctg \
-  --merge-alleles practical/ldsc/data/ref/w_hm3.snplist
-```
+After running the pipeline above, the first LDSC step is to convert the prepared text files into LDSC's `.sumstats.gz` format. If you want to inspect the script itself, see `practical/ldsc/ldsc_pipeline.sh`.
 
 Look for:
 
-- how many SNPs survive QC and allele matching
-- whether the log files contain warnings
-- the two output files `*.sumstats.gz`
+- how many SNPs survive QC and allele matching for `intelligence` and `p_factor`
+- whether the munge logs contain warnings
+- the two output files `intelligence_ctg.sumstats.gz` and `p_factor.sumstats.gz`
 
 ## Part 2: Estimate SNP heritability {.smaller}
 
-Now run single-trait LDSC for each phenotype.
-
-```bash
-python "$LDSC_DIR/ldsc.py" \
-  --h2 practical/ldsc/data/results/intelligence_ctg.sumstats.gz \
-  --ref-ld-chr practical/ldsc/data/ref/eur_w_ld_chr/ \
-  --w-ld-chr practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. \
-  --out practical/ldsc/data/results/intelligence_h2
-
-python "$LDSC_DIR/ldsc.py" \
-  --h2 practical/ldsc/data/results/depression_ctg.sumstats.gz \
-  --ref-ld-chr practical/ldsc/data/ref/eur_w_ld_chr/ \
-  --w-ld-chr practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. \
-  --out practical/ldsc/data/results/depression_h2
-```
+That same pipeline run then performs single-trait LDSC for each phenotype.
 
 Look for these lines in each log:
 
@@ -954,27 +932,29 @@ Look for these lines in each log:
 - `Intercept`
 - `Ratio`
 
+The key log files are:
+
+- `practical/ldsc/data/results/intelligence_h2.log`
+- `practical/ldsc/data/results/p_factor_h2.log`
+
 ::: {.callout-note}
 For this short practical we stay on the **observed scale**. We are not doing liability-scale conversion or partitioned heritability here.
 :::
 
 ## Part 3: Estimate the genetic correlation {.smaller}
 
-Finally, estimate the cross-trait genetic correlation.
-
-```bash
-python "$LDSC_DIR/ldsc.py" \
-  --rg practical/ldsc/data/results/intelligence_ctg.sumstats.gz,practical/ldsc/data/results/depression_ctg.sumstats.gz \
-  --ref-ld-chr practical/ldsc/data/ref/eur_w_ld_chr/ \
-  --w-ld-chr practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. \
-  --out practical/ldsc/data/results/intelligence_depression_rg
-```
+Finally, that same pipeline run performs the cross-trait LDSC regression using the two munged `.sumstats.gz` files.
 
 Look for:
 
 - `Genetic Correlation`
 - its standard error
 - the cross-trait intercept
+- the `P:` line
+
+The main log file is:
+
+- `practical/ldsc/data/results/intelligence_p_factor_rg.log`
 
 For these traits, we expect a **negative** genetic correlation.
 
@@ -982,11 +962,17 @@ For these traits, we expect a **negative** genetic correlation.
 
 After the run, check that you can answer these questions:
 
-1. Which trait has the larger observed-scale SNP heritability?
+1. Which trait has the larger observed-scale SNP heritability: `intelligence` or `p_factor`?
 2. Are the LDSC intercepts close to 1, or do they suggest substantial inflation beyond polygenicity?
-3. Is the estimated genetic correlation negative, and how large is it in magnitude?
-4. Is the cross-trait intercept close to 0, or could sample overlap / shared confounding be contributing?
+3. Are the LDSC ratios modest, or do they suggest a large share of inflation is due to confounding?
+4. Is the estimated genetic correlation between `intelligence` and `p_factor` negative, and how large is it in magnitude?
+5. Is the cross-trait intercept close to 0, or could sample overlap / shared confounding be contributing?
 
 ::: {.callout-important}
-The important habit is not just to report `h^2` and `r_g`, but also to inspect the **intercepts** and ask whether the analysis assumptions look reasonable.
+The important habit is not just to report `h^2` and `r_g`, but also to inspect the **intercepts** and **ratios** and ask whether the analysis assumptions look reasonable.
 :::
+
+
+
+
+

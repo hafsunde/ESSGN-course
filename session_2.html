@@ -1522,7 +1522,7 @@ b_{g \mid y}
 =
 h^4 \text{Cov}(y_m,y_f)
 \]</span></p>
-<p>Divide both sides by <span class="math inline">\(\sigma_g^2\)</span> to convert the left-hand side to a genetic correlation:</p>
+<p>Divide both sides by <span class="math inline">\(\sigma_g^2\)</span> to convert the left-hand side to a genotypic correlation:</p>
 <p><span class="math display">\[
 r_g^{\mathrm{mates}}
 =
@@ -2583,13 +2583,14 @@ y_{1f} - y_{2f}
 <p>In this practical, we will use <strong>LD score regression (LDSC)</strong> to estimate:</p>
 <ol type="1">
 <li>observed-scale SNP heritability for <strong>intelligence</strong></li>
-<li>observed-scale SNP heritability for <strong>depression</strong></li>
+<li>observed-scale SNP heritability for <strong>p_factor</strong></li>
 <li>the genetic correlation between the two traits</li>
 </ol>
-<p>The summary statistics come from the <strong>CTG summary statistics archive</strong> and the software is the canonical <strong>LDSC</strong> pipeline used in many real analyses:</p>
+<p>The summary statistics come from the <strong>CTG summary statistics archive</strong> and the practical uses a local course installer around the newer Python 3 LDSC workflow from <strong>CBIIT/ldsc</strong>. LDSC itself remains the canonical method originally associated with the <strong>bulik/ldsc</strong> project.</p>
 <ul>
 <li><a href="https://ctg.thebluebus.nl/software/summary_statistics/">CTG GWAS summary statistics</a></li>
-<li><a href="https://github.com/bulik/ldsc">LDSC repository</a></li>
+<li><a href="https://github.com/CBIIT/ldsc">CBIIT/ldsc repository</a></li>
+<li><a href="https://github.com/bulik/ldsc">Original bulik/ldsc repository</a></li>
 <li><a href="https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation">LDSC heritability and genetic correlation tutorial</a></li>
 </ul>
 <div class="callout callout-note callout-titled callout-style-default">
@@ -2601,7 +2602,7 @@ y_{1f} - y_{2f}
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>To keep the exercise focused, the instructor has already downloaded the public files, standardized the columns, and prepared course-ready inputs. You will still run the same LDSC commands used in practice: <code>munge_sumstats.py</code>, single-trait <code>--h2</code>, and cross-trait <code>--rg</code>.</p>
+<p>To keep the exercise focused, the instructor has already prepared helper scripts for the repetitive setup work. You will still run the same main LDSC steps used in practice: <code>munge_sumstats.py</code>, single-trait <code>--h2</code>, and cross-trait <code>--rg</code>, but the course scripts handle the local installation and platform details.</p>
 </div>
 </div>
 </div>
@@ -2611,7 +2612,7 @@ y_{1f} - y_{2f}
 <p>We will work with two pre-harmonized files prepared from the public CTG releases:</p>
 <ul>
 <li><code>practical/ldsc/data/course/intelligence_ctg.tsv.gz</code></li>
-<li><code>practical/ldsc/data/course/depression_ctg.tsv.gz</code></li>
+<li><code>practical/ldsc/data/course/p_factor.tsv.gz</code></li>
 </ul>
 <p>Each file has the same minimal schema:</p>
 <p><code>SNP</code>, <code>A1</code>, <code>A2</code>, <code>P</code>, <code>N</code>, <code>Z</code></p>
@@ -2621,8 +2622,10 @@ y_{1f} - y_{2f}
 <li><code>practical/ldsc/data/ref/eur_w_ld_chr/</code></li>
 <li><code>practical/ldsc/data/ref/weights_hm3_no_hla/</code></li>
 </ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href></a><span class="bu">export</span> <span class="va">LDSC_DIR</span><span class="op">=</span>/path/to/ldsc</span>
-<span id="cb1-2"><a href></a><span class="fu">mkdir</span> <span class="at">-p</span> practical/ldsc/data/results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Run the course workflow in this order from the repository root. The practical is intended to work in <strong>Git Bash on Windows</strong>, with the scripts handling the local Python and LDSC setup.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href></a><span class="ex">Rscript</span> practical/ldsc/prepare_ldsc_data.R <span class="at">--force</span></span>
+<span id="cb1-2"><a href></a><span class="fu">bash</span> practical/ldsc/install_ldsc.sh</span>
+<span id="cb1-3"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2639,42 +2642,29 @@ y_{1f} - y_{2f}
 </section>
 <section id="part-1-munge-the-summary-statistics" class="slide level2 smaller">
 <h2>Part 1: Munge the summary statistics</h2>
-<p>First convert the prepared text files into LDSC’s <code>.sumstats.gz</code> format.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/munge_sumstats.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb2-2"><a href></a>  <span class="at">--sumstats</span> practical/ldsc/data/course/intelligence_ctg.tsv.gz <span class="dt">\</span></span>
-<span id="cb2-3"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/intelligence_ctg <span class="dt">\</span></span>
-<span id="cb2-4"><a href></a>  <span class="at">--merge-alleles</span> practical/ldsc/data/ref/w_hm3.snplist</span>
-<span id="cb2-5"><a href></a></span>
-<span id="cb2-6"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/munge_sumstats.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb2-7"><a href></a>  <span class="at">--sumstats</span> practical/ldsc/data/course/depression_ctg.tsv.gz <span class="dt">\</span></span>
-<span id="cb2-8"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/depression_ctg <span class="dt">\</span></span>
-<span id="cb2-9"><a href></a>  <span class="at">--merge-alleles</span> practical/ldsc/data/ref/w_hm3.snplist</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The pipeline first converts the prepared text files into LDSC’s <code>.sumstats.gz</code> format. If you want to inspect the script itself, see <code>practical/ldsc/ldsc_pipeline.sh</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Look for:</p>
 <ul>
-<li>how many SNPs survive QC and allele matching</li>
-<li>whether the log files contain warnings</li>
-<li>the two output files <code>*.sumstats.gz</code></li>
+<li>how many SNPs survive QC and allele matching for <code>intelligence</code> and <code>p_factor</code></li>
+<li>whether the munge logs contain warnings</li>
+<li>the two output files <code>intelligence_ctg.sumstats.gz</code> and <code>p_factor.sumstats.gz</code></li>
 </ul>
 </section>
 <section id="part-2-estimate-snp-heritability" class="slide level2 smaller">
 <h2>Part 2: Estimate SNP heritability</h2>
-<p>Now run single-trait LDSC for each phenotype.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/ldsc.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-2"><a href></a>  <span class="at">--h2</span> practical/ldsc/data/results/intelligence_ctg.sumstats.gz <span class="dt">\</span></span>
-<span id="cb3-3"><a href></a>  <span class="at">--ref-ld-chr</span> practical/ldsc/data/ref/eur_w_ld_chr/ <span class="dt">\</span></span>
-<span id="cb3-4"><a href></a>  <span class="at">--w-ld-chr</span> practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. <span class="dt">\</span></span>
-<span id="cb3-5"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/intelligence_h2</span>
-<span id="cb3-6"><a href></a></span>
-<span id="cb3-7"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/ldsc.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-8"><a href></a>  <span class="at">--h2</span> practical/ldsc/data/results/depression_ctg.sumstats.gz <span class="dt">\</span></span>
-<span id="cb3-9"><a href></a>  <span class="at">--ref-ld-chr</span> practical/ldsc/data/ref/eur_w_ld_chr/ <span class="dt">\</span></span>
-<span id="cb3-10"><a href></a>  <span class="at">--w-ld-chr</span> practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. <span class="dt">\</span></span>
-<span id="cb3-11"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/depression_h2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The same pipeline then runs single-trait LDSC for each phenotype.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Look for these lines in each log:</p>
 <ul>
 <li><code>Total Observed scale h2</code></li>
 <li><code>Intercept</code></li>
 <li><code>Ratio</code></li>
+</ul>
+<p>The key log files are:</p>
+<ul>
+<li><code>practical/ldsc/data/results/intelligence_h2.log</code></li>
+<li><code>practical/ldsc/data/results/p_factor_h2.log</code></li>
 </ul>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -2692,17 +2682,18 @@ y_{1f} - y_{2f}
 </section>
 <section id="part-3-estimate-the-genetic-correlation" class="slide level2 smaller">
 <h2>Part 3: Estimate the genetic correlation</h2>
-<p>Finally, estimate the cross-trait genetic correlation.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/ldsc.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb4-2"><a href></a>  <span class="at">--rg</span> practical/ldsc/data/results/intelligence_ctg.sumstats.gz,practical/ldsc/data/results/depression_ctg.sumstats.gz <span class="dt">\</span></span>
-<span id="cb4-3"><a href></a>  <span class="at">--ref-ld-chr</span> practical/ldsc/data/ref/eur_w_ld_chr/ <span class="dt">\</span></span>
-<span id="cb4-4"><a href></a>  <span class="at">--w-ld-chr</span> practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. <span class="dt">\</span></span>
-<span id="cb4-5"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/intelligence_depression_rg</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Finally, the pipeline runs the cross-trait LDSC regression using the two munged <code>.sumstats.gz</code> files.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Look for:</p>
 <ul>
 <li><code>Genetic Correlation</code></li>
 <li>its standard error</li>
 <li>the cross-trait intercept</li>
+<li>the <code>P:</code> line</li>
+</ul>
+<p>The main log file is:</p>
+<ul>
+<li><code>practical/ldsc/data/results/intelligence_p_factor_rg.log</code></li>
 </ul>
 <p>For these traits, we expect a <strong>negative</strong> genetic correlation.</p>
 </section>
@@ -2710,9 +2701,10 @@ y_{1f} - y_{2f}
 <h2>Interpretation checkpoint</h2>
 <p>After the run, check that you can answer these questions:</p>
 <ol type="1">
-<li>Which trait has the larger observed-scale SNP heritability?</li>
+<li>Which trait has the larger observed-scale SNP heritability: <code>intelligence</code> or <code>p_factor</code>?</li>
 <li>Are the LDSC intercepts close to 1, or do they suggest substantial inflation beyond polygenicity?</li>
-<li>Is the estimated genetic correlation negative, and how large is it in magnitude?</li>
+<li>Are the LDSC ratios modest, or do they suggest a large share of inflation is due to confounding?</li>
+<li>Is the estimated genetic correlation between <code>intelligence</code> and <code>p_factor</code> negative, and how large is it in magnitude?</li>
 <li>Is the cross-trait intercept close to 0, or could sample overlap / shared confounding be contributing?</li>
 </ol>
 <div class="callout callout-important callout-titled callout-style-default">
@@ -2724,7 +2716,7 @@ y_{1f} - y_{2f}
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>The important habit is not just to report <code>h^2</code> and <code>r_g</code>, but also to inspect the <strong>intercepts</strong> and ask whether the analysis assumptions look reasonable.</p>
+<p>The important habit is not just to report <code>h^2</code> and <code>r_g</code>, but also to inspect the <strong>intercepts</strong> and <strong>ratios</strong> and ask whether the analysis assumptions look reasonable.</p>
 </div>
 </div>
 </div>
