@@ -5,16 +5,104 @@ set -euo pipefail
 # Assumes the instructor has already created the prepared inputs with:
 #   Rscript practical/ldsc/prepare_ldsc_data.R [--force]
 
-LDSC_DIR="${LDSC_DIR:-/path/to/ldsc}"
-COURSE_DIR="practical/ldsc/data/course"
-REF_DIR="practical/ldsc/data/ref"
-RESULTS_DIR="practical/ldsc/data/results"
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+HOST_UNAME_S="$(uname -s)"
+LDSC_DIR="${LDSC_DIR:-${SCRIPT_DIR}/ldsc}"
+LDSC_ENV_DIR="${LDSC_ENV_DIR:-${SCRIPT_DIR}/.venv/ldsc}"
+COURSE_DIR="${SCRIPT_DIR}/data/course"
+REF_DIR="${SCRIPT_DIR}/data/ref"
+RESULTS_DIR="${SCRIPT_DIR}/data/results"
 
 INTELLIGENCE_INPUT="${COURSE_DIR}/intelligence_ctg.tsv.gz"
 P_FACTOR_INPUT="${COURSE_DIR}/p_factor.tsv.gz"
 
+python_cmd_is_usable() {
+  "$@" - <<'PY' >/dev/null 2>&1
+import sys
+raise SystemExit(0 if sys.version_info >= (3, 9) else 1)
+PY
+}
+
+set_python_cmd_if_usable() {
+  if python_cmd_is_usable "$@"; then
+    PYTHON_CMD=("$@")
+    return 0
+  fi
+
+  return 1
+}
+
+detect_python_cmd() {
+  if [[ -n "${LDSC_PYTHON:-}" ]] && set_python_cmd_if_usable "${LDSC_PYTHON}"; then
+    return
+  fi
+
+  if [[ -f "${LDSC_ENV_DIR}/Scripts/python.exe" ]] && set_python_cmd_if_usable "${LDSC_ENV_DIR}/Scripts/python.exe"; then
+    return
+  fi
+
+  if [[ -x "${LDSC_ENV_DIR}/bin/python" ]] && set_python_cmd_if_usable "${LDSC_ENV_DIR}/bin/python"; then
+    return
+  fi
+
+  if [[ -f "${LDSC_ENV_DIR}/python.exe" ]] && set_python_cmd_if_usable "${LDSC_ENV_DIR}/python.exe"; then
+    return
+  fi
+
+  if command -v python3 >/dev/null 2>&1 && set_python_cmd_if_usable python3; then
+    return
+  fi
+
+  if command -v py >/dev/null 2>&1 && set_python_cmd_if_usable py -3; then
+    return
+  fi
+
+  local -a candidates
+  shopt -s nullglob
+  candidates=(
+    /c/Users/*/AppData/Local/Programs/Python/Python*/python.exe
+    "/c/Program Files"/Python*/python.exe
+    "/c/Program Files (x86)"/Python*/python.exe
+  )
+  shopt -u nullglob
+
+  local candidate
+  for candidate in "${candidates[@]}"; do
+    if set_python_cmd_if_usable "${candidate}"; then
+      return
+    fi
+  done
+
+  if command -v python >/dev/null 2>&1 && set_python_cmd_if_usable python; then
+    return
+  fi
+
+  echo "Could not find a working Python 3.9+ interpreter for LDSC." >&2
+  echo "Run: bash practical/ldsc/install_ldsc.sh" >&2
+  exit 1
+}
+
+path_for_python() {
+  local path="$1"
+  if [[ "${HOST_UNAME_S}" == MINGW* || "${HOST_UNAME_S}" == MSYS* || "${HOST_UNAME_S}" == CYGWIN* ]]; then
+    local converted
+    converted="$(cygpath -am "${path}")"
+    if [[ "${path}" == */ ]]; then
+      converted="${converted}/"
+    fi
+    printf '%s\n' "${converted}"
+  else
+    printf '%s\n' "${path}"
+  fi
+}
+
+PYTHON_CMD=()
+detect_python_cmd
+
 if [[ ! -f "${LDSC_DIR}/munge_sumstats.py" || ! -f "${LDSC_DIR}/ldsc.py" ]]; then
-  echo "Set LDSC_DIR to the directory containing munge_sumstats.py and ldsc.py" >&2
+  echo "Could not find LDSC in ${LDSC_DIR}" >&2
+  echo "Run: bash practical/ldsc/install_ldsc.sh" >&2
+  echo "Or set LDSC_DIR to the directory containing munge_sumstats.py and ldsc.py" >&2
   exit 1
 fi
 
@@ -31,33 +119,45 @@ done
 
 mkdir -p "${RESULTS_DIR}"
 
-python "${LDSC_DIR}/munge_sumstats.py" \
-  --sumstats "${INTELLIGENCE_INPUT}" \
-  --out "${RESULTS_DIR}/intelligence_ctg" \
-  --merge-alleles "${REF_DIR}/w_hm3.snplist"
+INTELLIGENCE_INPUT_PY="$(path_for_python "${INTELLIGENCE_INPUT}")"
+P_FACTOR_INPUT_PY="$(path_for_python "${P_FACTOR_INPUT}")"
+MERGE_ALLELES_PY="$(path_for_python "${REF_DIR}/w_hm3.snplist")"
+REF_LD_CHR_PY="$(path_for_python "${REF_DIR}/eur_w_ld_chr/")"
+W_LD_CHR_PY="$(path_for_python "${REF_DIR}/weights_hm3_no_hla/weights.hm3_noMHC.")"
+INTELLIGENCE_PREFIX_PY="$(path_for_python "${RESULTS_DIR}/intelligence_ctg")"
+P_FACTOR_PREFIX_PY="$(path_for_python "${RESULTS_DIR}/p_factor")"
+INTELLIGENCE_H2_OUT_PY="$(path_for_python "${RESULTS_DIR}/intelligence_h2")"
+P_FACTOR_H2_OUT_PY="$(path_for_python "${RESULTS_DIR}/p_factor_h2")"
+RG_OUT_PY="$(path_for_python "${RESULTS_DIR}/intelligence_p_factor_rg")"
+RG_INPUT_PY="${INTELLIGENCE_PREFIX_PY}.sumstats.gz,${P_FACTOR_PREFIX_PY}.sumstats.gz"
 
-python "${LDSC_DIR}/munge_sumstats.py" \
-  --sumstats "${P_FACTOR_INPUT}" \
-  --out "${RESULTS_DIR}/p_factor" \
-  --merge-alleles "${REF_DIR}/w_hm3.snplist"
+"${PYTHON_CMD[@]}" "${LDSC_DIR}/munge_sumstats.py" \
+  --sumstats "${INTELLIGENCE_INPUT_PY}" \
+  --out "${INTELLIGENCE_PREFIX_PY}" \
+  --merge-alleles "${MERGE_ALLELES_PY}"
 
-python "${LDSC_DIR}/ldsc.py" \
-  --h2 "${RESULTS_DIR}/intelligence_ctg.sumstats.gz" \
-  --ref-ld-chr "${REF_DIR}/eur_w_ld_chr/" \
-  --w-ld-chr "${REF_DIR}/weights_hm3_no_hla/weights.hm3_noMHC." \
-  --out "${RESULTS_DIR}/intelligence_h2"
+"${PYTHON_CMD[@]}" "${LDSC_DIR}/munge_sumstats.py" \
+  --sumstats "${P_FACTOR_INPUT_PY}" \
+  --out "${P_FACTOR_PREFIX_PY}" \
+  --merge-alleles "${MERGE_ALLELES_PY}"
 
-python "${LDSC_DIR}/ldsc.py" \
-  --h2 "${RESULTS_DIR}/p_factor.sumstats.gz" \
-  --ref-ld-chr "${REF_DIR}/eur_w_ld_chr/" \
-  --w-ld-chr "${REF_DIR}/weights_hm3_no_hla/weights.hm3_noMHC." \
-  --out "${RESULTS_DIR}/p_factor_h2"
+"${PYTHON_CMD[@]}" "${LDSC_DIR}/ldsc.py" \
+  --h2 "${INTELLIGENCE_PREFIX_PY}.sumstats.gz" \
+  --ref-ld-chr "${REF_LD_CHR_PY}" \
+  --w-ld-chr "${W_LD_CHR_PY}" \
+  --out "${INTELLIGENCE_H2_OUT_PY}"
 
-python "${LDSC_DIR}/ldsc.py" \
-  --rg "${RESULTS_DIR}/intelligence_ctg.sumstats.gz,${RESULTS_DIR}/p_factor.sumstats.gz" \
-  --ref-ld-chr "${REF_DIR}/eur_w_ld_chr/" \
-  --w-ld-chr "${REF_DIR}/weights_hm3_no_hla/weights.hm3_noMHC." \
-  --out "${RESULTS_DIR}/intelligence_p_factor_rg"
+"${PYTHON_CMD[@]}" "${LDSC_DIR}/ldsc.py" \
+  --h2 "${P_FACTOR_PREFIX_PY}.sumstats.gz" \
+  --ref-ld-chr "${REF_LD_CHR_PY}" \
+  --w-ld-chr "${W_LD_CHR_PY}" \
+  --out "${P_FACTOR_H2_OUT_PY}"
+
+"${PYTHON_CMD[@]}" "${LDSC_DIR}/ldsc.py" \
+  --rg "${RG_INPUT_PY}" \
+  --ref-ld-chr "${REF_LD_CHR_PY}" \
+  --w-ld-chr "${W_LD_CHR_PY}" \
+  --out "${RG_OUT_PY}"
 
 grep -E "Total Observed scale h2|Intercept|Ratio" "${RESULTS_DIR}/intelligence_h2.log"
 grep -E "Total Observed scale h2|Intercept|Ratio" "${RESULTS_DIR}/p_factor_h2.log"

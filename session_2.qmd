@@ -25,26 +25,6 @@ execute:
   cache: true
 ---
 
-## Lecture Outline
-
-The unifying theme today is that marginal SNP coefficients are **projections through correlation structure**, so extra covariance terms change what they mean.
-
-1. **Part 1: Local linkage disequilibrium**
-
-   Why nearby correlated SNPs distort and inform marginal effect estimates
-2. **Part 2: Assortative mating and long-range LD**
-
-   How matching on phenotype creates genome-wide correlation structure
-3. **Part 3: Gene-environment correlations**
-
-   How indirect effects, stratification, and correlated environments enter SNP estimates and variance decompositions
-4. **Part 4: Family GWAS**
-
-   How family designs remove much of the family-level confounding around marginal SNP estimates
-5. **Part 5: Practical**
-
-   Estimating SNP heritability and a genetic correlation with LD score regression
-
 
 ## What does a GWAS estimate?
 The infensimal model says that the phenotype is a sum of many small genetic effects plus an environment:
@@ -79,17 +59,41 @@ $$
 \end{array}
 $$
 
+## Lecture Outline
+
+The unifying theme today is that different sources of confounding ultimately comes down to the same thing: **marginal associations can be confounded by correlation structure**.
+
+1. **Part 1: Local linkage disequilibrium (LD)**
+
+   Why nearby correlated SNPs both distort and inform marginal effect estimates
+2. **Part 2: Assortative mating and long-range LD**
+
+   How mating behavioirs affect correlations between distant loci
+3. **Part 3: Gene-environment correlations**
+
+   How indirect effects, stratification, and correlated environments enter SNP estimates and variance decompositions
+4. **Part 4: Family-based methods**
+
+   How family designs remove much of the family-level confounding around marginal SNP estimates
+5. **Part 5: Practical**
+
+   Estimating SNP heritability and a genetic correlation with LD score regression
+
 # Part 1: Local Linkage Disequilibrium {background-color="#2c3e50" style="color: white;"}
 
 ## Nearby SNPs correlate
 
-Recombination shuffles **chromosome segments**, not isolated SNPs. So loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together. This makes nearby SNPs correlated in the population, a phenomenon called (local) **linkage disequilibrium (LD)**.
+Recombination shuffles **chromosome segments**, not isolated SNPs. Loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together. 
 
+This makes nearby SNPs correlated in the population: $\text{Cov}(x_j, x_k) \neq 0$ for nearby $j,k$
+
+This is called (local) **linkage disequilibrium (LD)**.
 
 
 <table style="border-collapse: collapse; font-family: Lato;">
-  <tr>
-    <td style="border: none; text-align: right;"><b>$t_{gm}$</b></td>
+  <tr><td colspan="11" style="height:10px;"></td></tr>
+   <tr>
+    <td style="border: none; text-align: right;"><b>$t_{grandmother}$</b></td>
     <td style="background:#d6eaf8; border:1px solid #ccc;">1</td>
     <td style="background:#d6eaf8; border:1px solid #ccc;">0</td>
     <td style="background:#d6eaf8; border:1px solid #ccc;">1</td>
@@ -103,7 +107,7 @@ Recombination shuffles **chromosome segments**, not isolated SNPs. So loci that 
   </tr>
 
   <tr>
-    <td style="border: none; text-align: right;"><b>$t_{gp}$</b></td>
+    <td style="border: none; text-align: right;"><b>$t_{grandfather}$</b></td>
     <td style="border:1px solid #ccc;">0</td>
     <td style="border:1px solid #ccc;">1</td>
     <td style="border:1px solid #ccc;">0</td>
@@ -119,7 +123,7 @@ Recombination shuffles **chromosome segments**, not isolated SNPs. So loci that 
   <tr><td colspan="11" style="height:10px;"></td></tr>
 
   <tr>
-    <td style="border: none; text-align: right;"><b>$t_p$</b></td>
+    <td style="border: none; text-align: right;"><b>$t_{parent}$</b></td>
     <td style="background:#d6eaf8; border:1px solid #ccc;"><b>1</b></td>
     <td style="background:#d6eaf8; border:1px solid #ccc;"><b>0</b></td>
     <td style="background:#d6eaf8; border:1px solid #ccc;"><b>1</b></td>
@@ -132,6 +136,12 @@ Recombination shuffles **chromosome segments**, not isolated SNPs. So loci that 
     <td style="background:#fadbd8; border:1px solid #ccc;"><b>0</b></td>
   </tr>
 </table>
+
+::: {.callout-note}
+If two nearby SNPs are often inherited together, they are statistically *dependent*: once you know the allele at one SNP, you can make a good guess about the allele at the other.
+:::
+
+
 ## A two-SNP toy example
 
 
@@ -157,111 +167,26 @@ $$
 \beta_1 \frac{\text{Cov}(x_2,x_1)}{\text{Var}(x_2)}
 $$
 
-In other wrods, $x_2$ will be associated with the phenotype even though it has **no direct causal effect**.
+In other words, $x_2$ will be associated with the phenotype even though it has **no direct causal effect**.
 
 
-## General local-LD decomposition {.smaller}
+## Generalizing to many SNPs
 
-For this part, set the rGE term aside and focus on genotype correlation:
+Recall that the marginal coefficient at SNP $j$ is (ignoring the rGE term for now):
 
 $$
-\tilde{\beta}_j \approx \beta_j
+\tilde{\beta}_j = \beta_j
 + \sum_{k \ne j} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
 $$
 
-::: {.callout-note}
-This is the local-LD version of the master decomposition: **nearby correlated genotypes make a marginal coefficient absorb tagged effects from other loci**.
-:::
-
-## Marginal effects as a projection through LD {.smaller}
-
-Collect the marginal coefficients into a vector. Then the same idea can be written compactly as:
-
-:::: {.columns}
-::: {.column width="42%"}
-$$
-\hat{\boldsymbol{\beta}}_{\text{marg}} \approx \mathbf{R}\boldsymbol{\beta}
-$$
-
-where $\mathbf{R}$ is the LD matrix with entries
+If we standardize the SNPs so that $\text{Var}(x_j)=1$, then $\text{Cov}(x_j,x_k)=r_{jk}$ and this becomes
 
 $$
-R_{jk} = \frac{\text{Cov}(x_j, x_k)}{\sqrt{\text{Var}(x_j)\text{Var}(x_k)}}
+\tilde{\beta}_j = \sum_{k=1}^M r_{jk}\beta_k
 $$
-:::
-::: {.column width="58%"}
-```{r}
-#| echo: false
-#| fig-width: 5.4
-#| fig-height: 3.8
-#| out-width: "100%"
-library(ggplot2)
 
-n <- 12
+So the marginal coefficient at SNP $j$ is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with **many** nearby variants can therefore pick up more tagged signal.
 
-ld_mat <- matrix(c(
-  1.00, 0.78, 0.61, 0.34, 0.08, 0.03, 0.01, 0.00, 0.00, 0.00, 0.00, 0.00,
-  0.78, 1.00, 0.74, 0.46, 0.10, 0.05, 0.02, 0.01, 0.00, 0.00, 0.00, 0.00,
-  0.61, 0.74, 1.00, 0.67, 0.14, 0.08, 0.03, 0.02, 0.00, 0.00, 0.00, 0.00,
-  0.34, 0.46, 0.67, 1.00, 0.18, 0.10, 0.05, 0.03, 0.01, 0.00, 0.00, 0.00,
-  0.08, 0.10, 0.14, 0.18, 1.00, 0.83, 0.57, 0.29, 0.05, 0.02, 0.00, 0.00,
-  0.03, 0.05, 0.08, 0.10, 0.83, 1.00, 0.71, 0.41, 0.08, 0.03, 0.01, 0.00,
-  0.01, 0.02, 0.03, 0.05, 0.57, 0.71, 1.00, 0.76, 0.16, 0.07, 0.03, 0.01,
-  0.00, 0.01, 0.02, 0.03, 0.29, 0.41, 0.76, 1.00, 0.23, 0.10, 0.04, 0.02,
-  0.00, 0.00, 0.00, 0.01, 0.05, 0.08, 0.16, 0.23, 1.00, 0.72, 0.44, 0.19,
-  0.00, 0.00, 0.00, 0.00, 0.02, 0.03, 0.07, 0.10, 0.72, 1.00, 0.69, 0.37,
-  0.00, 0.00, 0.00, 0.00, 0.00, 0.01, 0.03, 0.04, 0.44, 0.69, 1.00, 0.74,
-  0.00, 0.00, 0.00, 0.00, 0.00, 0.00, 0.01, 0.02, 0.19, 0.37, 0.74, 1.00
-), nrow = n, byrow = TRUE)
-
-ld_df <- expand.grid(
-  snp_x = seq_len(n),
-  snp_y = seq_len(n)
-)
-ld_df$ld <- as.vector(ld_mat)
-ld_df$label <- sub("^(-?)0\\.", "\\1.", sprintf("%.2f", ld_df$ld))
-ld_df$text_col <- ifelse(ld_df$ld > 0.55, "white", "#1f2d3d")
-ld_df$snp_y <- n + 1 - ld_df$snp_y
-
-ggplot(ld_df, aes(x = snp_x, y = snp_y, fill = ld)) +
-  geom_tile(color = "white", linewidth = 0.4) +
-  geom_text(aes(label = label, color = text_col), size = 2.6, family = "sans") +
-  geom_vline(xintercept = c(4.5, 8.5), color = "#2c3e50", linewidth = 0.7) +
-  geom_hline(yintercept = c(4.5, 8.5), color = "#2c3e50", linewidth = 0.7) +
-  coord_equal() +
-  scale_x_continuous(breaks = c(1, 4, 8, 12), expand = c(0, 0)) +
-  scale_y_continuous(
-    breaks = c(1, 4, 8, 12),
-    labels = c(12, 9, 5, 1),
-    expand = c(0, 0)
-  ) +
-  scale_fill_gradientn(
-    colours = c("#f7fbff", "#9ecae1", "#4292c6", "#084594"),
-    limits = c(0, 1),
-    name = "LD"
-  ) +
-  scale_color_identity() +
-  labs(x = "SNP", y = "SNP") +
-  theme_minimal(base_size = 10) +
-  theme(
-    panel.grid = element_blank(),
-    axis.title = element_text(size = 9),
-    axis.text = element_text(size = 8),
-    legend.title = element_text(size = 8),
-    legend.text = element_text(size = 7),
-    legend.key.height = unit(0.45, "cm"),
-    plot.margin = margin(2, 2, 2, 2)
-  )
-```
-:::
-::::
-
-::: {.callout-note}
-## Interpretation
-- The marginal effects are **projections through the LD structure**
-- A local LD block makes nearby coefficients move together
-- If SNPs were independent, $\mathbf{R}$ would be close to diagonal
-:::
 
 ## What is an LD score?
 
@@ -279,26 +204,51 @@ Here $\mathcal{N}(j)$ is a local window around SNP $j$, and the square matters b
 | High-LD SNP | Many strong local correlations | Large $\ell_j$ |
 
 ::: {.callout-note}
-A high LD score means the SNP is highly correlated with many nearby variants, and is more likely to tag causal variation in the region. A low LD score means the SNP is more isolated and less likely to tag nearby causal effects.
+A high LD score means the SNP is highly correlated with many nearby variants, and is more likely to tag causal variation in the region. 
+
+A low LD score means the SNP is more isolated and less likely to tag nearby causal effects.
 :::
 
-## LD score regression
+## LD score regression {.smaller}
 
-If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average.
+If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. How much larger depends on the heritability:
 
 $$
 E[\chi_j^2] \approx 1 + \frac{N h_g^2}{M}\ell_j + c
 $$
 
-where $\chi_j^2 = z_j^2$ for the marginal test statistic at SNP $j$.
+where $\chi_j^2 = z_j^2$, and $z_j = \hat{\tilde{\beta}}_j/\text{SE}(\hat{\tilde{\beta}}_j)$ for SNP $j$.
 
 ::: {.callout-note}
 ## High-level interpretation
 - Regress GWAS test statistics on LD scores
-- The **slope** tracks polygenic signal
+- Because the expected test statistic rises systematically with local LD, we can exploit that relationship to estimate SNP heritability
+- The **slope** tracks polygenic signal, but it must be rescaled to get heritability:
+  $h_g^2 = \text{slope} \times M / N$
 - The **intercept** tracks confounding or other inflation
 
-This is a teaching-level summary, not a full LDSC derivation.
+Other considerations include  appropriate regression weights to handle LD-dependent redundancy, plus a well-matched LD reference panel, careful GWAS QC, and checking for sample overlap or ancestry mismatch.
+:::
+
+## Genetic correlation from cross-trait LDSC {.smaller}
+
+For two traits, the same idea extends to the product of the two marginal $z$-statistics:
+
+$$
+E[z_{1j}z_{2j}]
+\approx
+\frac{\sqrt{N_1N_2}}{M} r_g \sqrt{h_{g1}^2 h_{g2}^2}\,\ell_j + c_{12}
+$$
+
+where $r_g$ is the **genetic correlation**, summarizing how strongly the additive genetic effects overlap across the two traits.
+
+::: {.callout-note}
+## High-level interpretation
+- Regress cross-trait $z$-score products on LD scores
+- The slope tracks **shared genetic signal** across the two traits, but it first has to be rescaled to get the genetic covariance:
+  $\mathrm{Cov}(g_1,g_2) = \text{slope} \times M / \sqrt{N_1N_2}$
+- Then standardize that covariance to get the genetic correlation:
+  $r_g = \mathrm{Cov}(g_1,g_2) / \sqrt{h_{g1}^2 h_{g2}^2}$
 :::
 
 ## Summary: local LD both confounds and helps
@@ -316,54 +266,49 @@ This is the template for the rest of the lecture: **marginal associations are pr
 
 # Part 2: Assortative Mating and Long-Range LD {background-color="#2c3e50" style="color: white;"}
 
-## Assortative mating starts with phenotype similarity
+## What is assortative mating?
 
-**Assortative mating** means that mates are not paired at random with respect to a trait or a trait-related signal.
+Partner similarity, $\text{Cov}(y_m, y_p) > 0$, can arise for different reasons. 
 
-If the two mates are indexed by $m$ and $f$, then positive assortment on the phenotype means:
-
-$$
-\text{Cov}(y_m, y_f) > 0
-$$
+**Assortative mating (AM)** means that the **matching process itself** induces covariance between partners, rather than that covariance reflecting a shared cause. 
 
 ::: {.callout-note}
-The matching is on **$y$**, not directly on $g$. The question is how phenotype assortment gets translated into genetic covariance.
+Observed partner covariance is a **symptom**, not yet an explanation.
+
+- **Assortative mating**: matching induces partner covariance
+- **Convergence**: partners become more similar after pairing
+- **Stratification**: partners are similar because both are shaped by the same background factors
+
+Here, we assume that partner covariance is due to assortative mating.
 :::
+
 
 ## Assortment makes correlation flow "backwards"
 
-Under ordinary family resemblance, covariance starts in the **causes** and is diluted as it shows up in the phenotype.
+**Ordinary family resemblance**: Covariance starts in the **causes** and is diluted as it shows up in the phenotype (correlation flows from $g$ to $y$).
 
-Under assortative mating, the matching starts on the **outcome**. If partners are similar in $y$, then some of that covariance feeds back into their genetic values:
+**Assortative mating**: Covariance starts on the **phenotype**. If partners are similar in $y$, then part of that covariance gets projected back into the causes (correlation flows from $y$ to $g$).
 
-$$
-\text{Cov}(y_m, y_f) > 0
-\qquad \Longrightarrow \qquad
-\text{Cov}(g_m, g_f) > 0
-$$
+Assortative mating therefore induces genetic similarity between partners.
+
 
 ::: {.callout-note}
-This is the key reversal: normally correlation flows from **$g$ to $y$**. Under assortative mating, partner matching begins on **$y$**, and part of that covariance gets projected back into **$g$**.
-
-So, to quantify the feedback, we temporarily place ourselves at the **outcome** and ask: if we observe someone's phenotype $y$, how much genetic value $g$ would we predict? That is why the next step regresses **$g$ on $y$**, not the other way around.
+## Useful intuition
+Assortative mating induces correlations among causes by matching on the effects. 
 :::
 
 
 ## Why regressing $g$ on $y$ gives $h^2$ {.smaller}
+To quantify the genetic similarity, we temporarily place ourselves at the **outcome** and ask: if we observe someone's phenotype $y$, what genetic value $g$ would we predict? 
 
-Assume the simple additive model
+We start with the simple additive model:
 
 $$
 y_i = g_i + e_i,
 \qquad
 \text{Cov}(g_i,e_i)=0
-$$
-
-Then
-
-$$
+\qquad \Rightarrow \qquad
 \text{Cov}(g_i,y_i)
-= \text{Cov}(g_i,g_i+e_i)
 = \text{Var}(g_i)
 = \sigma_g^2
 $$
@@ -378,7 +323,7 @@ b_{g \mid y}
 $$
 
 ::: {.callout-note}
-If there is rGE, this projection coefficient is still $\text{Cov}(g,y)/\text{Var}(y)$, but it is no longer exactly narrow-sense heritability. We set that complication aside here.
+If $\text{Cov}(g,e) \neq 0$, this projection coefficient is still $\text{Cov}(g,y)/\text{Var}(y)$, but it is no longer exactly narrow-sense heritability. We set that complication aside here.
 :::
 
 ## Matching on $y$ induces covariance in $g$ {.smaller}
@@ -386,18 +331,17 @@ If there is rGE, this projection coefficient is still $\text{Cov}(g,y)/\text{Var
 If partners match on phenotype, then project back into $g$ on **both** sides:
 
 $$
-\hat{g}_m \approx \frac{\sigma_g^2}{\sigma_y^2} y_m,
+\hat{g}_m = h^2 y_m,
 \qquad
-\hat{g}_f \approx \frac{\sigma_g^2}{\sigma_y^2} y_f
+\hat{g}_f = h^2 y_f
 $$
 
 Therefore
 
 $$
 \text{Cov}(g_m,g_f)
-\approx
-\left(\frac{\sigma_g^2}{\sigma_y^2}\right)^2
-\text{Cov}(y_m,y_f)
+=
+h^4 \text{Cov}(y_m,y_f)
 $$
 
 Divide both sides by $\sigma_g^2$ to convert the left-hand side to a genetic correlation:
@@ -405,6 +349,7 @@ Divide both sides by $\sigma_g^2$ to convert the left-hand side to a genetic cor
 $$
 r_g^{\mathrm{mates}}
 =
+\frac{\text{Cov}(g_m,g_f)}{\sigma_g^2}
 \approx
 \frac{(\sigma_g^2/\sigma_y^2)^2\text{Cov}(y_m,y_f)}{\sigma_g^2}
 =
@@ -414,42 +359,36 @@ r_g^{\mathrm{mates}}
 $$
 
 ::: {.callout-note}
-The $h^4$ appears on the covariance scale because the phenotype-to-genotype attenuation ($\sigma_g^2/\sigma_y^2 = h^2$) happens **once for each mate**. When we convert covariance to correlation, one power of $\sigma_g^2$ is divided back out, leaving the simpler result $r_g^{\mathrm{mates}} \approx h^2 r_y^{\mathrm{mates}}$. 
+The $h^4$ appears on the covariance scale because the phenotype-to-genotype projection ($\sigma_g^2/\sigma_y^2 = h^2$) happens **once for each mate**. When we convert covariance to correlation, one power of $\sigma_g^2$ is divided back out, leaving the simpler result $r_g^{\mathrm{mates}} \approx h^2 r_y^{\mathrm{mates}}$. 
 :::
 
 
 ## Direct versus indirect assortment {.smaller}
 
-Following Sunde et al. (2025), it helps to distinguish the **focal phenotype** $y$ from the **sorting factor** $S$ that partners actually match on.
+It helps to distinguish the **focal phenotype** $y$ from the **sorting factor** $s$ that partners actually match on.
 
-| Case | What partners sort on | Induced genotypic correlation between partners |
-|---|---|---|
-| **Direct assortment** | The focal phenotype itself: $S = y$ | $r_g^{\mathrm{mates}} \approx \mathrm{Corr}(g,y)^2 r_y^{\mathrm{mates}} \approx h^2 r_y^{\mathrm{mates}}$ |
-| **Indirect assortment** | A related signal or bundle of traits: $S \neq y$, but $\mathrm{Corr}(S,y) \neq 0$ | $r_g^{\mathrm{mates}} \approx \mathrm{Corr}(g,S)^2 r_S^{\mathrm{mates}}$ |
+| Case | What partners match on | Induced genotypic correlation between partners |
+|--|----|---|
+| **Direct assortment** | The focal phenotype itself: $s = y$ | $r_g^{\mathrm{mates}} \approx \mathrm{Corr}(g,y)^2 r_y^{\mathrm{mates}} = h^2 r_y^{\mathrm{mates}}$ |
+| **Indirect assortment** | A related signal or bundle of traits: $s \neq y$, but $\mathrm{Corr}(s,y) \neq 0$ | $r_g^{\mathrm{mates}} \approx \mathrm{Corr}(g,s)^2 r_s^{\mathrm{mates}}$ |
 
-::: {.callout-note}
-The key point is that partner **genotypic** similarity depends on how strongly the sorting factor $S$ captures the genetic causes of the focal phenotype. So indirect assortment can imply **more or less** genetic resemblance between partners than you would expect from the observed partner correlation in $y$ alone.
+::: {.callout-important}
+The key point is that the **genotypic correlation between partners depends on how strongly the sorting factor $s$ correlate with the genetic causes of the focal phenotype**. So indirect assortment can imply **more or less** genetic resemblance between partners than you would expect from the observed partner correlation in $y$ alone.
 
-In this lecture, we will assume **direct-assortment** where $S=y$, but note that assortative mating is indirect for many social traits (e.g., educational attainment).
+In this lecture, we assume **direct-assortment** where $s=y$, but note that assortative mating is indirect for many social traits (e.g., educational attainment).
 :::
 
 ## Mate-level genetic covariance is a sum of SNP-level covariance {.smaller}
 
-Write the genetic value as a weighted sum of SNPs:
-
-$$
-g_i = \sum_{j=1}^{M} \beta_j x_{ij}
-$$
-
-Then partner genetic covariance expands as
+Write the genetic value as a weighted sum of SNPs:$g_i = \sum_{j=1}^{M} \beta_j x_{ij}$. Then partner genetic covariance expands as
 
 $$
 \text{Cov}(g_m,g_f)
 =
-\text{Cov}\!\left(\sum_{j=1}^{M} \beta_j x_{mj}, \sum_{k=1}^{M} \beta_k x_{fk}\right)
+\text{Cov}\!\left(\underbrace{\sum_{j=1}^{M} \beta_j x_{mj}}_{g_m}, \underbrace{\sum_{k=1}^{M} \beta_k x_{fk}}_{g_f}\right)
 =
 \sum_{j=1}^{M}\sum_{k=1}^{M}
-\beta_j \beta_k \,\text{Cov}(x_{mj},x_{fk})
+ \,\text{Cov}(\beta_j x_{mj}, \beta_k x_{fk})
 $$
 
 So mate-level genetic covariance is the weighted sum of many cross-mate SNP covariances. Phenotype assortment can therefore induce many small SNP-level correlations across partners.
@@ -572,7 +511,7 @@ Again set the rGE term aside and focus on the LD component:
 
 $$
 \tilde{\beta}_j
-\approx \beta_j
+= \beta_j
 + \sum_{k \ne j} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
 $$
 
@@ -662,7 +601,7 @@ Again, marginal associations reflect **induced correlation structure**, not only
 Now set the LD term aside and focus on gene-environment correlation:
 
 $$
-\tilde{\beta}_j \approx \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
+\tilde{\beta}_j = \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
 $$
 
 Part 3 is about a new question:
@@ -769,7 +708,7 @@ For this part, the relevant simplification is:
 
 $$
 \tilde{\beta}_j
-\approx \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
+= \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
 $$
 
 ::: {.callout-note}

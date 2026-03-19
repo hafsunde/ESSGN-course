@@ -17,7 +17,7 @@ get_script_path <- function() {
 }
 
 normalize_names <- function(x) {
-  tolower(gsub("[^a-z0-9]+", "", x))
+  gsub("[^a-z0-9]+", "", tolower(x))
 }
 
 pick_column <- function(df, aliases, required = TRUE) {
@@ -218,12 +218,20 @@ read_sumstats_table <- function(path) {
 
 score_sumstats_candidate <- function(path, preferred_patterns = character()) {
   name <- tolower(basename(path))
+  info <- suppressWarnings(file.info(path))
+  size <- if (!is.null(info) && nrow(info) > 0 && !is.na(info$size[[1]])) info$size[[1]] else NA_real_
   score <- 0
 
   if (grepl("\\.(txt|tsv|sumstats|ma)$", name)) score <- score + 5
   if (grepl("\\.(txt|tsv|sumstats|ma)\\.(gz|bz2)$", name)) score <- score + 5
-  if (grepl("harmon|munge|readme|supp|metadata|example", name)) score <- score - 10
+  if (grepl("harmon|munge|supp|metadata|example", name)) score <- score - 10
+  if (grepl("readme|checksum|md5|sha(1|256|512)?|manifest|license", name)) score <- score - 50
   if (grepl("chr[0-9xy]+", name)) score <- score - 5
+
+  if (!is.na(size)) {
+    if (size < 1e5) score <- score - 20
+    if (size >= 1e6) score <- score + 10
+  }
 
   for (i in seq_along(preferred_patterns)) {
     if (grepl(preferred_patterns[[i]], name, perl = TRUE)) {
@@ -234,9 +242,53 @@ score_sumstats_candidate <- function(path, preferred_patterns = character()) {
   score
 }
 
+open_text_connection <- function(path) {
+  if (grepl("\\.bz2$", path, ignore.case = TRUE)) {
+    return(bzfile(path, open = "rt"))
+  }
+
+  if (grepl("\\.gz$", path, ignore.case = TRUE)) {
+    return(gzfile(path, open = "rt"))
+  }
+
+  file(path, open = "rt")
+}
+
+looks_like_sumstats_table <- function(path) {
+  info <- suppressWarnings(file.info(path))
+  if (is.null(info) || nrow(info) == 0 || is.na(info$size[[1]]) || info$size[[1]] <= 0) {
+    return(FALSE)
+  }
+
+  lines <- tryCatch({
+    con <- open_text_connection(path)
+    on.exit(close(con), add = TRUE)
+    readLines(con, n = 2, warn = FALSE)
+  }, error = function(...) character())
+
+  if (length(lines) == 0 || !nzchar(lines[[1]])) {
+    return(FALSE)
+  }
+
+  fields <- strsplit(lines[[1]], "\t", fixed = TRUE)[[1]]
+  if (length(fields) < 4) {
+    return(FALSE)
+  }
+
+  normalized <- normalize_names(fields)
+  has_snp <- any(normalized %in% normalize_names(c("SNP", "RSID", "MarkerName", "SNPID", "rsid")))
+  has_a1 <- any(normalized %in% normalize_names(c("A1", "Allele1", "EffectAllele", "EA", "ALT", "effect_allele")))
+  has_a2 <- any(normalized %in% normalize_names(c("A2", "Allele2", "OtherAllele", "NEA", "REF", "other_allele")))
+  has_p <- any(normalized %in% normalize_names(c("P", "Pval", "PValue", "PVAL", "p_value", "pval")))
+
+  has_snp && has_a1 && has_a2 && has_p
+}
+
 find_sumstats_file <- function(path, stage_dir, preferred_patterns = character()) {
   lower <- tolower(basename(path))
-  if (!looks_like_archive(path) && grepl("\\.(txt|tsv|sumstats|ma)(\\.(gz|bz2))?$", lower)) {
+  if (!looks_like_archive(path) && (
+    grepl("\\.(txt|tsv|sumstats|ma)(\\.(gz|bz2))?$", lower) || looks_like_sumstats_table(path)
+  )) {
     return(path)
   }
 
@@ -249,7 +301,8 @@ find_sumstats_file <- function(path, stage_dir, preferred_patterns = character()
   }
 
   candidate_mask <- grepl("\\.(txt|tsv|sumstats|ma)(\\.(gz|bz2))?$", files, ignore.case = TRUE)
-  candidates <- files[candidate_mask]
+  looks_tabular <- vapply(files, looks_like_sumstats_table, logical(1))
+  candidates <- files[candidate_mask | looks_tabular]
   if (length(candidates) == 0) {
     stop("Could not identify a summary statistics table inside ", basename(path))
   }
@@ -490,3 +543,4 @@ force <- any(args %in% c("--force", "force"))
 if (sys.nframe() == 0) {
   prepare_ldsc_data(force = force)
 }
+
