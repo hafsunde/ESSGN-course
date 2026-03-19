@@ -263,9 +263,9 @@ standardize_sumstats <- function(df, trait_label, default_n) {
   a1_col <- pick_column(df, c("A1", "Allele1", "EffectAllele", "EA", "ALT", "effect_allele"))
   a2_col <- pick_column(df, c("A2", "Allele2", "OtherAllele", "NEA", "REF", "other_allele"))
   p_col <- pick_column(df, c("P", "Pval", "PValue", "PVAL", "p_value", "pval"))
-  n_col <- pick_column(df, c("N", "Neff", "TotalSampleSize", "SampleSize", "N_eff", "n_total"), required = FALSE)
+  n_col <- pick_column(df, c("N", "Neff", "TotalSampleSize", "SampleSize", "N_eff", "n_total", "N_analyzed"), required = FALSE)
   z_col <- pick_column(df, c("Z", "Zscore", "ZScore", "ZStat", "zscore", "ZSCORE"), required = FALSE)
-  beta_col <- pick_column(df, c("BETA", "Beta", "Effect", "beta", "B"), required = FALSE)
+  beta_col <- pick_column(df, c("BETA", "Beta", "Effect", "beta", "B", "stdBeta"), required = FALSE)
   se_col <- pick_column(df, c("SE", "StdErr", "StandardError", "se", "SEbeta"), required = FALSE)
   or_col <- pick_column(df, c("OR", "OddsRatio", "odds_ratio"), required = FALSE)
 
