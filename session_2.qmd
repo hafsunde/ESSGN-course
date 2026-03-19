@@ -43,7 +43,7 @@ The unifying theme today is that marginal SNP coefficients are **projections thr
    How family designs remove much of the family-level confounding around marginal SNP estimates
 5. **Part 5: Practical**
 
-   Placeholder for future applied material
+   Estimating SNP heritability and a genetic correlation with LD score regression
 
 
 ## What does a GWAS estimate?
@@ -461,18 +461,42 @@ So mate-level genetic covariance is the weighted sum of many cross-mate SNP cova
 This is the bridge to long-range LD: once partner genomes become correlated, transmission and recombination can move that covariance into the next generation.
 :::
 
-## One generation creates trans covariance first
+## One generation creates trans covariance first {.smaller}
 
-Write the offspring genetic value as a maternal part plus a paternal part:
-
-$$
-g_i = g_i^{(m)} + g_i^{(f)}
-$$
-
-Once mate genetic values covary, the first new covariance in the next generation is primarily:
+To match Session 1, let $\mathbf{t}_m = (t_{m1},\ldots,t_{mM})^\top$ and $\mathbf{t}_p = (t_{p1},\ldots,t_{pM})^\top$ denote the transmitted maternal and paternal haplotype vectors.
 
 $$
-\text{Cov}\!\left(g^{(m)}, g^{(f)}\right) > 0
+\mathbf{t}_m + \mathbf{t}_p = \mathbf{x}_c,
+\qquad
+\boldsymbol{\beta}^\top \mathbf{t}_m = g_c^{(m)},
+\qquad
+\boldsymbol{\beta}^\top \mathbf{t}_p = g_c^{(p)},
+\qquad
+g_c = g_c^{(m)} + g_c^{(p)}
+$$
+
+If we focus on the **new** covariance induced by assortative mating and set aside ordinary local LD from Part 1, then after one generation the new covariance is across the two parental haplotypes:
+
+$$
+\text{Cov}(g_c^{(m)}, g_c^{(p)}) > 0
+$$
+
+but not yet within either transmitted haplotype, so
+
+$$
+\text{Var}(g_c^{(m)}) \approx \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj}),
+\qquad
+\text{Var}(g_c^{(p)}) \approx \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{pj})
+$$
+
+Therefore
+
+$$
+\text{Var}(g_c)
+=
+\text{Var}(g_c^{(m)})
++ \text{Var}(g_c^{(p)})
++ 2\text{Cov}(g_c^{(m)}, g_c^{(p)})
 $$
 
 :::: {.columns}
@@ -488,9 +512,9 @@ digraph trans_cov {
         fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
   edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
 
-  gm [label="g^(m)", fillcolor="#3498db", color="#2980b9"];
-  gf [label="g^(f)", fillcolor="#e74c3c", color="#c0392b"];
-  go [label="g_i", fillcolor="#7f8c8d", color="#707b7c"];
+  gm [label="g_c^(m)", fillcolor="#3498db", color="#2980b9"];
+  gf [label="g_c^(p)", fillcolor="#e74c3c", color="#c0392b"];
+  go [label="g_c", fillcolor="#7f8c8d", color="#707b7c"];
 
   gm -> go;
   gf -> go;
@@ -500,7 +524,7 @@ digraph trans_cov {
 :::
 ::: {.column width="55%"}
 
-This is **trans** covariance: covariance across the maternal and paternal contributions, before recombination has had time to move that covariance into within-haplotype structure.
+This is **trans** covariance: covariance across the maternal and paternal transmitted genetic contributions induced by the haplotypes $\mathbf{t}_m$ and $\mathbf{t}_p$, before recombination has had time to create new within-haplotype covariance.
 
 :::
 ::::
@@ -509,16 +533,30 @@ This is **trans** covariance: covariance across the maternal and paternal contri
 Here, "trans" and "cis" are bookkeeping terms for **where the covariance lives**. They are not new biological mechanisms.
 :::
 
-## Later generations build cis covariance and long-range LD
+## Later generations build cis covariance and long-range LD {.smaller}
 
 Repeated assortment plus recombination gradually converts part of the accumulated trans covariance into **cis** covariance within transmitted haplotypes.
 
-That is why assortative mating can generate long-range LD:
+That means the haplotype variance is no longer just a sum of single-locus terms. For example,
 
 $$
-\text{Cov}(x_j, x_k) > 0
+\text{Var}(g_c^{(m)})
+=
+\sum_{j=1}^{M}\sum_{k=1}^{M}
+\text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
+=
+\sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj})
++ 2\sum_{j<k}\beta_j\beta_k\text{Cov}(t_{mj}, t_{mk})
+$$
+
+and similarly for $g_c^{(p)}$. The off-diagonal terms are the new **cis** covariance terms.
+
+Once those within-haplotype covariances become nonzero for distant loci, assortative mating has generated long-range LD:
+
+$$
+\text{Cov}(t_{mj}, t_{mk}) \neq 0
 \qquad
-\text{even for distant loci}
+\text{for distant loci } j,k
 $$
 
 | Where the covariance lives | When it appears | Interpretation |
@@ -549,16 +587,26 @@ So a marginal hit at SNP $j$ can partly reflect genome-wide covariance structure
 
 ## Why $\text{Var}(g)$ increases for a few generations {.smaller}
 
-The genetic variance depends on both single-locus variances and cross-locus covariances:
+Using the haplotype decomposition,
 
 $$
-\text{Var}(g)
-= \text{Var}\!\left(\sum_{j=1}^{M} \beta_j x_j\right)
-= \sum_{j=1}^{M} \beta_j^2 \text{Var}(x_j)
-+ 2\sum_{j<k}\beta_j\beta_k\text{Cov}(x_j,x_k)
+\text{Var}(g_c)
+=
+\text{Var}(g_c^{(m)})
++ \text{Var}(g_c^{(p)})
++ 2\text{Cov}(g_c^{(m)}, g_c^{(p)})
 $$
 
-Positive cross-locus covariance inflates $\text{Var}(g)$ while assortative mating is building up.
+After one generation, the increase comes mainly from the positive **trans** term $2\text{Cov}(g_c^{(m)},g_c^{(p)})$. After later generations, each haplotype contribution also contains positive **cis** terms:
+
+$$
+\text{Var}(g_c^{(m)})
+=
+\sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj})
++ 2\sum_{j<k}\beta_j\beta_k\text{Cov}(t_{mj},t_{mk})
+$$
+
+and similarly for $g_c^{(p)}$.
 
 | Generation | Main covariance pattern | Expected $\text{Var}(g)$ |
 |---|---|---|
@@ -880,13 +928,129 @@ This is why family GWAS is such a useful complement to the rest of the lecture: 
 
 # Part 5: Practical {background-color="#2c3e50" style="color: white;"}
 
-## Practical placeholder
+## Practical 2: LD score regression with real GWAS data
 
-Future practical material will return to:
+In this practical, we will use **LD score regression (LDSC)** to estimate:
 
-- local LD and tagged marginal effects
-- assortative mating and long-range LD
-- gene-environment correlation in SNP associations and variance decomposition
-- family GWAS and within-family effect estimation
+1. observed-scale SNP heritability for **intelligence**
+2. observed-scale SNP heritability for **depression**
+3. the genetic correlation between the two traits
 
-The practical can later add simulations and worked examples in R or Julia, following the same structure as Session 1 and explicitly linking sibling contrasts back to the segregation variance introduced there.
+The summary statistics come from the **CTG summary statistics archive** and the software is the canonical **LDSC** pipeline used in many real analyses:
+
+- [CTG GWAS summary statistics](https://ctg.thebluebus.nl/software/summary_statistics/)
+- [LDSC repository](https://github.com/bulik/ldsc)
+- [LDSC heritability and genetic correlation tutorial](https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
+
+::: {.callout-note}
+To keep the exercise focused, the instructor has already downloaded the public files, standardized the columns, and prepared course-ready inputs. You will still run the same LDSC commands used in practice: `munge_sumstats.py`, single-trait `--h2`, and cross-trait `--rg`.
+:::
+
+## Setup and inputs {.smaller}
+
+We will work with two pre-harmonized files prepared from the public CTG releases:
+
+- `practical/ldsc/data/course/intelligence_ctg.tsv.gz`
+- `practical/ldsc/data/course/depression_ctg.tsv.gz`
+
+Each file has the same minimal schema:
+
+`SNP`, `A1`, `A2`, `P`, `N`, `Z`
+
+We also need the LDSC reference files:
+
+- `practical/ldsc/data/ref/w_hm3.snplist`
+- `practical/ldsc/data/ref/eur_w_ld_chr/`
+- `practical/ldsc/data/ref/weights_hm3_no_hla/`
+
+```bash
+export LDSC_DIR=/path/to/ldsc
+mkdir -p practical/ldsc/data/results
+```
+
+::: {.callout-note}
+These LD scores are based on **1000 Genomes Europeans**, so the exercise assumes European-ancestry GWAS summary statistics. In real work, ancestry mismatch between the GWAS and the reference panel can bias interpretation.
+:::
+
+## Part 1: Munge the summary statistics {.smaller}
+
+First convert the prepared text files into LDSC's `.sumstats.gz` format.
+
+```bash
+python "$LDSC_DIR/munge_sumstats.py" \
+  --sumstats practical/ldsc/data/course/intelligence_ctg.tsv.gz \
+  --out practical/ldsc/data/results/intelligence_ctg \
+  --merge-alleles practical/ldsc/data/ref/w_hm3.snplist
+
+python "$LDSC_DIR/munge_sumstats.py" \
+  --sumstats practical/ldsc/data/course/depression_ctg.tsv.gz \
+  --out practical/ldsc/data/results/depression_ctg \
+  --merge-alleles practical/ldsc/data/ref/w_hm3.snplist
+```
+
+Look for:
+
+- how many SNPs survive QC and allele matching
+- whether the log files contain warnings
+- the two output files `*.sumstats.gz`
+
+## Part 2: Estimate SNP heritability {.smaller}
+
+Now run single-trait LDSC for each phenotype.
+
+```bash
+python "$LDSC_DIR/ldsc.py" \
+  --h2 practical/ldsc/data/results/intelligence_ctg.sumstats.gz \
+  --ref-ld-chr practical/ldsc/data/ref/eur_w_ld_chr/ \
+  --w-ld-chr practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. \
+  --out practical/ldsc/data/results/intelligence_h2
+
+python "$LDSC_DIR/ldsc.py" \
+  --h2 practical/ldsc/data/results/depression_ctg.sumstats.gz \
+  --ref-ld-chr practical/ldsc/data/ref/eur_w_ld_chr/ \
+  --w-ld-chr practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. \
+  --out practical/ldsc/data/results/depression_h2
+```
+
+Look for these lines in each log:
+
+- `Total Observed scale h2`
+- `Intercept`
+- `Ratio`
+
+::: {.callout-note}
+For this short practical we stay on the **observed scale**. We are not doing liability-scale conversion or partitioned heritability here.
+:::
+
+## Part 3: Estimate the genetic correlation {.smaller}
+
+Finally, estimate the cross-trait genetic correlation.
+
+```bash
+python "$LDSC_DIR/ldsc.py" \
+  --rg practical/ldsc/data/results/intelligence_ctg.sumstats.gz,practical/ldsc/data/results/depression_ctg.sumstats.gz \
+  --ref-ld-chr practical/ldsc/data/ref/eur_w_ld_chr/ \
+  --w-ld-chr practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. \
+  --out practical/ldsc/data/results/intelligence_depression_rg
+```
+
+Look for:
+
+- `Genetic Correlation`
+- its standard error
+- the cross-trait intercept
+
+For these traits, we expect a **negative** genetic correlation.
+
+## Interpretation checkpoint
+
+After the run, check that you can answer these questions:
+
+1. Which trait has the larger observed-scale SNP heritability?
+2. Are the LDSC intercepts close to 1, or do they suggest substantial inflation beyond polygenicity?
+3. Is the estimated genetic correlation negative, and how large is it in magnitude?
+4. Is the cross-trait intercept close to 0, or could sample overlap / shared confounding be contributing?
+
+::: {.callout-important}
+The important habit is not just to report `h^2` and `r_g`, but also to inspect the **intercepts** and ask whether the analysis assumptions look reasonable.
+:::
