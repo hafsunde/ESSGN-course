@@ -34,12 +34,26 @@ pick_column <- function(df, aliases, required = TRUE) {
   NULL
 }
 
+dis_valid_download <- function(path) {
+  if (!file.exists(path) || is.na(file.info(path)$size) || file.info(path)$size <= 0) {
+    return(FALSE)
+  }
+
+  sig <- readBin(path, "raw", n = 4)
+
+  is_zip <- length(sig) >= 4 && identical(as.integer(sig[1:4]), c(0x50, 0x4B, 0x03, 0x04))
+  is_gz  <- length(sig) >= 2 && identical(as.integer(sig[1:2]), c(0x1F, 0x8B))
+
+  is_zip || is_gz
+}
+
 download_with_fallback <- function(urls, destfile) {
   dir.create(dirname(destfile), recursive = TRUE, showWarnings = FALSE)
   options(timeout = max(600, getOption("timeout")))
 
   for (url in urls) {
     message("Downloading ", basename(destfile), " from ", url)
+
     ok <- tryCatch({
       utils::download.file(
         url,
@@ -57,9 +71,15 @@ download_with_fallback <- function(urls, destfile) {
       FALSE
     })
 
-    if (ok && file.exists(destfile) && file.info(destfile)$size > 0) {
+    if (ok && is_valid_download(destfile)) {
       return(invisible(destfile))
     }
+
+    if (file.exists(destfile)) {
+      unlink(destfile, force = TRUE)
+    }
+
+    message("  failed: downloaded file is not a valid .zip or .gz archive")
   }
 
   stop("All download attempts failed for ", basename(destfile))
@@ -67,9 +87,25 @@ download_with_fallback <- function(urls, destfile) {
 
 extract_tar_archive <- function(archive, exdir) {
   dir.create(exdir, recursive = TRUE, showWarnings = FALSE)
-  status <- system2("tar", c("-xf", normalizePath(archive, winslash = "/", mustWork = TRUE), "-C", normalizePath(exdir, winslash = "/", mustWork = TRUE)))
+  
+  archive <- normalizePath(archive, winslash = "/", mustWork = TRUE)
+  exdir   <- normalizePath(exdir,   winslash = "/", mustWork = FALSE)
+  
+  res <- system2(
+    "tar",
+    c("-xf", shQuote(archive), "-C", shQuote(exdir)),
+    stdout = TRUE,
+    stderr = TRUE
+  )
+  
+  status <- attr(res, "status")
+  if (is.null(status)) status <- 0L
+  
   if (!identical(status, 0L)) {
-    stop("Extraction failed for ", archive)
+    stop(
+      "Extraction failed for ", archive, "\n",
+      paste(res, collapse = "\n")
+    )
   }
 }
 
@@ -314,7 +350,9 @@ prepare_ldsc_data <- function(force = FALSE) {
       tmp_extract,
       eur_ref_dir,
       pattern = "\\.(l2\\.ldscore\\.gz|l2\\.M|l2\\.M_5_50)$",
-      rename_basename = function(x) sub("^1000G\\.EUR\\.QC\\.", "", x)
+      rename_basename = function(x) {
+        sub("^(1000G\\.EUR\\.QC\\.|LDscore\\.)", "", x)
+      }
     )
     assert_expected_chr_files(
       eur_ref_dir,
