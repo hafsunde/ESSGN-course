@@ -1105,10 +1105,10 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 <p>How mating behavioirs affect correlations between distant loci</p></li>
 <li><p><strong>Part 3: Gene-environment correlations</strong></p>
 <p>How indirect effects, stratification, and correlated environments enter SNP estimates and variance decompositions</p></li>
-<li><p><strong>Part 4: Family-based methods</strong></p>
+<li><p><strong>Part 4 (<em>Maybe</em>): Family-based methods</strong></p>
 <p>How family designs remove much of the family-level confounding around marginal SNP estimates</p></li>
 <li><p><strong>Part 5: Practical</strong></p>
-<p>Estimating SNP heritability and a genetic correlation with LD score regression</p></li>
+<p>Estimating maternal indirect genetic effects with M-GCTA Estimating SNP heritability and a genetic correlation with LD score regression</p></li>
 </ol>
 </section>
 <section>
@@ -1759,11 +1759,8 @@ g_c = g_c^{(m)} + g_c^{(p)}
 =
 \sum_{j=1}^{M}\sum_{k=1}^{M}
 \text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
-=
-\sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj})
-+ 2\sum_{j&lt;k}\beta_j\beta_k\text{Cov}(t_{mj}, t_{mk})
 \]</span></p>
-<p>and similarly for <span class="math inline">\(g_c^{(p)}\)</span>. The off-diagonal terms are the new <strong>cis</strong> covariance terms.</p>
+<p>and similarly for <span class="math inline">\(g_c^{(p)}\)</span>. The off-diagonal terms are the new <strong>cis</strong> covariance terms (within haplotypes).</p>
 <p>Once those within-haplotype covariances become nonzero for distant loci, assortative mating has generated long-range LD:</p>
 <p><span class="math display">\[
 \text{Cov}(t_{mj}, t_{mk}) \neq 0
@@ -1853,8 +1850,8 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <p><span class="math display">\[
 \text{Var}(g_c^{(m)})
 =
-\sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj})
-+ 2\sum_{j&lt;k}\beta_j\beta_k\text{Cov}(t_{mj},t_{mk})
+\sum_{j=1}^{M}\sum_{k=1}^{M}
+\text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
 \]</span></p>
 <p>and similarly for <span class="math inline">\(g_c^{(p)}\)</span>.</p>
 <table class="caption-top">

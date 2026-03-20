@@ -521,12 +521,9 @@ $$
 =
 \sum_{j=1}^{M}\sum_{k=1}^{M}
 \text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
-=
-\sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj})
-+ 2\sum_{j<k}\beta_j\beta_k\text{Cov}(t_{mj}, t_{mk})
 $$
 
-and similarly for $g_c^{(p)}$. The off-diagonal terms are the new **cis** covariance terms.
+and similarly for $g_c^{(p)}$. The off-diagonal terms are the new **cis** covariance terms (within haplotypes).
 
 Once those within-haplotype covariances become nonzero for distant loci, assortative mating has generated long-range LD:
 
@@ -581,8 +578,8 @@ After one generation, the increase comes mainly from the positive **trans** term
 $$
 \text{Var}(g_c^{(m)})
 =
-\sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj})
-+ 2\sum_{j<k}\beta_j\beta_k\text{Cov}(t_{mj},t_{mk})
+\sum_{j=1}^{M}\sum_{k=1}^{M}
+\text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
 $$
 
 and similarly for $g_c^{(p)}$.

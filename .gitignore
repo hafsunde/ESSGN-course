@@ -31,3 +31,6 @@ Thumbs.db
 *.log
 *.tmp
 *~
+
+/.quarto/
+**/*.quarto_ipynb

@@ -1105,10 +1105,10 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 <p>How mating behavioirs affect correlations between distant loci</p></li>
 <li><p><strong>Part 3: Gene-environment correlations</strong></p>
 <p>How indirect effects, stratification, and correlated environments enter SNP estimates and variance decompositions</p></li>
-<li><p><strong>Part 4: Family-based methods</strong></p>
+<li><p><strong>Part 4 (<em>Maybe</em>): Family-based methods</strong></p>
 <p>How family designs remove much of the family-level confounding around marginal SNP estimates</p></li>
 <li><p><strong>Part 5: Practical</strong></p>
-<p>Estimating SNP heritability and a genetic correlation with LD score regression</p></li>
+<p>Estimating maternal indirect genetic effects with M-GCTA Estimating SNP heritability and a genetic correlation with LD score regression</p></li>
 </ol>
 </section>
 <section>
@@ -1456,8 +1456,8 @@ E[z_{1j}z_{2j}]
 </div>
 <p>In this section, we will go through <strong>the genetic consequences of assortative mating</strong>.</p>
 </section>
-<section id="matching-on-phenotype-induces-genetic-similarity" class="slide level2">
-<h2>Matching on phenotype induces genetic similarity</h2>
+<section id="consequences-of-assortative-mating" class="slide level2">
+<h2>Consequences of assortative mating</h2>
 <p><strong>Ordinary family resemblance</strong>: Covariance starts in the <strong>causes</strong> and is diluted as it shows up in the phenotype</p>
 <ul>
 <li>Correlation flows from <span class="math inline">\(g\)</span> to <span class="math inline">\(y\)</span>.</li>
@@ -1481,8 +1481,8 @@ E[z_{1j}z_{2j}]
 </div>
 </div>
 </section>
-<section id="why-regress-genetic-value-on-phenotype" class="slide level2">
-<h2>Why regress genetic value on phenotype?</h2>
+<section id="predicted-genetic-value-given-phenotype" class="slide level2">
+<h2>Predicted genetic value given phenotype</h2>
 <p>To quantify the induced genetic similarity, we start at the <strong>phenotype</strong> and ask: if we observe someone’s phenotype <span class="math inline">\(y\)</span>, what genetic value <span class="math inline">\(g\)</span> do we expect?</p>
 <p>Assume centered variables and the simple additive model:</p>
 <p><span class="math display">\[
@@ -1511,14 +1511,14 @@ E[g_i \mid y_i] = h^2 y_i
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Caution: this equals <span class="math inline">\(h^2\)</span> only when <span class="math inline">\(\text{Cov}(g,e)=0\)</span></strong></p>
+<p><strong>Caution: <span class="math inline">\(\text{Cov}(g,y)/\text{Var}(y)\)</span> is still the relevant slope even if <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>, but it no longer equals <span class="math inline">\(h^2\)</span>.</strong></p>
 </div>
 <div class="callout-content">
-<p>If <span class="math inline">\(\text{Cov}(g,e)\neq 0\)</span>, the regression coefficient <span class="math inline">\(\text{Cov}(g,y)/\text{Var}(y)\)</span> still exists, but that coefficient is no longer exactly narrow-sense heritability.</p>
 <details>
 <summary>
 Show the algebra
 </summary>
+<p>If <span class="math inline">\(\text{Cov}(g,e)\neq 0\)</span>, the regression coefficient <span class="math inline">\(\text{Cov}(g,y)/\text{Var}(y)\)</span> is still the relevant slope, but that coefficient is no longer exactly narrow-sense heritability:</p>
 <p>If <span class="math inline">\(y=g+e\)</span>, then</p>
 <p><span class="math display">\[
 \text{Cov}(g,y)
@@ -1551,7 +1551,7 @@ b_{g \mid y}
 <p><span class="math display">\[
 \text{Cov}(g_m,g_p)
 =
-\text{Cov}\!\left(E[g_m \mid y_m], E[g_p \mid y_p]\right)
+\text{Cov}(h^2 y_m, h^2 y_p)
 =
 h^4 \text{Cov}(y_m,y_p)
 \]</span></p>
@@ -1559,7 +1559,7 @@ h^4 \text{Cov}(y_m,y_p)
 <p><span class="math display">\[
 r_g^{\mathrm{mates}}
 =
-\frac{\text{Cov}(g_m,g_p)}{\sigma_g^2}
+\frac{(\sigma_g^2/\sigma_y^2)^2 \text{Cov}(y_m,y_p)}{\sigma_g^2}
 =
 \frac{\sigma_g^2}{\sigma_y^2}
 \frac{\text{Cov}(y_m,y_p)}{\sigma_y^2}
@@ -1759,11 +1759,8 @@ g_c = g_c^{(m)} + g_c^{(p)}
 =
 \sum_{j=1}^{M}\sum_{k=1}^{M}
 \text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
-=
-\sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj})
-+ 2\sum_{j&lt;k}\beta_j\beta_k\text{Cov}(t_{mj}, t_{mk})
 \]</span></p>
-<p>and similarly for <span class="math inline">\(g_c^{(p)}\)</span>. The off-diagonal terms are the new <strong>cis</strong> covariance terms.</p>
+<p>and similarly for <span class="math inline">\(g_c^{(p)}\)</span>. The off-diagonal terms are the new <strong>cis</strong> covariance terms (within haplotypes).</p>
 <p>Once those within-haplotype covariances become nonzero for distant loci, assortative mating has generated long-range LD:</p>
 <p><span class="math display">\[
 \text{Cov}(t_{mj}, t_{mk}) \neq 0
