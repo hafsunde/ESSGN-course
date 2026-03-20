@@ -22,6 +22,8 @@ practical/ldsc/data/raw/
 practical/ldsc/data/course/
 practical/ldsc/data/ref/
 practical/ldsc/data/results/
+practical/ldsc/ldsc/
+practical/ldsc/.venv/
 
 # --- OS/editor noise ---
 .DS_Store
