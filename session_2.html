@@ -1817,8 +1817,8 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <p>If assortative mating changes <span class="math inline">\(\text{Cov}(x_j, x_k)\)</span>, then any method built on assuming <span class="math inline">\(\text{Cov}(x_j, x_k) = 0\)</span> changes too.</p>
 <div style="font-size: 0.8em;">
 <ul>
-<li><strong>GWAS marginal effects</strong>, because <span class="math inline">\(\tilde{\beta}_j\)</span> absorbs tagged signal from other causal loci</li>
-<li><strong>LDSC</strong>, because the GWAS test statistics are inflated by long-range LD, which is not accounted for by the local LD score or the regression weights.</li>
+<li><strong>GWAS marginal effects</strong>, because <span class="math inline">\(\tilde{\beta}_j\)</span> absorbs tagged signal from other causal loci across the genome</li>
+<li><strong>LDSC</strong>, because the GWAS test statistics are inflated by long-range LD, which is not accounted for by the local LD score or the regression weights</li>
 <li><strong>GREML</strong>, because genome-wide similarity among “unrelated” people can carry trait-relevant covariance</li>
 <li><strong>Family resemblance</strong>, because the same induced structure is inherited within pedigrees</li>
 </ul>
@@ -2464,7 +2464,7 @@ x_{jc} =
 \]</span></p>
 <p><span class="math display">\[
 \text{Var}(x_{jc})
-= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm})
+= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm}) + \frac{1}{2}\text{Cov}(x_{jp}, x_{jm})
 + \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\text{segregation variance}}
 \]</span></p>
 <div class="callout callout-note callout-titled callout-style-default">
@@ -2581,7 +2581,7 @@ x_{jc} =
 <p><span class="math display">\[
 \mathrm{PGS}_i^{F} = \sum_j \hat{\tilde{\beta}}_j^{F} x_{ij}
 \]</span></p>
-<p>That does <strong>not</strong> mean the score itself is automatically unconfounded, because the observed SNPs are not “purified” by the family design.</p>
+<p>That does <strong>not</strong> mean the score itself is automatically unconfounded.</p>
 <p>Two problems can still remain at the SNP level:</p>
 <ul>
 <li><span class="math inline">\(x_{ij}\)</span> can still be correlated with other causal SNPs through local or long-range LD</li>
@@ -2596,7 +2596,7 @@ x_{jc} =
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>So even if family GWAS improves <span class="math inline">\(\hat{\tilde{\beta}}_j^{F}\)</span>, a tool built from <strong>weights times observed SNPs</strong> can still inherit bias from the SNP side. In other words, better weights do not guarantee that polygenic scores or other genotype-based predictors are unconfounded.</p>
+<p>Even a perfectly measured genetic value <span class="math inline">\(g\)</span> would still be associated with the phenotype through both direct and indirect pathways. A polygenic score has the same problem, so better SNP weights alone do not make it unconfounded.</p>
 </div>
 </div>
 </div>

@@ -929,7 +929,7 @@ $$
 
 $$
 \text{Var}(x_{jc})
-= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm})
+= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm}) + \frac{1}{2}\text{Cov}(x_{jp}, x_{jm})
 + \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\text{segregation variance}}
 $$
 
@@ -975,7 +975,7 @@ $$
 \mathrm{PGS}_i^{F} = \sum_j \hat{\tilde{\beta}}_j^{F} x_{ij}
 $$
 
-That does **not** mean the score itself is automatically unconfounded, because the observed SNPs are not "purified" by the family design.
+That does **not** mean the score itself is automatically unconfounded.
 
 Two problems can still remain at the SNP level:
 
@@ -983,7 +983,7 @@ Two problems can still remain at the SNP level:
 - $x_{ij}$ can still be correlated with environments, so $\text{Cov}(x_{ij}, e_i)$ need not vanish
 
 ::: {.callout-important}
-So even if family GWAS improves $\hat{\tilde{\beta}}_j^{F}$, a tool built from **weights times observed SNPs** can still inherit bias from the SNP side. In other words, better weights do not guarantee that polygenic scores or other genotype-based predictors are unconfounded.
+Even a perfectly measured genetic value $g$ would still be associated with the phenotype through both direct and indirect pathways. A polygenic score has the same problem, so better SNP weights alone do not make it unconfounded.
 :::
 
 ## Why adjust for parental or sibling polygenic scores?
