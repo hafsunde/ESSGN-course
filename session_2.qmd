@@ -59,6 +59,10 @@ $$
 \end{array}
 $$
 
+::: {.callout-note appearance="minimal"}
+Here we ignore sampling error, imperfect genetic overlap between GWAS and target phenotypes, and heterogeneity across GWAS samples
+:::
+
 ## Lecture Outline
 
 The unifying theme today is that different sources of confounding ultimately comes down to the same thing: **marginal associations can be confounded by correlation structure**.
@@ -85,11 +89,6 @@ The unifying theme today is that different sources of confounding ultimately com
 ## Nearby SNPs correlate
 
 Recombination shuffles **chromosome segments**, not isolated SNPs. Loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together. 
-
-This makes nearby SNPs correlated in the population: $\text{Cov}(x_j, x_k) \neq 0$ for nearby $j,k$
-
-This is called (local) **linkage disequilibrium (LD)**.
-
 
 <table style="border-collapse: collapse; font-family: Lato;">
   <tr><td colspan="11" style="height:10px;"></td></tr>
@@ -136,7 +135,14 @@ This is called (local) **linkage disequilibrium (LD)**.
     <td style="background:#fadbd8; border:1px solid #ccc;"><b>0</b></td>
     <td style="background:#fadbd8; border:1px solid #ccc;"><b>0</b></td>
   </tr>
+   <tr><td colspan="11" style="height:10px;"></td></tr>
+
 </table>
+
+
+This makes nearby SNPs correlated in the population: $\text{Cov}(x_j, x_k) \neq 0$ for nearby $j,k$
+
+This is called (local) **linkage disequilibrium (LD)**.
 
 ::: {.callout-note}
 If two nearby SNPs are often inherited together, they are statistically *dependent*: once you know the allele at one SNP, you can make a good guess about the allele at the other.
@@ -189,44 +195,46 @@ $$
 So the marginal coefficient at SNP $j$ is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with **many** nearby variants can therefore pick up more tagged signal.
 
 
+
+## We can exploit this structure {.huge background-color="#5b0f0f" color="white .center}
+
+<br>
+
+If a trait is heritable, then SNPs correlated with many nearby variants should have inflated test statistics on average, because they tag more causal variation in the region.
+
 ## What is an LD score?
 
-For SNP $j$, the **LD score** is the amount of local tagging it has:
+For SNP $j$, the **LD score** is the sum of squared correlations with nearby SNPs:
 
 $$
 \ell_j = \sum_{k \in \mathcal{N}(j)} r_{jk}^2
 $$
 
-Here $\mathcal{N}(j)$ is a local window around SNP $j$, and the square matters because tagging accumulates in **magnitude**, not in signed direction.
+where $\mathcal{N}(j)$ is a local window around SNP $j$. 
 
-| SNP | Local LD pattern | LD score |
-|---|---|---|
-| Low-LD SNP | Few or weak local correlations | Small $\ell_j$ |
-| High-LD SNP | Many strong local correlations | Large $\ell_j$ |
-
-::: {.callout-note}
+::: {.callout-tip}
+# Interpretation
 A high LD score means the SNP is highly correlated with many nearby variants, and is more likely to tag causal variation in the region. 
 
 A low LD score means the SNP is more isolated and less likely to tag nearby causal effects.
 :::
 
-## LD score regression {.smaller}
+## LD score regression
 
-If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. How much larger depends on the heritability:
+If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. This relationship is proportional to the heritability. We can therefore exploit this structure to estimate SNP heritability from GWAS summary statistics, using a method called **LD score regression (LDSC)**.
 
 $$
-E[\chi_j^2] \approx 1 + \frac{N h_g^2}{M}\ell_j + c
+E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 $$
 
 where $\chi_j^2 = z_j^2$, and $z_j = \hat{\tilde{\beta}}_j/\text{SE}(\hat{\tilde{\beta}}_j)$ for SNP $j$.
 
-::: {.callout-note}
+::: {.callout-tip}
 ## High-level interpretation
 - Regress GWAS test statistics on LD scores
-- Because the expected test statistic rises systematically with local LD, we can exploit that relationship to estimate SNP heritability
 - The **slope** tracks polygenic signal, but it must be rescaled to get heritability:
-  $h_g^2 = \text{slope} \times M / N$
-- The **intercept** tracks confounding or other inflation
+  $h^2 = \text{slope} \times M / N$
+- The **intercept**, $c$, tracks confounding or other inflation
 
 Other considerations include  appropriate regression weights to handle LD-dependent redundancy, plus a well-matched LD reference panel, careful GWAS QC, and checking for sample overlap or ancestry mismatch.
 :::
@@ -236,20 +244,25 @@ Other considerations include  appropriate regression weights to handle LD-depend
 For two traits, the same idea extends to the product of the two marginal $z$-statistics:
 
 $$
-E[z_{1j}z_{2j}]
-\approx
-\frac{\sqrt{N_1N_2}}{M} r_g \sqrt{h_{g1}^2 h_{g2}^2}\,\ell_j + c_{12}
+E[z_{1j} z_{2j} \mid \ell_j]
+=
+0 + 
+r_g \,\ell_j
+\left(
+\frac{\sqrt{N_1 N_2}}{M} \, h_{1} h_{2}
+\right)
++ c_{12}
 $$
 
 where $r_g$ is the **genetic correlation**, summarizing how strongly the additive genetic effects overlap across the two traits.
 
-::: {.callout-note}
+::: {.callout-tip}
 ## High-level interpretation
 - Regress cross-trait $z$-score products on LD scores
 - The slope tracks **shared genetic signal** across the two traits, but it first has to be rescaled to get the genetic covariance:
   $\mathrm{Cov}(g_1,g_2) = \text{slope} \times M / \sqrt{N_1N_2}$
 - Then standardize that covariance to get the genetic correlation:
-  $r_g = \mathrm{Cov}(g_1,g_2) / \sqrt{h_{g1}^2 h_{g2}^2}$
+  $r_g = \frac{\mathrm{Cov}(g_1,g_2)}{h_{1} h_{2}}$
 :::
 
 ## Summary: local LD both confounds and helps
@@ -262,7 +275,24 @@ where $r_g$ is the **genetic correlation**, summarizing how strongly the additiv
 | LD score regression exploits that structure | The same LD that complicates interpretation can be modeled |
 
 ::: {.callout-note}
-This is the template for the rest of the lecture: **marginal regression coefficients are shaped by correlation structure**.
+## Reminder:
+$$
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+& = &
+\beta_j
+& + &
+\color{red}{\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}}
+& + &
+\color{blue}{\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}} \\
+& &
+\scriptstyle {\text{Causal Effect}}
+& &
+\scriptstyle {\text{Linkage Disequilibrium}}
+& &
+\scriptstyle {\text{rGE}}
+\end{array}
+$$
 :::
 
 # Part 2: Assortative Mating and Long-Range LD {background-color="#2c3e50" style="color: white;"}
@@ -273,36 +303,44 @@ Partner similarity, $\text{Cov}(y_m, y_p) > 0$, can arise for different reasons.
 
 **Assortative mating (AM)** means that the **matching process itself** induces covariance between partners, rather than that covariance reflecting a shared cause. 
 
-::: {.callout-note}
-Observed partner covariance is a **symptom**, not yet an explanation.
+::: {.callout-important}
+## Observed partner covariance is a **symptom**, not yet an explanation.
 
 - **Assortative mating**: matching induces partner covariance
 - **Convergence**: partners become more similar after pairing
 - **Stratification**: partners are similar because both are shaped by the same background factors
 
-Here, we assume that partner covariance is due to assortative mating.
+Here, we assume that partner covariance is due to assortative mating, and we focus on the genetic consequences of that process.
 :::
 
-In this section, we will go through **the genetic consequences of assortative mating**. 
-
+::: {.callout-note}
+## Negative assortative mating?
+Technically, assortative mating can be negative if partners are more dissimilar than expected by chance. However, we focus on positive assortative mating here because it is much more common in human populations. The consequences of negative assortative mating are generally the same, but with opposite signs.
+:::
 ## Consequences of assortative mating
 
-**Ordinary family resemblance**: Covariance starts in the **causes** and is diluted as it shows up in the phenotype 
-
-  - Correlation flows from $g$ to $y$.
-
-**Assortative mating**: 
-Covariance starts on the **phenotype**. If maternal and paternal partners are similar in $y$, then part of that covariance is carried back into the genetic values that helped generate $y$.
-
-  - Correlation flows from $y$ to $g$.
-
-Assortative mating therefore induces genetic similarity between partners.
-
-
-::: {.callout-note}
+::: {.callout-tip}
 ## Useful intuition
 Assortative mating induces correlations among causes by matching on the effects. 
 :::
+
+
+**Ordinary family resemblance**: <br> Covariance starts in the **causes** and is diluted as it shows up in the phenotype 
+
+::: {.callout-note appearance="minimal"}
+Correlation flows from $g \to y$.
+:::
+
+**Assortative mating**: <br>
+Covariance starts on the **phenotype**. If partners are phenotypically similar, then part of that covariance is carried back into the genetic values.
+
+::: {.callout-note appearance="minimal"}
+Correlation flows from $y \to g$.
+:::
+
+
+Assortative mating therefore induces genetic similarity between partners.
+
 
 
 ## Predicted genetic value given phenotype
@@ -311,16 +349,19 @@ To quantify the induced genetic similarity, we start at the **phenotype** and as
 Assume centered variables and the simple additive model:
 
 $$
-y_i = g_i + e_i,
-\qquad
-\text{Cov}(g_i,e_i)=0
-\qquad \Rightarrow \qquad
+y_i = g_i + e_i;
+\quad
+\small \text{Cov}(g_i,e_i)=0;
+\quad
+E[g_i] = E[e_i] = 0
+\quad
+\Rightarrow \quad
 \text{Cov}(g_i,y_i)
 = \text{Var}(g_i)
 = \sigma_g^2
 $$
 
-So the regression slope of $g$ on $y$ is
+Here, the regression slope of $g$ on $y$ is
 
 $$
 b_{g \mid y}
@@ -329,15 +370,15 @@ b_{g \mid y}
 = h^2
 $$
 
-So the corresponding expected genetic value given phenotype is
+Meaning the corresponding expected genetic value given phenotype is
 
 $$
 E[g_i \mid y_i] = h^2 y_i
 $$
 
 
-::: {.callout-caution}
-## Caution: $\text{Cov}(g,y)/\text{Var}(y)$ is still the relevant slope even if $\text{Cov}(g,e) \neq 0$, but it no longer equals $h^2$.
+::: {.callout-warning}
+## $\text{Cov}(g,y)/\text{Var}(y)$ is still the relevant slope even if $\text{Cov}(g,e) \neq 0$, but it no longer equals $h^2$.
 <details>
 <summary>Show the algebra</summary>
 If $\text{Cov}(g,e)\neq 0$, the regression coefficient $\text{Cov}(g,y)/\text{Var}(y)$ is still the relevant slope, but that coefficient is no longer exactly narrow-sense heritability:
@@ -406,67 +447,97 @@ The $h^4$ appears on the covariance scale because the phenotype-to-genotype regr
 
 ## Direct versus indirect assortative mating {.smaller}
 
-It helps to distinguish the **focal phenotype** $y$ from the **sorting factor** $s$ that partners actually match on.
+The preceding (and following) derivations assume that partners match directly on the **focal phenotype** $y$. 
 
+In reality, they may match on a related signal or bundle of traits $s$ that correlates with $y$. We call $s$ the **sorting factor**.
+
+::: {style="font-size: 0.8em;"}
 | Case | What partners match on | Induced genotypic correlation between partners |
 |--|----|---|
-| **Direct assortative mating** | The focal phenotype itself: $s = y$ | $r_g^{\mathrm{mates}} = h^2 r_y^{\mathrm{mates}}$ |
-| **Indirect assortative mating** | A related signal or bundle of traits: $s \neq y$, but $\mathrm{Corr}(s,y) \neq 0$ | Depends on how strongly $s$ tracks the genetic causes of $y$ |
-
-::: {.callout-important}
-The key point is that the **genotypic correlation between partners depends on how strongly the sorting factor $s$ correlates with the genetic causes of the focal phenotype**. So indirect assortative mating can imply **more or less** genetic resemblance between partners than you would expect from the observed partner correlation in $y$ alone.
-
-In this lecture, we assume **direct assortative mating** where $s=y$, but note that assortative mating is indirect for many social traits (e.g., educational attainment).
+| **Direct assortment** | The focal phenotype itself: $s = y$ | $r_g^{\mathrm{mates}} = \mathrm{Corr}(g,y)^2 r_y^{\mathrm{mates}} = h^2 r_y^{\mathrm{mates}}$ |
+| **Indirect assortment** | A related signal or bundle of traits: $s \neq y$, but $\mathrm{Corr}(s,y) \neq 0$ |  $r_g^{\mathrm{mates}} = \mathrm{Corr}(g,s)^2 r_y^{\mathrm{mates}}$ |
 :::
 
-## Mate covariance comes from many SNP pairs {.smaller}
 
-Write the genetic value as a weighted sum of SNPs: $g_i = \sum_{j=1}^{M} \beta_j x_{ij}$. Then partner genetic covariance expands as
+::: {.callout-note}
+## Key point
+The genotypic correlation between partners depends on **how strongly the sorting factor $s$ correlates with the genetic causes of the focal phenotype**. Indirect assortative mating can imply **more or less** genetic resemblance between partners than you would otherwise expect.
+
+In this lecture, we assume direct assortment where $s=y$, but note that assortment is indirect for many social traits (e.g., educational attainment).
+:::
+
+## Genetic similarity spreads across many SNP pairs
+
+The genetic value is a weighted sum of SNPs: $g_i = \sum_{j=1}^{M} \beta_j x_{ij}$. Then partner genetic covariance therefore expands as
 
 $$
 \text{Cov}(g_m,g_p)
 =
-\text{Cov}\!\left(\underbrace{\sum_{j=1}^{M} \beta_j x_{mj}}_{g_m}, \underbrace{\sum_{k=1}^{M} \beta_k x_{pk}}_{g_p}\right)
+\text{Cov}\!\left(\underbrace{\sum_{j=1}^{M} \beta_j x_{mj}}_{g_m}\ ,\  \underbrace{\sum_{k=1}^{M} \beta_k x_{pk}}_{g_p}\right)
 =
 \sum_{j=1}^{M}\sum_{k=1}^{M}
  \beta_j\beta_k \,\text{Cov}(x_{mj}, x_{pk})
 $$
 
-So mate-level genetic covariance is the weighted sum of many cross-mate SNP covariances. Phenotype matching can therefore induce many small SNP-level correlations across partners.
+Phenotype matching therefore induces many small SNP-level correlations across partners. Importantly, all these correlations are **positive** for trait-associated SNPs, because the matching process aligns the genetic values of the partners.
 
 ::: {.callout-note}
-This is the bridge to long-range LD: once partner genomes become correlated, transmission and recombination can move that covariance into the next generation.
+To calculate $\text{Cov}(x_{mj}, x_{pk})$, we can use the same regression logic as before where we regress the two SNPs on their phenotype and combine that with the phenotypic covariance: $\frac{\text{Cov}(x_{mj}, y_m)}{\text{Var}(y_m)} \text{Cov}(y_m, y_p) \frac{\text{Cov}(y_p, x_{pk})}{\text{Var}(y_p)}$.
 :::
 
-## The first-generation effect is trans covariance {.smaller}
 
-To match Session 1, let $\mathbf{t}_m = (t_{m1},\ldots,t_{mM})^\top$ and $\mathbf{t}_p = (t_{p1},\ldots,t_{pM})^\top$ denote the transmitted maternal and paternal haplotype vectors.
+## Why is this a problem? {.huge background-color="#5b0f0f" color="white" .center}
+::: {.callout-important  appearance="simple"}
+Once partner genomes become correlated, transmission and recombination **embeds the correlation structure** in the next following generation. 
+
+Assortative mating across generations induces a signed correlation structure between trait-associated alleles (i.e., linkage disequilibrium), and that correlation structure can increase marginal SNP effects and family resemblance.
+
+Now we will unpack how that happens.
+:::
+
+## What happens after *one* generation of AM 
+
+First, we define the genetic values separately for the maternal and paternal haplotypes:
 
 $$
-\mathbf{t}_m + \mathbf{t}_p = \mathbf{x}_c,
+g_c^{(m)} = \sum_{j=1}^{M} \beta_j t_{mj}, 
 \qquad
-\boldsymbol{\beta}^\top \mathbf{t}_m = g_c^{(m)},
-\qquad
-\boldsymbol{\beta}^\top \mathbf{t}_p = g_c^{(p)},
+g_c^{(p)} = \sum_{j=1}^{M} \beta_j t_{pj},
 \qquad
 g_c = g_c^{(m)} + g_c^{(p)}
 $$
 
-If we focus on the **new** covariance induced by assortative mating and set aside ordinary local LD from Part 1, then after one generation the new covariance is across the two parental haplotypes:
+where $t_{mj}$ and $t_{pj}$ are the maternally and paternally transmitted alleles at SNP $j$, respectively. 
+
+After only one generation of assortment, the transmitted alleles are still independent **within** haplotypes (assuming no relevant local LD):
+
+$$
+\operatorname{Cov}(t_{m j}, t_{m k}) = 0,
+\qquad
+\operatorname{Cov}(t_{p j}, t_{p k}) = 0
+\qquad \text{for } j \neq k
+$$
+
+However, the transmitted alleles are correlated **across** haplotypes, because the parental genomes are correlated: 
 
 $$
 \text{Cov}(g_c^{(m)}, g_c^{(p)}) > 0
-$$
-
-but not yet within either transmitted haplotype, so
-
-$$
-\text{Var}(g_c^{(m)}) \approx \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj}),
 \qquad
-\text{Var}(g_c^{(p)}) \approx \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{pj})
+\Rightarrow
+\qquad
+\text{Cov}(t_{mj}, t_{pk}) > 0 \small \text{ for trait-associated } j,k
 $$
 
-Therefore
+
+## Genetic variance after one generation of AM
+Because the transmitted alleles are still independent within haplotypes, the variance of each haplotype contribution is just a sum of single-locus terms:
+$$
+\text{Var}(g_c^{(m)}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj}),
+\qquad
+\text{Var}(g_c^{(p)}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{pj})
+$$
+
+However, because the transmitted alleles from either parent are correlated, the total variance of the genetic value includes a positive covariance term:
 
 $$
 \text{Var}(g_c)
@@ -476,45 +547,24 @@ $$
 + 2\text{Cov}(g_c^{(m)}, g_c^{(p)})
 $$
 
-:::: {.columns}
-::: {.column width="45%"}
-```{dot}
-//| fig-width: 4.6
-//| fig-height: 3
-//| echo: false
-digraph trans_cov {
-  rankdir=TB;
-  graph [margin=0.08, nodesep=0.5, ranksep=0.7];
-  node [shape=circle, style=filled, fixedsize=true, width=0.85, height=0.85,
-        fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
-  edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
-
-  gm [label="g_c^(m)", fillcolor="#3498db", color="#2980b9"];
-  gf [label="g_c^(p)", fillcolor="#e74c3c", color="#c0392b"];
-  go [label="g_c", fillcolor="#7f8c8d", color="#707b7c"];
-
-  gm -> go;
-  gf -> go;
-  gm -> gf [dir=none, style=dashed, color="#27ae60", label=" trans cov"];
-}
-```
-:::
-::: {.column width="55%"}
-
-This is **trans** covariance: covariance across the maternal and paternal transmitted genetic contributions induced by the haplotypes $\mathbf{t}_m$ and $\mathbf{t}_p$, before recombination has had time to create new within-haplotype covariance.
-
-:::
-::::
 
 ::: {.callout-note}
-Here, "trans" and "cis" are bookkeeping terms for **where the covariance lives**. They are not new biological mechanisms.
+## Terminology: trans vs cis covariance
+Covariance **across** the maternal and paternal haplotypes is called **trans** covariance.
+
+Covariance **within** the maternal or paternal haplotype is called **cis** covariance.
 :::
 
-## Repeated assortment builds cis covariance and long-range LD {.smaller}
+## What happens after *several* generations of AM
 
-Repeated assortment plus recombination gradually converts part of the accumulated trans covariance into **cis** covariance within transmitted haplotypes.
+Repeated assortment plus recombination gradually converts the **trans** covariance into **cis** covariance. 
+$$
+\text{Cov}(t_{mj}, t_{mk}) \neq 0
+\qquad
+\text{for distant loci } j,k
+$$
 
-That means the haplotype variance is no longer just a sum of single-locus terms. For example,
+That means the haplotype variance is no longer just a sum of single-locus terms. Instead, the variance now includes off-diagonal covariance terms between trait-associated loci. For example,
 
 $$
 \text{Var}(g_c^{(m)})
@@ -523,26 +573,13 @@ $$
 \text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
 $$
 
-and similarly for $g_c^{(p)}$. The off-diagonal terms are the new **cis** covariance terms (within haplotypes).
+<br>
 
-Once those within-haplotype covariances become nonzero for distant loci, assortative mating has generated long-range LD:
-
-$$
-\text{Cov}(t_{mj}, t_{mk}) \neq 0
-\qquad
-\text{for distant loci } j,k
-$$
-
-| Where the covariance lives | When it appears | Interpretation |
-|---|---|---|
-| Trans covariance | First generation | Maternal and paternal contributions become aligned |
-| Cis covariance | Later generations | Aligned alleles begin to co-occur within haplotypes |
-| Long-range LD | Repeated assortment | Distant loci become correlated in the population |
-
-::: {.callout-note}
-Assortative mating does not just create "more LD". It changes the **geography** of LD by creating nonlocal correlation structure.
-
-In older quantitative-genetic language, these cross-locus associations within gametes or haplotypes are called **gametic phase disequilibrium**. When they arise between distant loci, we describe the same pattern as **long-range LD**.
+::: {style="font-size: 0.8em;"}
+| When | Where | Interpretation |
+|--|---|-----|
+| 1 generation | 	Across haplotypes (trans)  | Maternal and paternal contributions become aligned |
+| ≥2 generations | Within haplotypes (cis) | Aligned alleles begin to co-occur within haplotypes |
 :::
 
 ## Why marginal SNP effects now tag distant variants {.smaller}

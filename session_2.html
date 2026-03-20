@@ -1094,6 +1094,13 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 \scriptstyle {\text{rGE}}
 \end{array}
 \]</span></p>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>Here we ignore sampling error, imperfect genetic overlap between GWAS and target phenotypes, and heterogeneity across GWAS samples</p>
+</div>
+</div>
+</div>
 </section>
 <section id="lecture-outline" class="slide level2 scrollable">
 <h2>Lecture Outline</h2>
@@ -1108,7 +1115,7 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 <li><p><strong>Part 4 (<em>Maybe</em>): Family-based methods</strong></p>
 <p>How family designs remove much of the family-level confounding around marginal SNP estimates</p></li>
 <li><p><strong>Part 5: Practical</strong></p>
-<p>Estimating maternal indirect genetic effects with M-GCTA Estimating SNP heritability and a genetic correlation with LD score regression</p></li>
+<p>Practical 1: GREML and maternal indirect genetic effects with M-GCTA Practical 2: SNP heritability and a genetic correlation with LD score regression</p></li>
 </ol>
 </section>
 <section>
@@ -1119,8 +1126,6 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 <section id="nearby-snps-correlate" class="slide level2">
 <h2>Nearby SNPs correlate</h2>
 <p>Recombination shuffles <strong>chromosome segments</strong>, not isolated SNPs. Loci that are close together are less likely to be separated by recombination and therefore tend to be inherited together.</p>
-<p>This makes nearby SNPs correlated in the population: <span class="math inline">\(\text{Cov}(x_j, x_k) \neq 0\)</span> for nearby <span class="math inline">\(j,k\)</span></p>
-<p>This is called (local) <strong>linkage disequilibrium (LD)</strong>.</p>
 <table style="border-collapse: collapse; font-family: Lato;">
 <tbody><tr>
 <td colspan="11" style="height:10px;">
@@ -1235,7 +1240,13 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 <b>0</b>
 </td>
 </tr>
+<tr>
+<td colspan="11" style="height:10px;">
+</td>
+</tr>
 </tbody></table>
+<p>This makes nearby SNPs correlated in the population: <span class="math inline">\(\text{Cov}(x_j, x_k) \neq 0\)</span> for nearby <span class="math inline">\(j,k\)</span></p>
+<p>This is called (local) <strong>linkage disequilibrium (LD)</strong>.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1283,41 +1294,25 @@ y_i = \beta_1 x_{i1} + e_i
 \]</span></p>
 <p>So the marginal coefficient at SNP <span class="math inline">\(j\)</span> is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with <strong>many</strong> nearby variants can therefore pick up more tagged signal.</p>
 </section>
+<section id="we-can-exploit-this-structure" class="slide level2 huge center" data-background-color="#5b0f0f" color="&quot;white">
+<h2>We can exploit this structure</h2>
+<p><br></p>
+<p>If a trait is heritable, then SNPs correlated with many nearby variants should have inflated test statistics on average, because they tag more causal variation in the region.</p>
+</section>
 <section id="what-is-an-ld-score" class="slide level2">
 <h2>What is an LD score?</h2>
-<p>For SNP <span class="math inline">\(j\)</span>, the <strong>LD score</strong> is the amount of local tagging it has:</p>
+<p>For SNP <span class="math inline">\(j\)</span>, the <strong>LD score</strong> is the sum of squared correlations with nearby SNPs:</p>
 <p><span class="math display">\[
 \ell_j = \sum_{k \in \mathcal{N}(j)} r_{jk}^2
 \]</span></p>
-<p>Here <span class="math inline">\(\mathcal{N}(j)\)</span> is a local window around SNP <span class="math inline">\(j\)</span>, and the square matters because tagging accumulates in <strong>magnitude</strong>, not in signed direction.</p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>SNP</th>
-<th>Local LD pattern</th>
-<th>LD score</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Low-LD SNP</td>
-<td>Few or weak local correlations</td>
-<td>Small <span class="math inline">\(\ell_j\)</span></td>
-</tr>
-<tr class="even">
-<td>High-LD SNP</td>
-<td>Many strong local correlations</td>
-<td>Large <span class="math inline">\(\ell_j\)</span></td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-note callout-titled callout-style-default">
+<p>where <span class="math inline">\(\mathcal{N}(j)\)</span> is a local window around SNP <span class="math inline">\(j\)</span>.</p>
+<div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Interpretation</strong></p>
 </div>
 <div class="callout-content">
 <p>A high LD score means the SNP is highly correlated with many nearby variants, and is more likely to tag causal variation in the region.</p>
@@ -1326,14 +1321,14 @@ y_i = \beta_1 x_{i1} + e_i
 </div>
 </div>
 </section>
-<section id="ld-score-regression" class="slide level2 smaller">
+<section id="ld-score-regression" class="slide level2">
 <h2>LD score regression</h2>
-<p>If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. How much larger depends on the heritability:</p>
+<p>If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. This relationship is proportional to the heritability. We can therefore exploit this structure to estimate SNP heritability from GWAS summary statistics, using a method called <strong>LD score regression (LDSC)</strong>.</p>
 <p><span class="math display">\[
-E[\chi_j^2] \approx 1 + \frac{N h_g^2}{M}\ell_j + c
+E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 \]</span></p>
 <p>where <span class="math inline">\(\chi_j^2 = z_j^2\)</span>, and <span class="math inline">\(z_j = \hat{\tilde{\beta}}_j/\text{SE}(\hat{\tilde{\beta}}_j)\)</span> for SNP <span class="math inline">\(j\)</span>.</p>
-<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
@@ -1344,9 +1339,8 @@ E[\chi_j^2] \approx 1 + \frac{N h_g^2}{M}\ell_j + c
 <div class="callout-content">
 <ul>
 <li>Regress GWAS test statistics on LD scores</li>
-<li>Because the expected test statistic rises systematically with local LD, we can exploit that relationship to estimate SNP heritability</li>
-<li>The <strong>slope</strong> tracks polygenic signal, but it must be rescaled to get heritability: <span class="math inline">\(h_g^2 = \text{slope} \times M / N\)</span></li>
-<li>The <strong>intercept</strong> tracks confounding or other inflation</li>
+<li>The <strong>slope</strong> tracks polygenic signal, but it must be rescaled to get heritability: <span class="math inline">\(h^2 = \text{slope} \times M / N\)</span></li>
+<li>The <strong>intercept</strong>, <span class="math inline">\(c\)</span>, tracks confounding or other inflation</li>
 </ul>
 <p>Other considerations include appropriate regression weights to handle LD-dependent redundancy, plus a well-matched LD reference panel, careful GWAS QC, and checking for sample overlap or ancestry mismatch.</p>
 </div>
@@ -1357,12 +1351,17 @@ E[\chi_j^2] \approx 1 + \frac{N h_g^2}{M}\ell_j + c
 <h2>Genetic correlation from cross-trait LDSC</h2>
 <p>For two traits, the same idea extends to the product of the two marginal <span class="math inline">\(z\)</span>-statistics:</p>
 <p><span class="math display">\[
-E[z_{1j}z_{2j}]
-\approx
-\frac{\sqrt{N_1N_2}}{M} r_g \sqrt{h_{g1}^2 h_{g2}^2}\,\ell_j + c_{12}
+E[z_{1j} z_{2j} \mid \ell_j]
+=
+0 +
+r_g \,\ell_j
+\left(
+\frac{\sqrt{N_1 N_2}}{M} \, h_{1} h_{2}
+\right)
++ c_{12}
 \]</span></p>
 <p>where <span class="math inline">\(r_g\)</span> is the <strong>genetic correlation</strong>, summarizing how strongly the additive genetic effects overlap across the two traits.</p>
-<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
@@ -1374,7 +1373,7 @@ E[z_{1j}z_{2j}]
 <ul>
 <li>Regress cross-trait <span class="math inline">\(z\)</span>-score products on LD scores</li>
 <li>The slope tracks <strong>shared genetic signal</strong> across the two traits, but it first has to be rescaled to get the genetic covariance: <span class="math inline">\(\mathrm{Cov}(g_1,g_2) = \text{slope} \times M / \sqrt{N_1N_2}\)</span></li>
-<li>Then standardize that covariance to get the genetic correlation: <span class="math inline">\(r_g = \mathrm{Cov}(g_1,g_2) / \sqrt{h_{g1}^2 h_{g2}^2}\)</span></li>
+<li>Then standardize that covariance to get the genetic correlation: <span class="math inline">\(r_g = \frac{\mathrm{Cov}(g_1,g_2)}{h_{1} h_{2}}\)</span></li>
 </ul>
 </div>
 </div>
@@ -1418,10 +1417,26 @@ E[z_{1j}z_{2j}]
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Reminder:</strong></p>
 </div>
 <div class="callout-content">
-<p>This is the template for the rest of the lecture: <strong>marginal regression coefficients are shaped by correlation structure</strong>.</p>
+<p><span class="math display">\[
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+&amp; = &amp;
+\beta_j
+&amp; + &amp;
+\color{red}{\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}}
+&amp; + &amp;
+\color{blue}{\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}} \\
+&amp; &amp;
+\scriptstyle {\text{Causal Effect}}
+&amp; &amp;
+\scriptstyle {\text{Linkage Disequilibrium}}
+&amp; &amp;
+\scriptstyle {\text{rGE}}
+\end{array}
+\]</span></p>
 </div>
 </div>
 </div>
@@ -1435,39 +1450,41 @@ E[z_{1j}z_{2j}]
 <h2>What is assortative mating?</h2>
 <p>Partner similarity, <span class="math inline">\(\text{Cov}(y_m, y_p) &gt; 0\)</span>, can arise for different reasons.</p>
 <p><strong>Assortative mating (AM)</strong> means that the <strong>matching process itself</strong> induces covariance between partners, rather than that covariance reflecting a shared cause.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Observed partner covariance is a <strong>symptom</strong>, not yet an explanation.</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Assortative mating</strong>: matching induces partner covariance</li>
+<li><strong>Convergence</strong>: partners become more similar after pairing</li>
+<li><strong>Stratification</strong>: partners are similar because both are shaped by the same background factors</li>
+</ul>
+<p>Here, we assume that partner covariance is due to assortative mating, and we focus on the genetic consequences of that process.</p>
+</div>
+</div>
+</div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Negative assortative mating?</strong></p>
 </div>
 <div class="callout-content">
-<p>Observed partner covariance is a <strong>symptom</strong>, not yet an explanation.</p>
-<ul>
-<li><strong>Assortative mating</strong>: matching induces partner covariance</li>
-<li><strong>Convergence</strong>: partners become more similar after pairing</li>
-<li><strong>Stratification</strong>: partners are similar because both are shaped by the same background factors</li>
-</ul>
-<p>Here, we assume that partner covariance is due to assortative mating.</p>
+<p>Technically, assortative mating can be negative if partners are more dissimilar than expected by chance. However, we focus on positive assortative mating here because it is much more common in human populations. The consequences of negative assortative mating are generally the same, but with opposite signs.</p>
 </div>
 </div>
 </div>
-<p>In this section, we will go through <strong>the genetic consequences of assortative mating</strong>.</p>
 </section>
 <section id="consequences-of-assortative-mating" class="slide level2">
 <h2>Consequences of assortative mating</h2>
-<p><strong>Ordinary family resemblance</strong>: Covariance starts in the <strong>causes</strong> and is diluted as it shows up in the phenotype</p>
-<ul>
-<li>Correlation flows from <span class="math inline">\(g\)</span> to <span class="math inline">\(y\)</span>.</li>
-</ul>
-<p><strong>Assortative mating</strong>: Covariance starts on the <strong>phenotype</strong>. If maternal and paternal partners are similar in <span class="math inline">\(y\)</span>, then part of that covariance is carried back into the genetic values that helped generate <span class="math inline">\(y\)</span>.</p>
-<ul>
-<li>Correlation flows from <span class="math inline">\(y\)</span> to <span class="math inline">\(g\)</span>.</li>
-</ul>
-<p>Assortative mating therefore induces genetic similarity between partners.</p>
-<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
@@ -1480,38 +1497,58 @@ E[z_{1j}z_{2j}]
 </div>
 </div>
 </div>
+<p><strong>Ordinary family resemblance</strong>: <br> Covariance starts in the <strong>causes</strong> and is diluted as it shows up in the phenotype</p>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>Correlation flows from <span class="math inline">\(g \to y\)</span>.</p>
+</div>
+</div>
+</div>
+<p><strong>Assortative mating</strong>: <br> Covariance starts on the <strong>phenotype</strong>. If partners are phenotypically similar, then part of that covariance is carried back into the genetic values.</p>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>Correlation flows from <span class="math inline">\(y \to g\)</span>.</p>
+</div>
+</div>
+</div>
+<p>Assortative mating therefore induces genetic similarity between partners.</p>
 </section>
 <section id="predicted-genetic-value-given-phenotype" class="slide level2">
 <h2>Predicted genetic value given phenotype</h2>
 <p>To quantify the induced genetic similarity, we start at the <strong>phenotype</strong> and ask: if we observe someone’s phenotype <span class="math inline">\(y\)</span>, what genetic value <span class="math inline">\(g\)</span> do we expect?</p>
 <p>Assume centered variables and the simple additive model:</p>
 <p><span class="math display">\[
-y_i = g_i + e_i,
-\qquad
-\text{Cov}(g_i,e_i)=0
-\qquad \Rightarrow \qquad
+y_i = g_i + e_i;
+\quad
+\small \text{Cov}(g_i,e_i)=0;
+\quad
+E[g_i] = E[e_i] = 0
+\quad
+\Rightarrow \quad
 \text{Cov}(g_i,y_i)
 = \text{Var}(g_i)
 = \sigma_g^2
 \]</span></p>
-<p>So the regression slope of <span class="math inline">\(g\)</span> on <span class="math inline">\(y\)</span> is</p>
+<p>Here, the regression slope of <span class="math inline">\(g\)</span> on <span class="math inline">\(y\)</span> is</p>
 <p><span class="math display">\[
 b_{g \mid y}
 = \frac{\text{Cov}(g,y)}{\text{Var}(y)}
 = \frac{\sigma_g^2}{\sigma_y^2}
 = h^2
 \]</span></p>
-<p>So the corresponding expected genetic value given phenotype is</p>
+<p>Meaning the corresponding expected genetic value given phenotype is</p>
 <p><span class="math display">\[
 E[g_i \mid y_i] = h^2 y_i
 \]</span></p>
-<div class="callout callout-caution callout-titled callout-style-default">
+<div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Caution: <span class="math inline">\(\text{Cov}(g,y)/\text{Var}(y)\)</span> is still the relevant slope even if <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>, but it no longer equals <span class="math inline">\(h^2\)</span>.</strong></p>
+<p><strong><span class="math inline">\(\text{Cov}(g,y)/\text{Var}(y)\)</span> is still the relevant slope even if <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>, but it no longer equals <span class="math inline">\(h^2\)</span>.</strong></p>
 </div>
 <div class="callout-content">
 <details>
@@ -1581,7 +1618,9 @@ r_g^{\mathrm{mates}}
 </section>
 <section id="direct-versus-indirect-assortative-mating" class="slide level2 smaller">
 <h2>Direct versus indirect assortative mating</h2>
-<p>It helps to distinguish the <strong>focal phenotype</strong> <span class="math inline">\(y\)</span> from the <strong>sorting factor</strong> <span class="math inline">\(s\)</span> that partners actually match on.</p>
+<p>The preceding (and following) derivations assume that partners match directly on the <strong>focal phenotype</strong> <span class="math inline">\(y\)</span>.</p>
+<p>In reality, they may match on a related signal or bundle of traits <span class="math inline">\(s\)</span> that correlates with <span class="math inline">\(y\)</span>. We call <span class="math inline">\(s\)</span> the <strong>sorting factor</strong>.</p>
+<div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
 <col style="width: 22%">
@@ -1597,44 +1636,45 @@ r_g^{\mathrm{mates}}
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Direct assortative mating</strong></td>
+<td><strong>Direct assortment</strong></td>
 <td>The focal phenotype itself: <span class="math inline">\(s = y\)</span></td>
-<td><span class="math inline">\(r_g^{\mathrm{mates}} = h^2 r_y^{\mathrm{mates}}\)</span></td>
+<td><span class="math inline">\(r_g^{\mathrm{mates}} = \mathrm{Corr}(g,y)^2 r_y^{\mathrm{mates}} = h^2 r_y^{\mathrm{mates}}\)</span></td>
 </tr>
 <tr class="even">
-<td><strong>Indirect assortative mating</strong></td>
+<td><strong>Indirect assortment</strong></td>
 <td>A related signal or bundle of traits: <span class="math inline">\(s \neq y\)</span>, but <span class="math inline">\(\mathrm{Corr}(s,y) \neq 0\)</span></td>
-<td>Depends on how strongly <span class="math inline">\(s\)</span> tracks the genetic causes of <span class="math inline">\(y\)</span></td>
+<td><span class="math inline">\(r_g^{\mathrm{mates}} = \mathrm{Corr}(g,s)^2 r_y^{\mathrm{mates}}\)</span></td>
 </tr>
 </tbody>
 </table>
-<div class="callout callout-important callout-titled callout-style-default">
+</div>
+<div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Important</strong></p>
+<p><strong>Key point</strong></p>
 </div>
 <div class="callout-content">
-<p>The key point is that the <strong>genotypic correlation between partners depends on how strongly the sorting factor <span class="math inline">\(s\)</span> correlates with the genetic causes of the focal phenotype</strong>. So indirect assortative mating can imply <strong>more or less</strong> genetic resemblance between partners than you would expect from the observed partner correlation in <span class="math inline">\(y\)</span> alone.</p>
-<p>In this lecture, we assume <strong>direct assortative mating</strong> where <span class="math inline">\(s=y\)</span>, but note that assortative mating is indirect for many social traits (e.g., educational attainment).</p>
+<p>The genotypic correlation between partners depends on <strong>how strongly the sorting factor <span class="math inline">\(s\)</span> correlates with the genetic causes of the focal phenotype</strong>. Indirect assortative mating can imply <strong>more or less</strong> genetic resemblance between partners than you would otherwise expect.</p>
+<p>In this lecture, we assume direct assortment where <span class="math inline">\(s=y\)</span>, but note that assortment is indirect for many social traits (e.g., educational attainment).</p>
 </div>
 </div>
 </div>
 </section>
-<section id="mate-covariance-comes-from-many-snp-pairs" class="slide level2 smaller">
-<h2>Mate covariance comes from many SNP pairs</h2>
-<p>Write the genetic value as a weighted sum of SNPs: <span class="math inline">\(g_i = \sum_{j=1}^{M} \beta_j x_{ij}\)</span>. Then partner genetic covariance expands as</p>
+<section id="genetic-similarity-spreads-across-many-snp-pairs" class="slide level2">
+<h2>Genetic similarity spreads across many SNP pairs</h2>
+<p>The genetic value is a weighted sum of SNPs: <span class="math inline">\(g_i = \sum_{j=1}^{M} \beta_j x_{ij}\)</span>. Then partner genetic covariance therefore expands as</p>
 <p><span class="math display">\[
 \text{Cov}(g_m,g_p)
 =
-\text{Cov}\!\left(\underbrace{\sum_{j=1}^{M} \beta_j x_{mj}}_{g_m}, \underbrace{\sum_{k=1}^{M} \beta_k x_{pk}}_{g_p}\right)
+\text{Cov}\!\left(\underbrace{\sum_{j=1}^{M} \beta_j x_{mj}}_{g_m}\ ,\  \underbrace{\sum_{k=1}^{M} \beta_k x_{pk}}_{g_p}\right)
 =
 \sum_{j=1}^{M}\sum_{k=1}^{M}
 \beta_j\beta_k \,\text{Cov}(x_{mj}, x_{pk})
 \]</span></p>
-<p>So mate-level genetic covariance is the weighted sum of many cross-mate SNP covariances. Phenotype matching can therefore induce many small SNP-level correlations across partners.</p>
+<p>Phenotype matching therefore induces many small SNP-level correlations across partners. Importantly, all these correlations are <strong>positive</strong> for trait-associated SNPs, because the matching process aligns the genetic values of the partners.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1644,34 +1684,61 @@ r_g^{\mathrm{mates}}
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>This is the bridge to long-range LD: once partner genomes become correlated, transmission and recombination can move that covariance into the next generation.</p>
+<p>To calculate <span class="math inline">\(\text{Cov}(x_{mj}, x_{pk})\)</span>, we can use the same regression logic as before where we regress the two SNPs on their phenotype and combine that with the phenotypic covariance: <span class="math inline">\(\frac{\text{Cov}(x_{mj}, y_m)}{\text{Var}(y_m)} \text{Cov}(y_m, y_p) \frac{\text{Cov}(y_p, x_{pk})}{\text{Var}(y_p)}\)</span>.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="the-first-generation-effect-is-trans-covariance" class="slide level2 smaller">
-<h2>The first-generation effect is trans covariance</h2>
-<p>To match Session 1, let <span class="math inline">\(\mathbf{t}_m = (t_{m1},\ldots,t_{mM})^\top\)</span> and <span class="math inline">\(\mathbf{t}_p = (t_{p1},\ldots,t_{pM})^\top\)</span> denote the transmitted maternal and paternal haplotype vectors.</p>
+<section id="why-is-this-a-problem" class="slide level2 huge center" data-background-color="#5b0f0f" color="white">
+<h2>Why is this a problem?</h2>
+<div class="callout callout-important callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>Once partner genomes become correlated, transmission and recombination <strong>embeds the correlation structure</strong> in the next following generation.</p>
+<p>Assortative mating across generations induces a signed correlation structure between trait-associated alleles (i.e., linkage disequilibrium), and that correlation structure can increase marginal SNP effects and family resemblance.</p>
+<p>Now we will unpack how that happens.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="what-happens-after-one-generation-of-am" class="slide level2">
+<h2>What happens after <em>one</em> generation of AM</h2>
+<p>First, we define the genetic values separately for the maternal and paternal haplotypes:</p>
 <p><span class="math display">\[
-\mathbf{t}_m + \mathbf{t}_p = \mathbf{x}_c,
+g_c^{(m)} = \sum_{j=1}^{M} \beta_j t_{mj},
 \qquad
-\boldsymbol{\beta}^\top \mathbf{t}_m = g_c^{(m)},
-\qquad
-\boldsymbol{\beta}^\top \mathbf{t}_p = g_c^{(p)},
+g_c^{(p)} = \sum_{j=1}^{M} \beta_j t_{pj},
 \qquad
 g_c = g_c^{(m)} + g_c^{(p)}
 \]</span></p>
-<p>If we focus on the <strong>new</strong> covariance induced by assortative mating and set aside ordinary local LD from Part 1, then after one generation the new covariance is across the two parental haplotypes:</p>
+<p>where <span class="math inline">\(t_{mj}\)</span> and <span class="math inline">\(t_{pj}\)</span> are the maternally and paternally transmitted alleles at SNP <span class="math inline">\(j\)</span>, respectively.</p>
+<p>After only one generation of assortment, the transmitted alleles are still independent <strong>within</strong> haplotypes (assuming no relevant local LD):</p>
+<p><span class="math display">\[
+\operatorname{Cov}(t_{m j}, t_{m k}) = 0,
+\qquad
+\operatorname{Cov}(t_{p j}, t_{p k}) = 0
+\qquad \text{for } j \neq k
+\]</span></p>
+<p>However, the transmitted alleles are correlated <strong>across</strong> haplotypes, because the parental genomes are correlated:</p>
 <p><span class="math display">\[
 \text{Cov}(g_c^{(m)}, g_c^{(p)}) &gt; 0
-\]</span></p>
-<p>but not yet within either transmitted haplotype, so</p>
-<p><span class="math display">\[
-\text{Var}(g_c^{(m)}) \approx \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj}),
 \qquad
-\text{Var}(g_c^{(p)}) \approx \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{pj})
+\Rightarrow
+\qquad
+\text{Cov}(t_{mj}, t_{pk}) &gt; 0 \small \text{ for trait-associated } j,k
 \]</span></p>
-<p>Therefore</p>
+</section>
+<section id="genetic-variance-after-one-generation-of-am" class="slide level2">
+<h2>Genetic variance after one generation of AM</h2>
+<p>Because the transmitted alleles are still independent within haplotypes, the variance of each haplotype contribution is just a sum of single-locus terms: <span class="math display">\[
+\text{Var}(g_c^{(m)}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj}),
+\qquad
+\text{Var}(g_c^{(p)}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{pj})
+\]</span></p>
+<p>However, because the transmitted alleles from either parent are correlated, the total variance of the genetic value includes a positive covariance term:</p>
 <p><span class="math display">\[
 \text{Var}(g_c)
 =
@@ -1679,138 +1746,63 @@ g_c = g_c^{(m)} + g_c^{(p)}
 + \text{Var}(g_c^{(p)})
 + 2\text{Cov}(g_c^{(m)}, g_c^{(p)})
 \]</span></p>
-<div class="columns">
-<div class="column" style="width:45%;">
-<div class="cell" data-fig-width="4.6" data-fig-height="3" data-layout-align="center">
-<div class="cell-output-display">
-<div>
-<p></p><figure class><p></p>
-<div>
-<svg width="442" height="288" viewbox="5.76 5.76 117.76 315.76" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(9.76 311.76)">
-<title>trans_cov</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-306 108,-306 108,4 -4,4"></polygon>
-<!-- gm -->
-<g id="node1" class="node">
-<title>gm</title>
-<ellipse fill="#3498db" stroke="#2980b9" stroke-width="2" cx="73.5" cy="-271.5" rx="30.5" ry="30.5"></ellipse>
-<text text-anchor="middle" x="73.5" y="-266.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">g_c^(m)</text>
-</g>
-<!-- gf -->
-<g id="node2" class="node">
-<title>gf</title>
-<ellipse fill="#e74c3c" stroke="#c0392b" stroke-width="2" cx="30.5" cy="-142.5" rx="30.5" ry="30.5"></ellipse>
-<text text-anchor="middle" x="30.5" y="-137.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">g_c^(p)</text>
-</g>
-<!-- gm&#45;&gt;gf -->
-<g id="edge3" class="edge">
-<title>gm-&gt;gf</title>
-<path fill="none" stroke="#27ae60" stroke-width="2" stroke-dasharray="5,2" d="M51.81,-250.04C43.34,-240.59 34.61,-228.67 30.18,-216 25.42,-202.33 24.99,-186.32 25.98,-172.82" />
-<text text-anchor="middle" x="59.66" y="-202.5" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="15.00"> trans cov</text>
-</g>
-<!-- go -->
-<g id="node3" class="node">
-<title>go</title>
-<ellipse fill="#7f8c8d" stroke="#707b7c" stroke-width="2" cx="73.5" cy="-30.5" rx="30.5" ry="30.5"></ellipse>
-<text text-anchor="middle" x="73.5" y="-25.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">g_c</text>
-</g>
-<!-- gm&#45;&gt;go -->
-<g id="edge1" class="edge">
-<title>gm-&gt;go</title>
-<path fill="none" stroke="black" stroke-width="2" d="M85.61,-243.3C88.84,-234.74 91.88,-225.13 93.5,-216 102.39,-165.98 92.74,-107.59 84.02,-70.11" />
-<polygon fill="black" stroke="black" stroke-width="2" points="87.35,-69.01 81.6,-60.12 80.55,-70.66 87.35,-69.01"></polygon>
-</g>
-<!-- gf&#45;&gt;go -->
-<g id="edge2" class="edge">
-<title>gf-&gt;go</title>
-<path fill="none" stroke="black" stroke-width="2" d="M41.35,-113.74C46.7,-100.06 53.22,-83.38 58.99,-68.62" />
-<polygon fill="black" stroke="black" stroke-width="2" points="62.27,-69.84 62.65,-59.25 55.75,-67.29 62.27,-69.84"></polygon>
-</g>
-</g>
-</svg>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:55%;">
-<p>This is <strong>trans</strong> covariance: covariance across the maternal and paternal transmitted genetic contributions induced by the haplotypes <span class="math inline">\(\mathbf{t}_m\)</span> and <span class="math inline">\(\mathbf{t}_p\)</span>, before recombination has had time to create new within-haplotype covariance.</p>
-</div></div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Terminology: trans vs cis covariance</strong></p>
 </div>
 <div class="callout-content">
-<p>Here, “trans” and “cis” are bookkeeping terms for <strong>where the covariance lives</strong>. They are not new biological mechanisms.</p>
+<p>Covariance <strong>across</strong> the maternal and paternal haplotypes is called <strong>trans</strong> covariance.</p>
+<p>Covariance <strong>within</strong> the maternal or paternal haplotype is called <strong>cis</strong> covariance.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="repeated-assortment-builds-cis-covariance-and-long-range-ld" class="slide level2 smaller">
-<h2>Repeated assortment builds cis covariance and long-range LD</h2>
-<p>Repeated assortment plus recombination gradually converts part of the accumulated trans covariance into <strong>cis</strong> covariance within transmitted haplotypes.</p>
-<p>That means the haplotype variance is no longer just a sum of single-locus terms. For example,</p>
+<section id="what-happens-after-several-generations-of-am" class="slide level2">
+<h2>What happens after <em>several</em> generations of AM</h2>
+<p>Repeated assortment plus recombination gradually converts the <strong>trans</strong> covariance into <strong>cis</strong> covariance. <span class="math display">\[
+\text{Cov}(t_{mj}, t_{mk}) \neq 0
+\qquad
+\text{for distant loci } j,k
+\]</span></p>
+<p>That means the haplotype variance is no longer just a sum of single-locus terms. Instead, the variance now includes off-diagonal covariance terms between trait-associated loci. For example,</p>
 <p><span class="math display">\[
 \text{Var}(g_c^{(m)})
 =
 \sum_{j=1}^{M}\sum_{k=1}^{M}
 \text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
 \]</span></p>
-<p>and similarly for <span class="math inline">\(g_c^{(p)}\)</span>. The off-diagonal terms are the new <strong>cis</strong> covariance terms (within haplotypes).</p>
-<p>Once those within-haplotype covariances become nonzero for distant loci, assortative mating has generated long-range LD:</p>
-<p><span class="math display">\[
-\text{Cov}(t_{mj}, t_{mk}) \neq 0
-\qquad
-\text{for distant loci } j,k
-\]</span></p>
+<p>and similarly for <span class="math inline">\(g_c^{(p)}\)</span>.</p>
+<div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 20%">
+<col style="width: 30%">
+<col style="width: 50%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Where the covariance lives</th>
-<th>When it appears</th>
+<th>When</th>
+<th>Where</th>
 <th>Interpretation</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Trans covariance</td>
-<td>First generation</td>
+<td>1 generation</td>
+<td>Across haplotypes (trans)</td>
 <td>Maternal and paternal contributions become aligned</td>
 </tr>
 <tr class="even">
-<td>Cis covariance</td>
-<td>Later generations</td>
+<td>≥2 generations</td>
+<td>Within haplotypes (cis)</td>
 <td>Aligned alleles begin to co-occur within haplotypes</td>
-</tr>
-<tr class="odd">
-<td>Long-range LD</td>
-<td>Repeated assortment</td>
-<td>Distant loci become correlated in the population</td>
 </tr>
 </tbody>
 </table>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>Assortative mating does not just create “more LD”. It changes the <strong>geography</strong> of LD by creating nonlocal correlation structure.</p>
-<p>In older quantitative-genetic language, these cross-locus associations within gametes or haplotypes are called <strong>gametic phase disequilibrium</strong>. When they arise between distant loci, we describe the same pattern as <strong>long-range LD</strong>.</p>
-</div>
-</div>
 </div>
 </section>
 <section id="why-marginal-snp-effects-now-tag-distant-variants" class="slide level2 smaller">
@@ -2025,18 +2017,14 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <td>Parents transmit both genes and family environments</td>
 </tr>
 <tr class="even">
-<td>Evocative / active rGE</td>
-<td>Genotypes shape responses from others or environmental choices</td>
+<td>Indirect genetic effects</td>
+<td>Related people’s genotypes shape the focal person’s environment</td>
 </tr>
 <tr class="odd">
-<td>Indirect genetic effects</td>
-<td>Other people’s genotypes shape the focal person’s environment</td>
-</tr>
-<tr class="even">
 <td>Stratification / population structure</td>
 <td>Allele frequencies and environments differ across groups</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Residual confounding</td>
 <td>Selection, ascertainment, measurement, or omitted structure</td>
 </tr>
@@ -2607,6 +2595,294 @@ y_{1f} - y_{2f}
 <h1>Part 5: Practical</h1>
 
 </section>
+<section id="practical-1-greml-and-m-gcta-with-simulated-trios" class="slide level2 scrollable">
+<h2>Practical 1: GREML and M-GCTA with simulated trios</h2>
+<p>Run <code>practical/sim_genomic.R</code> (or <code>practical/sim_genomic.jl</code>) end-to-end:</p>
+<ol type="1">
+<li>Simulate genotypes for <code>N</code> trios at <code>M</code> SNPs</li>
+<li>Simulate phenotypes with direct SNP effects and <code>h^2 = 0.5</code></li>
+<li>Estimate <code>h^2</code> by parent-offspring regression</li>
+<li>Estimate <code>h^2</code> by GREML</li>
+<li>Simulate an offspring phenotype with a maternal indirect genetic effect</li>
+<li>Refit the wrong direct-only GREML model</li>
+<li>Fit the maternal model (M-GCTA) and compare the variance components</li>
+</ol>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Parts 1-4 match the Session 1 practical. The new Session 2 material is the extension in parts 5-7.</p>
+<p>As before, computing the GRM is the slow step. Use that time to discuss what <code>G</code> contains and why GREML treats it as the covariance structure for genetic values.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="part-1-simulate-genotypes" class="slide level2 smaller">
+<h2>Part 1: Simulate genotypes</h2>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-1-1">R</a></li><li><a href="#tabset-1-2">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href></a><span class="fu">set.seed</span>(<span class="dv">080318</span>)</span>
+<span id="cb1-2"><a href></a><span class="fu">library</span>(gaston)</span>
+<span id="cb1-3"><a href></a></span>
+<span id="cb1-4"><a href></a>N <span class="ot">=</span> <span class="dv">3000</span>  <span class="co"># Trios</span></span>
+<span id="cb1-5"><a href></a>M <span class="ot">=</span> <span class="dv">12000</span> <span class="co"># SNPs</span></span>
+<span id="cb1-6"><a href></a>p <span class="ot">=</span> <span class="fl">0.5</span></span>
+<span id="cb1-7"><a href></a>Xf <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rbinom</span>(N <span class="sc">*</span> M, <span class="dv">2</span>, p), N, M)</span>
+<span id="cb1-8"><a href></a>Xm <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rbinom</span>(N <span class="sc">*</span> M, <span class="dv">2</span>, p), N, M)</span>
+<span id="cb1-9"><a href></a>Xo <span class="ot">=</span> <span class="fu">matrix</span>(</span>
+<span id="cb1-10"><a href></a>  <span class="fu">rbinom</span>(N <span class="sc">*</span> M, <span class="dv">1</span>, <span class="fu">as.vector</span>(Xf) <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">+</span></span>
+<span id="cb1-11"><a href></a>  <span class="fu">rbinom</span>(N <span class="sc">*</span> M, <span class="dv">1</span>, <span class="fu">as.vector</span>(Xm) <span class="sc">/</span> <span class="dv">2</span>), N, M)</span>
+<span id="cb1-12"><a href></a>X <span class="ot">=</span> <span class="fu">rbind</span>(Xf, Xm, Xo)</span>
+<span id="cb1-13"><a href></a></span>
+<span id="cb1-14"><a href></a>idf <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>N</span>
+<span id="cb1-15"><a href></a>idm <span class="ot">=</span> (N <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span> <span class="sc">*</span> N)</span>
+<span id="cb1-16"><a href></a>ido <span class="ot">=</span> (<span class="dv">2</span> <span class="sc">*</span> N <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">3</span> <span class="sc">*</span> N)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+<div id="tabset-1-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href></a><span class="im">using</span> <span class="bu">LinearAlgebra</span>, <span class="bu">Distributions</span>, <span class="bu">DataFrames</span>, <span class="bu">GLM</span></span>
+<span id="cb2-2"><a href></a><span class="im">using</span> <span class="bu">GREMLModels</span>, <span class="bu">Random</span></span>
+<span id="cb2-3"><a href></a><span class="bu">Random</span>.<span class="fu">seed!</span>(<span class="fl">080318</span>)</span>
+<span id="cb2-4"><a href></a></span>
+<span id="cb2-5"><a href></a>N, M <span class="op">=</span> <span class="fl">3000</span>, <span class="fl">12000</span></span>
+<span id="cb2-6"><a href></a>p <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb2-7"><a href></a>Xf <span class="op">=</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M) <span class="op">.+</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M)</span>
+<span id="cb2-8"><a href></a>Xm <span class="op">=</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M) <span class="op">.+</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M)</span>
+<span id="cb2-9"><a href></a>Xo <span class="op">=</span> <span class="fu">rand</span>.(<span class="fu">Bernoulli</span>.(Xf <span class="op">./</span> <span class="fl">2</span>)) <span class="op">.+</span> <span class="fu">rand</span>.(<span class="fu">Bernoulli</span>.(Xm <span class="op">./</span> <span class="fl">2</span>))</span>
+<span id="cb2-10"><a href></a>X <span class="op">=</span> <span class="fu">vcat</span>(Xf, Xm, Xo)</span>
+<span id="cb2-11"><a href></a></span>
+<span id="cb2-12"><a href></a>idf <span class="op">=</span> <span class="fl">1</span><span class="op">:</span>N</span>
+<span id="cb2-13"><a href></a>idm <span class="op">=</span> N<span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>N</span>
+<span id="cb2-14"><a href></a>ido <span class="op">=</span> <span class="fl">2</span>N<span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>N</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="part-2-simulate-phenotypes" class="slide level2 smaller">
+<h2>Part 2: Simulate phenotypes</h2>
+<div class="panel-tabset">
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-2-1">R</a></li><li><a href="#tabset-2-2">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-2-1">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a>p_est <span class="ot">=</span> <span class="fu">colMeans</span>(X) <span class="sc">/</span> <span class="dv">2</span></span>
+<span id="cb3-2"><a href></a>X_tilde <span class="ot">=</span> <span class="fu">scale</span>(X, <span class="dv">2</span> <span class="sc">*</span> p_est, <span class="fu">sqrt</span>(<span class="dv">2</span> <span class="sc">*</span> p_est <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p_est)))</span>
+<span id="cb3-3"><a href></a>s2_g <span class="ot">=</span> <span class="fl">0.5</span></span>
+<span id="cb3-4"><a href></a>s2_e <span class="ot">=</span> <span class="fl">0.5</span></span>
+<span id="cb3-5"><a href></a>b <span class="ot">=</span> <span class="fu">rnorm</span>(M, <span class="dv">0</span>, <span class="fu">sqrt</span>(s2_g <span class="sc">/</span> M))</span>
+<span id="cb3-6"><a href></a>g <span class="ot">=</span> <span class="fu">as.vector</span>(X_tilde <span class="sc">%*%</span> b)</span>
+<span id="cb3-7"><a href></a>e <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">3</span> <span class="sc">*</span> N, <span class="dv">0</span>, <span class="fu">sqrt</span>(s2_e))</span>
+<span id="cb3-8"><a href></a>y <span class="ot">=</span> g <span class="sc">+</span> e</span>
+<span id="cb3-9"><a href></a></span>
+<span id="cb3-10"><a href></a><span class="fu">cor</span>(<span class="fu">cbind</span>(g[idf], g[idm], g[ido]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>           [,1]       [,2]      [,3]
+[1,]  1.0000000 -0.0235797 0.4687054
+[2,] -0.0235797  1.0000000 0.4939061
+[3,]  0.4687054  0.4939061 1.0000000</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a><span class="fu">cov</span>(<span class="fu">cbind</span>(g[idf], g[idm], g[ido]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>            [,1]        [,2]      [,3]
+[1,]  0.48251619 -0.01137793 0.2255605
+[2,] -0.01137793  0.48254504 0.2376952
+[3,]  0.22556055  0.23769524 0.4799704</code></pre>
+</div>
+</div></div>
+</div>
+<div id="tabset-2-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href></a>p_est <span class="op">=</span> <span class="fu">vec</span>(<span class="fu">mean</span>(X, dims <span class="op">=</span> <span class="fl">1</span>)) <span class="op">./</span> <span class="fl">2</span></span>
+<span id="cb7-2"><a href></a>X_tilde <span class="op">=</span> (<span class="fu">Float64</span>.(X) <span class="op">.-</span> (<span class="fl">2</span> <span class="op">.*</span> p_est)<span class="ch">&#39;) ./ sqrt.(2 .* p_est .* (1 .- p_est))&#39;</span></span>
+<span id="cb7-3"><a href></a></span>
+<span id="cb7-4"><a href></a>sigma2_g, sigma2_e <span class="op">=</span> <span class="fl">0.5</span>, <span class="fl">0.5</span></span>
+<span id="cb7-5"><a href></a>b <span class="op">=</span> <span class="fu">randn</span>(M) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_g <span class="op">/</span> M)</span>
+<span id="cb7-6"><a href></a>g <span class="op">=</span> X_tilde <span class="op">*</span> b</span>
+<span id="cb7-7"><a href></a><span class="cn">e</span> <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">3</span>N) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_e)</span>
+<span id="cb7-8"><a href></a>y <span class="op">=</span> g <span class="op">+</span> <span class="cn">e</span></span>
+<span id="cb7-9"><a href></a></span>
+<span id="cb7-10"><a href></a><span class="fu">cor</span>(<span class="fu">hcat</span>(g[idf], g[idm], g[ido]))</span>
+<span id="cb7-11"><a href></a><span class="fu">cov</span>(<span class="fu">hcat</span>(g[idf], g[idm], g[ido]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="part-3-parent-offspring-regression" class="slide level2 smaller">
+<h2>Part 3: Parent-offspring regression</h2>
+<div class="panel-tabset">
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-3-1">R</a></li><li><a href="#tabset-3-2">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-3-1">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a>yp <span class="ot">=</span> <span class="fl">0.5</span> <span class="sc">*</span> (y[idf] <span class="sc">+</span> y[idm])</span>
+<span id="cb8-2"><a href></a>yo <span class="ot">=</span> y[ido]</span>
+<span id="cb8-3"><a href></a>m_po <span class="ot">=</span> <span class="fu">lm</span>(yo <span class="sc">~</span> yp)</span>
+<span id="cb8-4"><a href></a><span class="fu">summary</span>(m_po)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = yo ~ yp)
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2.9114 -0.6556  0.0087  0.6526  3.4581 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) -0.00442    0.01715  -0.258    0.797    
+yp           0.48668    0.02429  20.034   &lt;2e-16 ***
+---
+Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+
+Residual standard error: 0.9394 on 2998 degrees of freedom
+Multiple R-squared:  0.1181,    Adjusted R-squared:  0.1178 
+F-statistic: 401.4 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
+</div>
+</div></div>
+</div>
+<div id="tabset-3-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href></a>yp <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> (y[idf] <span class="op">+</span> y[idm])</span>
+<span id="cb10-2"><a href></a>yo <span class="op">=</span> y[ido]</span>
+<span id="cb10-3"><a href></a>df1 <span class="op">=</span> <span class="fu">DataFrame</span>(yo <span class="op">=</span> yo, yp <span class="op">=</span> yp)</span>
+<span id="cb10-4"><a href></a>mpo <span class="op">=</span> <span class="fu">lm</span>(<span class="pp">@formula</span>(yo <span class="op">~</span> yp), df1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="part-4-greml-direct-model" class="slide level2 smaller">
+<h2>Part 4: GREML direct model</h2>
+<div class="panel-tabset">
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-4-1">R</a></li><li><a href="#tabset-4-2">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-4-1">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href></a>G <span class="ot">=</span> <span class="fu">tcrossprod</span>(X_tilde) <span class="sc">/</span> M</span>
+<span id="cb11-2"><a href></a>Goo <span class="ot">=</span> G[ido, ido]</span>
+<span id="cb11-3"><a href></a>m_direct <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo, <span class="at">K =</span> Goo, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb11-4"><a href></a>m_direct<span class="sc">$</span>tau</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.4651665</code></pre>
+</div>
+</div></div>
+</div>
+<div id="tabset-4-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href></a>G <span class="op">=</span> (X_tilde <span class="op">*</span> X_tilde<span class="op">&#39;</span>) <span class="op">/</span> M</span>
+<span id="cb13-2"><a href></a>Goo <span class="op">=</span> G[ido, ido]</span>
+<span id="cb13-3"><a href></a>Id <span class="op">=</span> <span class="fu">Diagonal</span>(<span class="fu">ones</span>(N))</span>
+<span id="cb13-4"><a href></a>r <span class="op">=</span> [Goo, Id]</span>
+<span id="cb13-5"><a href></a>mdirect <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(yo <span class="op">~</span> <span class="fl">1</span>), df1, r; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="part-5-simulate-a-maternal-indirect-genetic-effect" class="slide level2 smaller">
+<h2>Part 5: Simulate a maternal indirect genetic effect</h2>
+<div class="panel-tabset">
+<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-5-1">R</a></li><li><a href="#tabset-5-2">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-5-1">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href></a>Sg <span class="ot">=</span> <span class="fu">rbind</span>(</span>
+<span id="cb14-2"><a href></a>  <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.2</span>),</span>
+<span id="cb14-3"><a href></a>  <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.5</span>)</span>
+<span id="cb14-4"><a href></a>)</span>
+<span id="cb14-5"><a href></a>s2_e <span class="ot">=</span> <span class="fl">0.1</span></span>
+<span id="cb14-6"><a href></a>B <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">2</span> <span class="sc">*</span> M), M, <span class="dv">2</span>) <span class="sc">%*%</span> <span class="fu">chol</span>(Sg <span class="sc">/</span> M)</span>
+<span id="cb14-7"><a href></a>g_m <span class="ot">=</span> X_tilde <span class="sc">%*%</span> B[, <span class="dv">1</span>]</span>
+<span id="cb14-8"><a href></a>g_d <span class="ot">=</span> X_tilde <span class="sc">%*%</span> B[, <span class="dv">2</span>]</span>
+<span id="cb14-9"><a href></a>e_2 <span class="ot">=</span> g_m[idm] <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="dv">0</span>, <span class="fu">sqrt</span>(s2_e))</span>
+<span id="cb14-10"><a href></a>yo_2 <span class="ot">=</span> g_d[ido] <span class="sc">+</span> e_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column">
+
+</div></div>
+</div>
+<div id="tabset-5-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href></a>Sigma_g <span class="op">=</span> [<span class="fl">0.2</span> <span class="fl">0.2</span>; <span class="fl">0.2</span> <span class="fl">0.5</span>]</span>
+<span id="cb15-2"><a href></a>sigma2_e <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb15-3"><a href></a>C <span class="op">=</span> <span class="fu">cholesky</span>(<span class="fu">Symmetric</span>(Sigma_g <span class="op">/</span> M)).U</span>
+<span id="cb15-4"><a href></a>B <span class="op">=</span> <span class="fu">randn</span>(M, <span class="fl">2</span>) <span class="op">*</span> C</span>
+<span id="cb15-5"><a href></a>g_m <span class="op">=</span> X_tilde <span class="op">*</span> B[<span class="op">:</span>, <span class="fl">1</span>]</span>
+<span id="cb15-6"><a href></a>g_d <span class="op">=</span> X_tilde <span class="op">*</span> B[<span class="op">:</span>, <span class="fl">2</span>]</span>
+<span id="cb15-7"><a href></a>e2 <span class="op">=</span> g_m[idm] <span class="op">+</span> <span class="fu">randn</span>(N) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_e)</span>
+<span id="cb15-8"><a href></a>yo2 <span class="op">=</span> g_d[ido] <span class="op">+</span> e2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="part-6-fit-the-wrong-direct-only-model" class="slide level2 smaller">
+<h2>Part 6: Fit the wrong direct-only model</h2>
+<div class="panel-tabset">
+<ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-6-1">R</a></li><li><a href="#tabset-6-2">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-6-1">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href></a>m_direct_2 <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo_2, <span class="at">K =</span> Goo, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb16-2"><a href></a>m_direct_2<span class="sc">$</span>tau</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.7574815</code></pre>
+</div>
+</div></div>
+</div>
+<div id="tabset-6-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href></a>df2 <span class="op">=</span> <span class="fu">DataFrame</span>(y <span class="op">=</span> yo2)</span>
+<span id="cb18-2"><a href></a>mdirect2 <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(y <span class="op">~</span> <span class="fl">1</span>), df2, r; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="part-7-fit-the-maternal-model-m-gcta" class="slide level2 smaller">
+<h2>Part 7: Fit the maternal model (M-GCTA)</h2>
+<div class="panel-tabset">
+<ul id="tabset-7" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-7-1">R</a></li><li><a href="#tabset-7-2">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-7-1">
+<div class="cell columns column-output-location">
+<div class="column">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href></a>Gmm <span class="ot">=</span> G[idm, idm]</span>
+<span id="cb19-2"><a href></a>Dom <span class="ot">=</span> G[ido, idm] <span class="sc">+</span> G[idm, ido]</span>
+<span id="cb19-3"><a href></a>m_maternal <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo_2, <span class="at">K =</span> <span class="fu">list</span>(Gmm, Dom, Goo), <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb19-4"><a href></a>m_maternal<span class="sc">$</span>tau</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div><div class="column">
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 0.2342414 0.1057606 0.5821293</code></pre>
+</div>
+</div></div>
+</div>
+<div id="tabset-7-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href></a>Gmm <span class="op">=</span> G[idm, idm]</span>
+<span id="cb21-2"><a href></a>Dom <span class="op">=</span> G[ido, idm] <span class="op">+</span> G[idm, ido]</span>
+<span id="cb21-3"><a href></a>r2 <span class="op">=</span> [Gmm, Dom, Goo, Id]</span>
+<span id="cb21-4"><a href></a>mmaternal <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(y <span class="op">~</span> <span class="fl">1</span>), df2, r2; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</section>
+<section id="interpretation-checkpoint" class="slide level2 scrollable">
+<h2>Interpretation checkpoint</h2>
+<p>After running the simulation, check that you can answer these questions:</p>
+<ol type="1">
+<li>Does parent-offspring regression recover something close to the simulated <code>h^2 = 0.5</code> in the direct-only setting?</li>
+<li>In the direct-only GREML model, what do the estimated variance components look like before and after adding the maternal indirect effect?</li>
+<li>Once you fit the maternal model, do the variance components move closer to the data-generating values?</li>
+<li>Why does the direct-only model misattribute part of the maternal effect?</li>
+</ol>
+</section>
 <section id="practical-2-ld-score-regression-with-real-gwas-data" class="slide level2 scrollable">
 <h2>Practical 2: LD score regression with real GWAS data</h2>
 <p>In this practical, we will use <strong>LD score regression (LDSC)</strong> to estimate:</p>
@@ -2652,9 +2928,9 @@ y_{1f} - y_{2f}
 <li><code>practical/ldsc/data/ref/weights_hm3_no_hla/</code></li>
 </ul>
 <p>Run the course workflow in this order from the repository root. The practical is intended to work in <strong>Git Bash on Windows</strong>, with the scripts handling the local Python and LDSC setup.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href></a><span class="ex">Rscript</span> practical/ldsc/prepare_ldsc_data.R <span class="at">--force</span></span>
-<span id="cb1-2"><a href></a><span class="fu">bash</span> practical/ldsc/install_ldsc.sh</span>
-<span id="cb1-3"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href></a><span class="ex">Rscript</span> practical/ldsc/prepare_ldsc_data.R <span class="at">--force</span></span>
+<span id="cb22-2"><a href></a><span class="fu">bash</span> practical/ldsc/install_ldsc.sh</span>
+<span id="cb22-3"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2723,7 +2999,7 @@ y_{1f} - y_{2f}
 </ul>
 <p>For these traits, we expect a <strong>negative</strong> genetic correlation.</p>
 </section>
-<section id="interpretation-checkpoint" class="slide level2 scrollable">
+<section id="interpretation-checkpoint-1" class="slide level2 scrollable">
 <h2>Interpretation checkpoint</h2>
 <p>After the run, check that you can answer these questions:</p>
 <ol type="1">
@@ -3924,6 +4200,82 @@ window.QuartoSupport = function () {
         ]
       });
     </script>
+    
+
+    <script>
+
+      // htmlwidgets need to know to resize themselves when slides are shown/hidden.
+
+      // Fire the "slideenter" event (handled by htmlwidgets.js) when the current
+
+      // slide changes (different for each slide format).
+
+      (function () {
+
+        // dispatch for htmlwidgets
+
+        function fireSlideEnter() {
+
+          const event = window.document.createEvent("Event");
+
+          event.initEvent("slideenter", true, true);
+
+          window.document.dispatchEvent(event);
+
+        }
+
+    
+
+        function fireSlideChanged(previousSlide, currentSlide) {
+
+          fireSlideEnter();
+
+    
+
+          // dispatch for shiny
+
+          if (window.jQuery) {
+
+            if (previousSlide) {
+
+              window.jQuery(previousSlide).trigger("hidden");
+
+            }
+
+            if (currentSlide) {
+
+              window.jQuery(currentSlide).trigger("shown");
+
+            }
+
+          }
+
+        }
+
+    
+
+        // hookup for slidy
+
+        if (window.w3c_slidy) {
+
+          window.w3c_slidy.add_observer(function (slide_num) {
+
+            // slide_num starts at position 1
+
+            fireSlideChanged(null, w3c_slidy.slides[slide_num - 1]);
+
+          });
+
+        }
+
+    
+
+      })();
+
+    </script>
+
+    
+
     <script id="quarto-html-after-body" type="application/javascript">
       window.document.addEventListener("DOMContentLoaded", function (event) {
         const tabsets =  window.document.querySelectorAll(".panel-tabset-tabby")
