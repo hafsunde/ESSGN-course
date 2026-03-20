@@ -9,6 +9,8 @@ Random.seed!(080318)
 
 t0 = time()
 
+# Session 1 practical recap
+# ----------------------------------------
 # 1. Simulate genotypes
 # ----------------------------------------
 N, M = 3000, 12000  # trios and SNPs
@@ -65,6 +67,8 @@ Id = Diagonal(ones(N))
 r = [Goo, Id]
 mdirect = fit(GREMLModel, @formula(yo ~ 1), df1, r; verbose = false)
 
+# Session 2 extension: maternal IGE / M-GCTA
+# ----------------------------------------
 # 5. Simulate offspring phenotype with maternal IGE component
 # ----------------------------------------
 Σg = [0.2 0.2; 0.2 0.5]

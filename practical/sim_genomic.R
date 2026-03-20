@@ -6,6 +6,8 @@ library(gaston)
 
 tme <- Sys.time()
 
+# Session 1 practical recap
+# ----------------------------------------
 # 1. Sim genotypes
 # ----------------------------------------
 N <- 3000 # Trios
@@ -58,6 +60,8 @@ Goo <- G[ido, ido]
 mdirect <- lmm.aireml(yo, K = Goo, verbose = FALSE)
 mdirect$tau
 
+# Session 2 extension: maternal IGE / M-GCTA
+# ----------------------------------------
 # 5. Simulate with a maternal ige
 # ----------------------------------------
 Sg <- rbind(

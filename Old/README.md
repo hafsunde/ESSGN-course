@@ -61,6 +61,7 @@ Copy-Item media/videos/variance_sum/720p30/VarianceOfSumScene.mp4 assets/varianc
 ```powershell
 quarto render slides.qmd --to revealjs
 quarto render behavioral_genetics.qmd --to revealjs
+quarto render session_2.qmd --to revealjs
 ```
 
 Output is typically a `slides.html` file in this folder.
