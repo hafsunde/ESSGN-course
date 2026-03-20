@@ -247,11 +247,11 @@ Theory, statistics, methodology often derive from the same **theoretical model**
 
 :::: {.columns}
 ::: {.column width="50%"}
-![](session_1_files/vol1.jpg){width=55% fig-align="center"}
+![](assets/session_1/vol1.jpg){width=55% fig-align="center"}
 :::
 
 ::: {.column width="50%"}
-![](session_1_files/vol2.jpg){width=55% fig-align="center"}
+![](assets/session_1/vol2.jpg){width=55% fig-align="center"}
 :::
 ::::
 
@@ -289,7 +289,7 @@ $$
 
 ## The Central Limit Theorem does the work
 
-![](session_1_files/clt_convergence.png){fig-align="center" width=95%}
+![](assets/session_1/clt_convergence.png){fig-align="center" width=95%}
 
 ## From one trait to two
 
@@ -377,44 +377,44 @@ The model makes **clear predictions** about how much relatives should resemble e
 
 ## Genetic transmission 101
 
-At each locus, the offspring gets **one allele** from the focal parent. Let $t_p \in \{0,1\}$ be the transmitted haplotype from that parent.
+At SNP $j$, the offspring gets **one allele** from the focal parent. Let $t_{jp} \in \{0,1\}$ be the transmitted allele from that parent.
 
-The parental genotype $x_p \in \{0,1,2\}$ determines the distribution of $t_p$:
+The parental genotype $x_{jp} \in \{0,1,2\}$ determines the distribution of $t_{jp}$:
 
-| Parental genotype | Transmitted haplotype |
+| Parental genotype | Transmitted allele |
 |--|-----|
-| $x_p = 0$ | $t_p = 0$ |
-| $x_p = 1$ |  $t_p \sim \mathrm{Bernoulli}(\frac{1}{2})$ |
-| $x_p = 2$ | $t_p = 1$ |
+| $x_{jp} = 0$ | $t_{jp} = 0$ |
+| $x_{jp} = 1$ |  $t_{jp} \sim \mathrm{Bernoulli}(\frac{1}{2})$ |
+| $x_{jp} = 2$ | $t_{jp} = 1$ |
 
-So the **expected** transmitted haplotype from the parent is:
+So the **expected** transmitted allele from the parent is:
 
 $$
-E[t_p \mid x_p] = \frac{1}{2}x_p
+E[t_{jp} \mid x_{jp}] = \frac{1}{2}x_{jp}
 $$
 
 ## How do relatives become correlated?
 
-The offspring genotype is the sum of the transmitted haplotypes from the father and the mother:
+The offspring genotype at SNP $j$ is the sum of the transmitted alleles from the father and the mother:
 
 $$
-x_c =
-\underbrace{\left(\frac{1}{2}x_p + \epsilon_p\right)}_{\text{haplotype $t_p$}}
+x_{jc} =
+\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\text{paternal allele $t_{jp}$}}
 +
-\underbrace{\left(\frac{1}{2}x_m + \epsilon_m\right)}_{\text{haplotype $t_m$}}
+\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\text{maternal allele $t_{jm}$}}
 $$
 
-Here, $\epsilon_p$ and $\epsilon_m$ are the random segregation deviations from the parental genotypes. Under random mating, $\text{Cov}(x_p, x_m)=0$, so:
+Here, $\epsilon_{jp}$ and $\epsilon_{jm}$ are the random segregation deviations from the parental genotypes at SNP $j$. Under random mating, $\text{Cov}(x_{jp}, x_{jm})=0$, so:
 
 $$
-	\text{Cov}(x_c, x_p) = \frac{1}{2}\text{Var}(x_p)
+	\text{Cov}(x_{jc}, x_{jp}) = \frac{1}{2}\text{Var}(x_{jp})
 $$
 
 $$
-\text{Var}(x_c)
-= \frac{1}{4}\text{Var}(x_p) + \frac{1}{4}\text{Var}(x_m)
-+ \underbrace{\text{Var}(\epsilon_p + \epsilon_m)}_{\frac{1}{2}\text{Var}(x)}
-= \text{Var}(x)
+\text{Var}(x_{jc})
+= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm})
++ \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\frac{1}{2}\text{Var}(x_j)}
+= \text{Var}(x_j)
 $$
 
 
