@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ESSGN Course Slides</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f7fb;
+      --panel: #ffffff;
+      --text: #1f2937;
+      --muted: #5b6473;
+      --accent: #1d4ed8;
+      --border: #d9dfeb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Georgia, "Times New Roman", serif;
+      background:
+        radial-gradient(circle at top left, #e7eefc 0, transparent 32%),
+        linear-gradient(180deg, #f9fafc 0%, var(--bg) 100%);
+      color: var(--text);
+    }
+
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 56px 24px 80px;
+    }
+
+    h1 {
+      margin: 0 0 12px;
+      font-size: clamp(2.2rem, 4vw, 3.6rem);
+      line-height: 1.05;
+    }
+
+    p.lead {
+      max-width: 60ch;
+      margin: 0 0 32px;
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    }
+
+    .card {
+      display: block;
+      padding: 24px;
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      background: var(--panel);
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 14px 40px rgba(31, 41, 55, 0.08);
+      transition: transform 140ms ease, box-shadow 140ms ease, border-color 140ms ease;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      transform: translateY(-3px);
+      border-color: #b9c8ee;
+      box-shadow: 0 18px 50px rgba(29, 78, 216, 0.12);
+      outline: none;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent);
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: 1.45rem;
+      line-height: 1.2;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    footer {
+      margin-top: 36px;
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 0.95em;
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>ESSGN Course Slides</h1>
+    <p class="lead">
+      Open the workshop slide decks below. These pages are published from the repository's
+      <code>docs/</code> folder so they can be viewed directly in GitHub Pages.
+    </p>
+
+    <section class="grid" aria-label="Workshop sessions">
+      <a class="card" href="session_1.html">
+        <p class="eyebrow">Session 1</p>
+        <h2>Heritability and Genetic Correlations</h2>
+        <p>Lecture slides for statistical tools, quantitative genetics, and variance estimation.</p>
+      </a>
+
+      <a class="card" href="session_2.html">
+        <p class="eyebrow">Session 2</p>
+        <h2>Gene-Environment Correlations and Assortative Mating</h2>
+        <p>Lecture slides for LD, assortative mating, family designs, and the LDSC practical.</p>
+      </a>
+    </section>
+
+    <footer>
+      After updating a slide deck locally, run <code>.\sync_github_pages.ps1</code> to refresh the published files.
+    </footer>
+  </main>
+</body>
+</html>

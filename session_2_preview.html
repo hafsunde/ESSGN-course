@@ -1421,7 +1421,7 @@ E[z_{1j}z_{2j}]
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>This is the template for the rest of the lecture: <strong>marginal associations are projections through correlation structure</strong>.</p>
+<p>This is the template for the rest of the lecture: <strong>marginal regression coefficients are shaped by correlation structure</strong>.</p>
 </div>
 </div>
 </div>
@@ -1433,11 +1433,8 @@ E[z_{1j}z_{2j}]
 </section>
 <section id="what-is-assortative-mating" class="slide level2">
 <h2>What is assortative mating?</h2>
-<p>Partner similarity can arise for different reasons. <strong>Assortative mating (AM)</strong> means that the <strong>matching process itself</strong> induces covariance between partners on some relevant characteristic <span class="math inline">\(S\)</span>, rather than that covariance reflecting a shared cause.</p>
-<p><span class="math display">\[
-\text{Cov}(S_m, S_f) &gt; 0
-\]</span></p>
-<p>The defining statistical feature of AM is induced <strong>partner covariance</strong> from matching itself.</p>
+<p>Partner similarity, <span class="math inline">\(\text{Cov}(y_m, y_p) &gt; 0\)</span>, can arise for different reasons.</p>
+<p><strong>Assortative mating (AM)</strong> means that the <strong>matching process itself</strong> induces covariance between partners, rather than that covariance reflecting a shared cause.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1453,14 +1450,23 @@ E[z_{1j}z_{2j}]
 <li><strong>Convergence</strong>: partners become more similar after pairing</li>
 <li><strong>Stratification</strong>: partners are similar because both are shaped by the same background factors</li>
 </ul>
+<p>Here, we assume that partner covariance is due to assortative mating.</p>
 </div>
 </div>
 </div>
+<p>In this section, we will go through <strong>the genetic consequences of assortative mating</strong>.</p>
 </section>
-<section id="assortment-makes-correlation-flow-backwards" class="slide level2">
-<h2>Assortment makes correlation flow “backwards”</h2>
-<p>Under ordinary family resemblance, covariance starts in the <strong>causes</strong> and is diluted as it shows up in the phenotype. That is, normally correlation flows from <strong><span class="math inline">\(g\)</span> to <span class="math inline">\(y\)</span></strong>.</p>
-<p>Under assortative mating, the matching starts on the <strong>phenotype</strong>. If partners are similar in <span class="math inline">\(y\)</span>, then part of that covariance gets projected back into the causes. That is, the correlation flows from <strong><span class="math inline">\(y\)</span> to <span class="math inline">\(g\)</span></strong></p>
+<section id="matching-on-phenotype-induces-genetic-similarity" class="slide level2">
+<h2>Matching on phenotype induces genetic similarity</h2>
+<p><strong>Ordinary family resemblance</strong>: Covariance starts in the <strong>causes</strong> and is diluted as it shows up in the phenotype</p>
+<ul>
+<li>Correlation flows from <span class="math inline">\(g\)</span> to <span class="math inline">\(y\)</span>.</li>
+</ul>
+<p><strong>Assortative mating</strong>: Covariance starts on the <strong>phenotype</strong>. If maternal and paternal partners are similar in <span class="math inline">\(y\)</span>, then part of that covariance is carried back into the genetic values that helped generate <span class="math inline">\(y\)</span>.</p>
+<ul>
+<li>Correlation flows from <span class="math inline">\(y\)</span> to <span class="math inline">\(g\)</span>.</li>
+</ul>
+<p>Assortative mating therefore induces genetic similarity between partners.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1475,10 +1481,10 @@ E[z_{1j}z_{2j}]
 </div>
 </div>
 </section>
-<section id="why-regressing-g-on-y-gives-h2" class="slide level2 smaller">
-<h2>Why regressing <span class="math inline">\(g\)</span> on <span class="math inline">\(y\)</span> gives <span class="math inline">\(h^2\)</span></h2>
-<p>To quantify the feedback, we temporarily place ourselves at the <strong>outcome</strong> and ask: if we observe someone’s phenotype <span class="math inline">\(y\)</span>, what genetic value <span class="math inline">\(g\)</span> would we predict?</p>
-<p>We start with the simple additive model:</p>
+<section id="why-regress-genetic-value-on-phenotype" class="slide level2">
+<h2>Why regress genetic value on phenotype?</h2>
+<p>To quantify the induced genetic similarity, we start at the <strong>phenotype</strong> and ask: if we observe someone’s phenotype <span class="math inline">\(y\)</span>, what genetic value <span class="math inline">\(g\)</span> do we expect?</p>
+<p>Assume centered variables and the simple additive model:</p>
 <p><span class="math display">\[
 y_i = g_i + e_i,
 \qquad
@@ -1488,51 +1494,75 @@ y_i = g_i + e_i,
 = \text{Var}(g_i)
 = \sigma_g^2
 \]</span></p>
-<p>So the linear projection of <span class="math inline">\(g\)</span> on <span class="math inline">\(y\)</span> has slope</p>
+<p>So the regression slope of <span class="math inline">\(g\)</span> on <span class="math inline">\(y\)</span> is</p>
 <p><span class="math display">\[
 b_{g \mid y}
 = \frac{\text{Cov}(g,y)}{\text{Var}(y)}
 = \frac{\sigma_g^2}{\sigma_y^2}
 = h^2
 \]</span></p>
-<div class="callout callout-note callout-titled callout-style-default">
+<p>So the corresponding expected genetic value given phenotype is</p>
+<p><span class="math display">\[
+E[g_i \mid y_i] = h^2 y_i
+\]</span></p>
+<div class="callout callout-caution callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Caution: this equals <span class="math inline">\(h^2\)</span> only when <span class="math inline">\(\text{Cov}(g,e)=0\)</span></strong></p>
 </div>
 <div class="callout-content">
-<p>If <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>, this projection coefficient is still <span class="math inline">\(\text{Cov}(g,y)/\text{Var}(y)\)</span>, but it is no longer exactly narrow-sense heritability. We set that complication aside here.</p>
+<p>If <span class="math inline">\(\text{Cov}(g,e)\neq 0\)</span>, the regression coefficient <span class="math inline">\(\text{Cov}(g,y)/\text{Var}(y)\)</span> still exists, but that coefficient is no longer exactly narrow-sense heritability.</p>
+<details>
+<summary>
+Show the algebra
+</summary>
+<p>If <span class="math inline">\(y=g+e\)</span>, then</p>
+<p><span class="math display">\[
+\text{Cov}(g,y)
+= \text{Cov}(g, g+e)
+= \text{Var}(g) + \text{Cov}(g,e)
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+\text{Var}(y)
+= \text{Var}(g+e)
+= \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)
+\]</span></p>
+<p>Hence</p>
+<p><span class="math display">\[
+b_{g \mid y}
+= \frac{\text{Cov}(g,y)}{\text{Var}(y)}
+= \frac{\sigma_g^2 + \sigma_{ge}}{\sigma_g^2 + \sigma_e^2 + 2\sigma_{ge}}
+= h^2 + \frac{\sigma_{ge}}{\sigma_y^2}
+\]</span></p>
+<p>where <span class="math inline">\(\sigma_{ge} = \text{Cov}(g,e)\)</span> and <span class="math inline">\(h^2 = \sigma_g^2/\sigma_y^2\)</span>.</p>
+<p>So the regression coefficient equals <span class="math inline">\(h^2\)</span> only when <span class="math inline">\(\text{Cov}(g,e)=0\)</span>. If <span class="math inline">\(\text{Cov}(g,e) &gt; 0\)</span>, it is larger than <span class="math inline">\(h^2\)</span>; if <span class="math inline">\(\text{Cov}(g,e) &lt; 0\)</span>, it is smaller.</p>
+</details>
 </div>
 </div>
 </div>
 </section>
-<section id="matching-on-y-induces-covariance-in-g" class="slide level2 smaller">
-<h2>Matching on <span class="math inline">\(y\)</span> induces covariance in <span class="math inline">\(g\)</span></h2>
-<p>If partners match on phenotype, then project back into <span class="math inline">\(g\)</span> on <strong>both</strong> sides:</p>
+<section id="quantifying-genetic-similarity" class="slide level2">
+<h2>Quantifying genetic similarity</h2>
+<p>Applying <span class="math inline">\(E[g \mid y] = h^2 y\)</span> to both mates, the induced covariance component is:</p>
 <p><span class="math display">\[
-\hat{g}_m = h^2 y_m,
-\qquad
-\hat{g}_f = h^2 y_f
-\]</span></p>
-<p>Therefore</p>
-<p><span class="math display">\[
-\text{Cov}(g_m,g_f)
+\text{Cov}(g_m,g_p)
 =
-h^4 \text{Cov}(y_m,y_f)
+\text{Cov}\!\left(E[g_m \mid y_m], E[g_p \mid y_p]\right)
+=
+h^4 \text{Cov}(y_m,y_p)
 \]</span></p>
-<p>Divide both sides by <span class="math inline">\(\sigma_g^2\)</span> to convert the left-hand side to a genetic correlation:</p>
+<p>So the induced genotypic correlation between mates is</p>
 <p><span class="math display">\[
 r_g^{\mathrm{mates}}
 =
-\frac{\text{Cov}(g_m,g_f)}{\sigma_g^2}
-\approx
-\frac{(\sigma_g^2/\sigma_y^2)^2\text{Cov}(y_m,y_f)}{\sigma_g^2}
+\frac{\text{Cov}(g_m,g_p)}{\sigma_g^2}
 =
 \frac{\sigma_g^2}{\sigma_y^2}
-\frac{\text{Cov}(y_m,y_f)}{\sigma_y^2}
+\frac{\text{Cov}(y_m,y_p)}{\sigma_y^2}
 = h^2 r_y^{\mathrm{mates}}
 \]</span></p>
 <div class="callout callout-note callout-titled callout-style-default">
@@ -1544,71 +1574,67 @@ r_g^{\mathrm{mates}}
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>The <span class="math inline">\(h^4\)</span> appears on the covariance scale because the phenotype-to-genotype projection (<span class="math inline">\(\sigma_g^2/\sigma_y^2 = h^2\)</span>) happens <strong>once for each mate</strong>. When we convert covariance to correlation, one power of <span class="math inline">\(\sigma_g^2\)</span> is divided back out, leaving the simpler result <span class="math inline">\(r_g^{\mathrm{mates}} \approx h^2 r_y^{\mathrm{mates}}\)</span>.</p>
+<p>The <span class="math inline">\(h^4\)</span> appears on the covariance scale because the phenotype-to-genotype regression slope (<span class="math inline">\(\sigma_g^2/\sigma_y^2 = h^2\)</span>) is applied <strong>once for each mate</strong>. When we convert covariance to correlation, one power of <span class="math inline">\(\sigma_g^2\)</span> is divided back out, leaving the simpler result <span class="math inline">\(r_g^{\mathrm{mates}} = h^2 r_y^{\mathrm{mates}}\)</span>.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="direct-versus-indirect-assortment" class="slide level2 smaller">
-<h2>Direct versus indirect assortment</h2>
-<p>Following Sunde et al. (2025), it helps to distinguish the <strong>focal phenotype</strong> <span class="math inline">\(y\)</span> from the <strong>sorting factor</strong> <span class="math inline">\(S\)</span> that partners actually match on.</p>
+<section id="direct-versus-indirect-assortative-mating" class="slide level2 smaller">
+<h2>Direct versus indirect assortative mating</h2>
+<p>It helps to distinguish the <strong>focal phenotype</strong> <span class="math inline">\(y\)</span> from the <strong>sorting factor</strong> <span class="math inline">\(s\)</span> that partners actually match on.</p>
 <table class="caption-top">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 22%">
+<col style="width: 44%">
 <col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Case</th>
-<th>What partners sort on</th>
+<th>What partners match on</th>
 <th>Induced genotypic correlation between partners</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Direct assortment</strong></td>
-<td>The focal phenotype itself: <span class="math inline">\(S = y\)</span></td>
-<td><span class="math inline">\(r_g^{\mathrm{mates}} \approx \mathrm{Corr}(g,y)^2 r_y^{\mathrm{mates}} = h^2 r_y^{\mathrm{mates}}\)</span></td>
+<td><strong>Direct assortative mating</strong></td>
+<td>The focal phenotype itself: <span class="math inline">\(s = y\)</span></td>
+<td><span class="math inline">\(r_g^{\mathrm{mates}} = h^2 r_y^{\mathrm{mates}}\)</span></td>
 </tr>
 <tr class="even">
-<td><strong>Indirect assortment</strong></td>
-<td>A related signal or bundle of traits: <span class="math inline">\(S \neq y\)</span>, but <span class="math inline">\(\mathrm{Corr}(S,y) \neq 0\)</span></td>
-<td><span class="math inline">\(r_g^{\mathrm{mates}} \approx \mathrm{Corr}(g,S)^2 r_S^{\mathrm{mates}}\)</span></td>
+<td><strong>Indirect assortative mating</strong></td>
+<td>A related signal or bundle of traits: <span class="math inline">\(s \neq y\)</span>, but <span class="math inline">\(\mathrm{Corr}(s,y) \neq 0\)</span></td>
+<td>Depends on how strongly <span class="math inline">\(s\)</span> tracks the genetic causes of <span class="math inline">\(y\)</span></td>
 </tr>
 </tbody>
 </table>
-<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>The key point is that partner <strong>genotypic</strong> similarity depends on how strongly the sorting factor <span class="math inline">\(S\)</span> captures the genetic causes of the focal phenotype. So indirect assortment can imply <strong>more or less</strong> genetic resemblance between partners than you would expect from the observed partner correlation in <span class="math inline">\(y\)</span> alone.</p>
-<p>In this lecture, we will assume <strong>direct-assortment</strong> where <span class="math inline">\(S=y\)</span>, but note that assortative mating is indirect for many social traits (e.g., educational attainment).</p>
+<p>The key point is that the <strong>genotypic correlation between partners depends on how strongly the sorting factor <span class="math inline">\(s\)</span> correlates with the genetic causes of the focal phenotype</strong>. So indirect assortative mating can imply <strong>more or less</strong> genetic resemblance between partners than you would expect from the observed partner correlation in <span class="math inline">\(y\)</span> alone.</p>
+<p>In this lecture, we assume <strong>direct assortative mating</strong> where <span class="math inline">\(s=y\)</span>, but note that assortative mating is indirect for many social traits (e.g., educational attainment).</p>
 </div>
 </div>
 </div>
 </section>
-<section id="mate-level-genetic-covariance-is-a-sum-of-snp-level-covariance" class="slide level2 smaller">
-<h2>Mate-level genetic covariance is a sum of SNP-level covariance</h2>
-<p>Write the genetic value as a weighted sum of SNPs:</p>
+<section id="mate-covariance-comes-from-many-snp-pairs" class="slide level2 smaller">
+<h2>Mate covariance comes from many SNP pairs</h2>
+<p>Write the genetic value as a weighted sum of SNPs: <span class="math inline">\(g_i = \sum_{j=1}^{M} \beta_j x_{ij}\)</span>. Then partner genetic covariance expands as</p>
 <p><span class="math display">\[
-g_i = \sum_{j=1}^{M} \beta_j x_{ij}
-\]</span></p>
-<p>Then partner genetic covariance expands as</p>
-<p><span class="math display">\[
-\text{Cov}(g_m,g_f)
+\text{Cov}(g_m,g_p)
 =
-\text{Cov}\!\left(\underbrace{\sum_{j=1}^{M} \beta_j x_{mj}}_{g_m}, \underbrace{\sum_{k=1}^{M} \beta_k x_{fk}}_{g_f}\right)
+\text{Cov}\!\left(\underbrace{\sum_{j=1}^{M} \beta_j x_{mj}}_{g_m}, \underbrace{\sum_{k=1}^{M} \beta_k x_{pk}}_{g_p}\right)
 =
 \sum_{j=1}^{M}\sum_{k=1}^{M}
-\,\text{Cov}(\beta_j x_{mj}, \beta_k x_{fk})
+\beta_j\beta_k \,\text{Cov}(x_{mj}, x_{pk})
 \]</span></p>
-<p>So mate-level genetic covariance is the weighted sum of many cross-mate SNP covariances. Phenotype assortment can therefore induce many small SNP-level correlations across partners.</p>
+<p>So mate-level genetic covariance is the weighted sum of many cross-mate SNP covariances. Phenotype matching can therefore induce many small SNP-level correlations across partners.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1623,8 +1649,8 @@ g_i = \sum_{j=1}^{M} \beta_j x_{ij}
 </div>
 </div>
 </section>
-<section id="one-generation-creates-trans-covariance-first" class="slide level2 smaller">
-<h2>One generation creates trans covariance first</h2>
+<section id="the-first-generation-effect-is-trans-covariance" class="slide level2 smaller">
+<h2>The first-generation effect is trans covariance</h2>
 <p>To match Session 1, let <span class="math inline">\(\mathbf{t}_m = (t_{m1},\ldots,t_{mM})^\top\)</span> and <span class="math inline">\(\mathbf{t}_p = (t_{p1},\ldots,t_{pM})^\top\)</span> denote the transmitted maternal and paternal haplotype vectors.</p>
 <p><span class="math display">\[
 \mathbf{t}_m + \mathbf{t}_p = \mathbf{x}_c,
@@ -1724,8 +1750,8 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </div>
 </div>
 </section>
-<section id="later-generations-build-cis-covariance-and-long-range-ld" class="slide level2 smaller">
-<h2>Later generations build cis covariance and long-range LD</h2>
+<section id="repeated-assortment-builds-cis-covariance-and-long-range-ld" class="slide level2 smaller">
+<h2>Repeated assortment builds cis covariance and long-range LD</h2>
 <p>Repeated assortment plus recombination gradually converts part of the accumulated trans covariance into <strong>cis</strong> covariance within transmitted haplotypes.</p>
 <p>That means the haplotype variance is no longer just a sum of single-locus terms. For example,</p>
 <p><span class="math display">\[
@@ -1785,6 +1811,7 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </div>
 <div class="callout-content">
 <p>Assortative mating does not just create “more LD”. It changes the <strong>geography</strong> of LD by creating nonlocal correlation structure.</p>
+<p>In older quantitative-genetic language, these cross-locus associations within gametes or haplotypes are called <strong>gametic phase disequilibrium</strong>. When they arise between distant loci, we describe the same pattern as <strong>long-range LD</strong>.</p>
 </div>
 </div>
 </div>
@@ -1875,19 +1902,19 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </div>
 </div>
 </section>
-<section id="relatives-also-resemble-each-other-more" class="slide level2">
-<h2>Relatives also resemble each other more</h2>
+<section id="family-resemblance-increases-under-assortative-mating" class="slide level2">
+<h2>Family resemblance increases under assortative mating</h2>
 <p>Once parental genomes are more aligned, resemblance among relatives increases for the trait under assortment.</p>
 <p>If mates are positively correlated in genetic value, then:</p>
 <p><span class="math display">\[
-\text{Cov}(g_m, g_f) &gt; 0
+\text{Cov}(g_m, g_p) &gt; 0
 \]</span></p>
 <p>and therefore:</p>
 <p><span class="math display">\[
-\text{Var}\!\left(\frac{g_m + g_f}{2}\right)
+\text{Var}\!\left(\frac{g_m + g_p}{2}\right)
 = \frac{1}{4}\text{Var}(g_m)
-+ \frac{1}{4}\text{Var}(g_f)
-+ \frac{1}{2}\text{Cov}(g_m, g_f)
++ \frac{1}{4}\text{Var}(g_p)
++ \frac{1}{2}\text{Cov}(g_m, g_p)
 \]</span></p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -1919,7 +1946,7 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <tbody>
 <tr class="odd">
 <td>Mates match on phenotype</td>
-<td>Start with <span class="math inline">\(\text{Cov}(y_m,y_f) &gt; 0\)</span></td>
+<td>Start with <span class="math inline">\(\text{Cov}(y_m,y_p) &gt; 0\)</span></td>
 </tr>
 <tr class="even">
 <td>First generation</td>
@@ -1958,8 +1985,8 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <h1>Part 3: Gene-Environment Correlations</h1>
 
 </section>
-<section id="same-projection-new-covariance-sources" class="slide level2">
-<h2>Same projection, new covariance sources</h2>
+<section id="same-regression-new-covariance-sources" class="slide level2">
+<h2>Same regression, new covariance sources</h2>
 <p>Now set the LD term aside and focus on gene-environment correlation:</p>
 <p><span class="math display">\[
 \tilde{\beta}_j = \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
@@ -2336,7 +2363,7 @@ y = g + e
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>Across local LD, assortative mating, and gene-environment correlation, the same lesson keeps returning: <strong>marginal associations are projections through correlation structure</strong>.</p>
+<p>Across local LD, assortative mating, and gene-environment correlation, the same lesson keeps returning: <strong>marginal regression coefficients are shaped by correlation structure</strong>.</p>
 </div>
 </div>
 </div>
@@ -2588,13 +2615,14 @@ y_{1f} - y_{2f}
 <p>In this practical, we will use <strong>LD score regression (LDSC)</strong> to estimate:</p>
 <ol type="1">
 <li>observed-scale SNP heritability for <strong>intelligence</strong></li>
-<li>observed-scale SNP heritability for <strong>depression</strong></li>
+<li>observed-scale SNP heritability for <strong>p_factor</strong></li>
 <li>the genetic correlation between the two traits</li>
 </ol>
-<p>The summary statistics come from the <strong>CTG summary statistics archive</strong> and the software is the canonical <strong>LDSC</strong> pipeline used in many real analyses:</p>
+<p>The summary statistics come from the <strong>CTG summary statistics archive</strong> and the practical uses a local course installer around the newer Python 3 LDSC workflow from <strong>CBIIT/ldsc</strong>. LDSC itself remains the canonical method originally associated with the <strong>bulik/ldsc</strong> project.</p>
 <ul>
 <li><a href="https://ctg.thebluebus.nl/software/summary_statistics/">CTG GWAS summary statistics</a></li>
-<li><a href="https://github.com/bulik/ldsc">LDSC repository</a></li>
+<li><a href="https://github.com/CBIIT/ldsc">CBIIT/ldsc repository</a></li>
+<li><a href="https://github.com/bulik/ldsc">Original bulik/ldsc repository</a></li>
 <li><a href="https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation">LDSC heritability and genetic correlation tutorial</a></li>
 </ul>
 <div class="callout callout-note callout-titled callout-style-default">
@@ -2606,7 +2634,7 @@ y_{1f} - y_{2f}
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>To keep the exercise focused, the instructor has already downloaded the public files, standardized the columns, and prepared course-ready inputs. You will still run the same LDSC commands used in practice: <code>munge_sumstats.py</code>, single-trait <code>--h2</code>, and cross-trait <code>--rg</code>.</p>
+<p>To keep the exercise focused, the instructor has already prepared helper scripts for the repetitive setup work. You will still run the same main LDSC steps used in practice: <code>munge_sumstats.py</code>, single-trait <code>--h2</code>, and cross-trait <code>--rg</code>, but the course scripts handle the local installation and platform details.</p>
 </div>
 </div>
 </div>
@@ -2616,7 +2644,7 @@ y_{1f} - y_{2f}
 <p>We will work with two pre-harmonized files prepared from the public CTG releases:</p>
 <ul>
 <li><code>practical/ldsc/data/course/intelligence_ctg.tsv.gz</code></li>
-<li><code>practical/ldsc/data/course/depression_ctg.tsv.gz</code></li>
+<li><code>practical/ldsc/data/course/p_factor.tsv.gz</code></li>
 </ul>
 <p>Each file has the same minimal schema:</p>
 <p><code>SNP</code>, <code>A1</code>, <code>A2</code>, <code>P</code>, <code>N</code>, <code>Z</code></p>
@@ -2626,8 +2654,10 @@ y_{1f} - y_{2f}
 <li><code>practical/ldsc/data/ref/eur_w_ld_chr/</code></li>
 <li><code>practical/ldsc/data/ref/weights_hm3_no_hla/</code></li>
 </ul>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href></a><span class="bu">export</span> <span class="va">LDSC_DIR</span><span class="op">=</span>/path/to/ldsc</span>
-<span id="cb1-2"><a href></a><span class="fu">mkdir</span> <span class="at">-p</span> practical/ldsc/data/results</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Run the course workflow in this order from the repository root. The practical is intended to work in <strong>Git Bash on Windows</strong>, with the scripts handling the local Python and LDSC setup.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href></a><span class="ex">Rscript</span> practical/ldsc/prepare_ldsc_data.R <span class="at">--force</span></span>
+<span id="cb1-2"><a href></a><span class="fu">bash</span> practical/ldsc/install_ldsc.sh</span>
+<span id="cb1-3"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2644,42 +2674,27 @@ y_{1f} - y_{2f}
 </section>
 <section id="part-1-munge-the-summary-statistics" class="slide level2 smaller">
 <h2>Part 1: Munge the summary statistics</h2>
-<p>First convert the prepared text files into LDSC’s <code>.sumstats.gz</code> format.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/munge_sumstats.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb2-2"><a href></a>  <span class="at">--sumstats</span> practical/ldsc/data/course/intelligence_ctg.tsv.gz <span class="dt">\</span></span>
-<span id="cb2-3"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/intelligence_ctg <span class="dt">\</span></span>
-<span id="cb2-4"><a href></a>  <span class="at">--merge-alleles</span> practical/ldsc/data/ref/w_hm3.snplist</span>
-<span id="cb2-5"><a href></a></span>
-<span id="cb2-6"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/munge_sumstats.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb2-7"><a href></a>  <span class="at">--sumstats</span> practical/ldsc/data/course/depression_ctg.tsv.gz <span class="dt">\</span></span>
-<span id="cb2-8"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/depression_ctg <span class="dt">\</span></span>
-<span id="cb2-9"><a href></a>  <span class="at">--merge-alleles</span> practical/ldsc/data/ref/w_hm3.snplist</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>After running the pipeline above, the first LDSC step is to convert the prepared text files into LDSC’s <code>.sumstats.gz</code> format. If you want to inspect the script itself, see <code>practical/ldsc/ldsc_pipeline.sh</code>.</p>
 <p>Look for:</p>
 <ul>
-<li>how many SNPs survive QC and allele matching</li>
-<li>whether the log files contain warnings</li>
-<li>the two output files <code>*.sumstats.gz</code></li>
+<li>how many SNPs survive QC and allele matching for <code>intelligence</code> and <code>p_factor</code></li>
+<li>whether the munge logs contain warnings</li>
+<li>the two output files <code>intelligence_ctg.sumstats.gz</code> and <code>p_factor.sumstats.gz</code></li>
 </ul>
 </section>
 <section id="part-2-estimate-snp-heritability" class="slide level2 smaller">
 <h2>Part 2: Estimate SNP heritability</h2>
-<p>Now run single-trait LDSC for each phenotype.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/ldsc.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-2"><a href></a>  <span class="at">--h2</span> practical/ldsc/data/results/intelligence_ctg.sumstats.gz <span class="dt">\</span></span>
-<span id="cb3-3"><a href></a>  <span class="at">--ref-ld-chr</span> practical/ldsc/data/ref/eur_w_ld_chr/ <span class="dt">\</span></span>
-<span id="cb3-4"><a href></a>  <span class="at">--w-ld-chr</span> practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. <span class="dt">\</span></span>
-<span id="cb3-5"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/intelligence_h2</span>
-<span id="cb3-6"><a href></a></span>
-<span id="cb3-7"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/ldsc.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb3-8"><a href></a>  <span class="at">--h2</span> practical/ldsc/data/results/depression_ctg.sumstats.gz <span class="dt">\</span></span>
-<span id="cb3-9"><a href></a>  <span class="at">--ref-ld-chr</span> practical/ldsc/data/ref/eur_w_ld_chr/ <span class="dt">\</span></span>
-<span id="cb3-10"><a href></a>  <span class="at">--w-ld-chr</span> practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. <span class="dt">\</span></span>
-<span id="cb3-11"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/depression_h2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>That same pipeline run then performs single-trait LDSC for each phenotype.</p>
 <p>Look for these lines in each log:</p>
 <ul>
 <li><code>Total Observed scale h2</code></li>
 <li><code>Intercept</code></li>
 <li><code>Ratio</code></li>
+</ul>
+<p>The key log files are:</p>
+<ul>
+<li><code>practical/ldsc/data/results/intelligence_h2.log</code></li>
+<li><code>practical/ldsc/data/results/p_factor_h2.log</code></li>
 </ul>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -2697,17 +2712,17 @@ y_{1f} - y_{2f}
 </section>
 <section id="part-3-estimate-the-genetic-correlation" class="slide level2 smaller">
 <h2>Part 3: Estimate the genetic correlation</h2>
-<p>Finally, estimate the cross-trait genetic correlation.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href></a><span class="ex">python</span> <span class="st">&quot;</span><span class="va">$LDSC_DIR</span><span class="st">/ldsc.py&quot;</span> <span class="dt">\</span></span>
-<span id="cb4-2"><a href></a>  <span class="at">--rg</span> practical/ldsc/data/results/intelligence_ctg.sumstats.gz,practical/ldsc/data/results/depression_ctg.sumstats.gz <span class="dt">\</span></span>
-<span id="cb4-3"><a href></a>  <span class="at">--ref-ld-chr</span> practical/ldsc/data/ref/eur_w_ld_chr/ <span class="dt">\</span></span>
-<span id="cb4-4"><a href></a>  <span class="at">--w-ld-chr</span> practical/ldsc/data/ref/weights_hm3_no_hla/weights.hm3_noMHC. <span class="dt">\</span></span>
-<span id="cb4-5"><a href></a>  <span class="at">--out</span> practical/ldsc/data/results/intelligence_depression_rg</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Finally, that same pipeline run performs the cross-trait LDSC regression using the two munged <code>.sumstats.gz</code> files.</p>
 <p>Look for:</p>
 <ul>
 <li><code>Genetic Correlation</code></li>
 <li>its standard error</li>
 <li>the cross-trait intercept</li>
+<li>the <code>P:</code> line</li>
+</ul>
+<p>The main log file is:</p>
+<ul>
+<li><code>practical/ldsc/data/results/intelligence_p_factor_rg.log</code></li>
 </ul>
 <p>For these traits, we expect a <strong>negative</strong> genetic correlation.</p>
 </section>
@@ -2715,9 +2730,10 @@ y_{1f} - y_{2f}
 <h2>Interpretation checkpoint</h2>
 <p>After the run, check that you can answer these questions:</p>
 <ol type="1">
-<li>Which trait has the larger observed-scale SNP heritability?</li>
+<li>Which trait has the larger observed-scale SNP heritability: <code>intelligence</code> or <code>p_factor</code>?</li>
 <li>Are the LDSC intercepts close to 1, or do they suggest substantial inflation beyond polygenicity?</li>
-<li>Is the estimated genetic correlation negative, and how large is it in magnitude?</li>
+<li>Are the LDSC ratios modest, or do they suggest a large share of inflation is due to confounding?</li>
+<li>Is the estimated genetic correlation between <code>intelligence</code> and <code>p_factor</code> negative, and how large is it in magnitude?</li>
 <li>Is the cross-trait intercept close to 0, or could sample overlap / shared confounding be contributing?</li>
 </ol>
 <div class="callout callout-important callout-titled callout-style-default">
@@ -2729,7 +2745,7 @@ y_{1f} - y_{2f}
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>The important habit is not just to report <code>h^2</code> and <code>r_g</code>, but also to inspect the <strong>intercepts</strong> and ask whether the analysis assumptions look reasonable.</p>
+<p>The important habit is not just to report <code>h^2</code> and <code>r_g</code>, but also to inspect the <strong>intercepts</strong> and <strong>ratios</strong> and ask whether the analysis assumptions look reasonable.</p>
 </div>
 </div>
 </div>
