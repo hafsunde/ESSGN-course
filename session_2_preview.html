@@ -1665,7 +1665,7 @@ r_g^{\mathrm{mates}}
 </section>
 <section id="genetic-similarity-spreads-across-many-snp-pairs" class="slide level2">
 <h2>Genetic similarity spreads across many SNP pairs</h2>
-<p>The genetic value is a weighted sum of SNPs: <span class="math inline">\(g_i = \sum_{j=1}^{M} \beta_j x_{ij}\)</span>. Then partner genetic covariance therefore expands as</p>
+<p>The genetic value is a weighted sum of SNPs: <span class="math inline">\(g_i = \sum_{j=1}^{M} \beta_j x_{ij}\)</span>. Genotypic covariance between mates therefore expands as</p>
 <p><span class="math display">\[
 \text{Cov}(g_m,g_p)
 =
@@ -1674,7 +1674,7 @@ r_g^{\mathrm{mates}}
 \sum_{j=1}^{M}\sum_{k=1}^{M}
 \beta_j\beta_k \,\text{Cov}(x_{mj}, x_{pk})
 \]</span></p>
-<p>Phenotype matching therefore induces many small SNP-level correlations across partners. Importantly, all these correlations are <strong>positive</strong> for trait-associated SNPs, because the matching process aligns the genetic values of the partners.</p>
+<p>Assortative mating therefore induces many small SNP-level correlations across partners. Importantly, all these correlations are <strong>positive</strong> for trait-associated SNPs, because the matching process aligns the genetic values of the partners.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1797,7 +1797,7 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <td>Maternal and paternal contributions become aligned</td>
 </tr>
 <tr class="even">
-<td>≥2 generations</td>
+<td>2+ generations</td>
 <td>Within haplotypes (cis)</td>
 <td>Aligned alleles begin to co-occur within haplotypes</td>
 </tr>
@@ -1805,8 +1805,36 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </table>
 </div>
 </section>
-<section id="why-marginal-snp-effects-now-tag-distant-variants" class="slide level2 smaller">
-<h2>Why marginal SNP effects now tag distant variants</h2>
+<section id="conclusion-so-far" class="slide level2 huge center" data-background-color="#5b0f0f" color="white">
+<h2>Conclusion so far</h2>
+<p><br></p>
+<p>Assortative mating in earlier generations means that <strong>trait-related SNPs are not independent from each other</strong>.</p>
+</section>
+<section id="which-estimands-change-once-genotype-covariance-changes" class="slide level2 smaller">
+<h2>Which estimands change once genotype covariance changes?</h2>
+<p>If assortative mating changes <span class="math inline">\(\text{Cov}(x_j, x_k)\)</span>, then any method built from genotype covariance changes too.</p>
+<ul>
+<li><strong>GWAS marginal effects</strong>, because <span class="math inline">\(\tilde{\beta}_j\)</span> absorbs tagged signal from correlated loci</li>
+<li><strong>LDSC</strong>, because the summary statistics are already shaped by long-range structure before the regression starts</li>
+<li><strong>GREML</strong>, because genome-wide similarity among “unrelated” people can carry trait-relevant covariance</li>
+<li><strong>Family resemblance</strong>, because the same induced structure is inherited within pedigrees</li>
+</ul>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>Same mechanism, different estimands: once assortative mating changes the correlation structure of genotypes, it changes the targets of several methods at once.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="payoff-1-marginal-snp-effects-no-longer-look-purely-local" class="slide level2 smaller">
+<h2>Payoff 1: marginal SNP effects no longer look purely local</h2>
 <p>Again set the rGE term aside and focus on the LD component:</p>
 <p><span class="math display">\[
 \tilde{\beta}_j
@@ -1824,81 +1852,68 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </div>
 <div class="callout-content">
 <p>So a marginal hit at SNP <span class="math inline">\(j\)</span> can partly reflect genome-wide covariance structure, not only local biology at SNP <span class="math inline">\(j\)</span>.</p>
+<p>That means the GWAS summary statistics are already altered before any downstream summary-statistic method is applied.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="why-textvarg-increases-for-a-few-generations" class="slide level2 smaller">
-<h2>Why <span class="math inline">\(\text{Var}(g)\)</span> increases for a few generations</h2>
-<p>Using the haplotype decomposition,</p>
+<section id="why-this-matters-for-ld-score-regression" class="slide level2 smaller">
+<h2>Why this matters for LD score regression</h2>
+<p>In Part 1, the LDSC logic was:</p>
 <p><span class="math display">\[
-\text{Var}(g_c)
-=
-\text{Var}(g_c^{(m)})
-+ \text{Var}(g_c^{(p)})
-+ 2\text{Cov}(g_c^{(m)}, g_c^{(p)})
+E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 \]</span></p>
-<p>After one generation, the increase comes mainly from the positive <strong>trans</strong> term <span class="math inline">\(2\text{Cov}(g_c^{(m)},g_c^{(p)})\)</span>. After later generations, each haplotype contribution also contains positive <strong>cis</strong> terms:</p>
-<p><span class="math display">\[
-\text{Var}(g_c^{(m)})
-=
-\sum_{j=1}^{M}\sum_{k=1}^{M}
-\text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
-\]</span></p>
-<p>and similarly for <span class="math inline">\(g_c^{(p)}\)</span>.</p>
-<table class="caption-top">
-<thead>
-<tr class="header">
-<th>Generation</th>
-<th>Main covariance pattern</th>
-<th>Expected <span class="math inline">\(\text{Var}(g)\)</span></th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>Random mating baseline</td>
-<td>Little long-range covariance</td>
-<td>Baseline</td>
-</tr>
-<tr class="even">
-<td>After 1 generation</td>
-<td>Positive trans covariance</td>
-<td>Higher</td>
-</tr>
-<tr class="odd">
-<td>After several generations</td>
-<td>Trans + cis covariance</td>
-<td>Higher still</td>
-</tr>
-<tr class="even">
-<td>Equilibrium</td>
-<td>Assortment balanced by recombination</td>
-<td>Plateau</td>
-</tr>
-</tbody>
-</table>
-<div class="callout callout-note callout-titled callout-style-default">
+<p>where <span class="math inline">\(\ell_j\)</span> summarizes <strong>local</strong> LD around SNP <span class="math inline">\(j\)</span>.</p>
+<ul>
+<li>Under assortative mating, some of the extra signal in <span class="math inline">\(\chi_j^2\)</span> comes from <strong>distant</strong> trait-relevant loci</li>
+<li>So the LDSC slope can reflect not only direct polygenic signal, but also AM-induced long-range tagging</li>
+<li>More generally, summary-statistic methods are working on GWAS results that already contain the AM signal</li>
+</ul>
+<div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>This trajectory is schematic: positive assortment tends to increase genetic variance for a few generations and then approach a new equilibrium, not increase forever.</p>
+<p>The key issue is upstream: assortative mating changes the <strong>marginal coefficients themselves</strong>, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="family-resemblance-increases-under-assortative-mating" class="slide level2">
-<h2>Family resemblance increases under assortative mating</h2>
-<p>Once parental genomes are more aligned, resemblance among relatives increases for the trait under assortment.</p>
-<p>If mates are positively correlated in genetic value, then:</p>
+<section id="payoff-2-greml-with-strangers-is-not-automatically-protected" class="slide level2 smaller">
+<h2>Payoff 2: GREML with strangers is not automatically protected</h2>
+<p>In Session 1, ordinary GREML used genotype similarity to model phenotype similarity:</p>
 <p><span class="math display">\[
-\text{Cov}(g_m, g_p) &gt; 0
+\mathbf{y} = \mathbf{g} + \mathbf{e},
+\qquad
+\mathbf{g} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G})
 \]</span></p>
-<p>and therefore:</p>
+<p>For unrelated pairs, the basic idea is still covariance matching:</p>
+<p><span class="math display">\[
+\text{Cov}(y_i, y_{\ell}) \approx \sigma_g^2 G_{i\ell}
+\]</span></p>
+<p>Under assortative mating, slight genome-wide similarity between “strangers” can also carry <strong>trait-relevant long-range covariance</strong>, because the induced LD is population-wide rather than pedigree-specific.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>Using strangers removes close family relationships, but it does <strong>not</strong> remove population covariance created by mating structure.</p>
+<p>So the fitted GREML variance component can absorb AM-induced covariance rather than only the random-mating additive variance.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="short-bridge-relatives-become-more-similar-too" class="slide level2">
+<h2>Short bridge: relatives become more similar too</h2>
+<p>If mates are positively correlated in genetic value, the same covariance structure also increases resemblance among relatives for the assorted trait:</p>
 <p><span class="math display">\[
 \text{Var}\!\left(\frac{g_m + g_p}{2}\right)
 = \frac{1}{4}\text{Var}(g_m)
@@ -1914,13 +1929,38 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>The same induced covariance structure now appears in two places: - in GWAS, through long-range tagging - in families, through stronger resemblance among relatives</p>
+<p>This is the bridge to Part 4:</p>
+<ul>
+<li>family designs can remove much of the <strong>between-family</strong> assortment signal by holding the parental pair fixed</li>
+<li>but inherited local and long-range LD do <strong>not</strong> disappear inside families</li>
+</ul>
 </div>
 </div>
 </div>
 </section>
-<section id="summary-assortative-mating-changes-gwas-ld-and-family-resemblance" class="slide level2">
-<h2>Summary: assortative mating changes GWAS, LD, and family resemblance</h2>
+<section id="teaser-cross-trait-assortment-can-distort-r_g" class="slide level2 smaller">
+<h2>Teaser: cross-trait assortment can distort <span class="math inline">\(r_g\)</span></h2>
+<p>If people sort on one trait, or on a bundle of traits related to both <span class="math inline">\(y_1\)</span> and <span class="math inline">\(y_2\)</span>, then alleles increasing trait 1 can become correlated with alleles increasing trait 2 across the genome.</p>
+<ul>
+<li>Cross-trait GWAS summary statistics can then contain covariance not due only to overlap of direct effects</li>
+<li>So an estimated genetic correlation from marginal data need not equal pure overlap of direct effects</li>
+</ul>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>This is one place where <strong>score correlation</strong> and <strong>effect correlation</strong> can come apart. We will keep that as a teaser here rather than do the full derivation.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="summary-assortative-mating-changes-the-inputs-to-gwas-ldsc-and-greml" class="slide level2">
+<h2>Summary: assortative mating changes the inputs to GWAS, LDSC, and GREML</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 50%">
@@ -1946,12 +1986,16 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <td>Cis covariance and long-range LD build up</td>
 </tr>
 <tr class="even">
-<td>Population consequence</td>
-<td><span class="math inline">\(\text{Var}(g)\)</span> rises for a while, then approaches equilibrium</td>
+<td>GWAS / LDSC consequence</td>
+<td>Marginal summary statistics absorb distant tagged signal</td>
 </tr>
 <tr class="odd">
-<td>Family consequence</td>
-<td>Relatives resemble each other more</td>
+<td>GREML consequence</td>
+<td>Unrelated-pair similarity can absorb AM-induced covariance</td>
+</tr>
+<tr class="even">
+<td>Family-design bridge</td>
+<td>Comparing relatives helps with between-family structure, but inherited long-range LD remains</td>
 </tr>
 </tbody>
 </table>
@@ -1964,7 +2008,7 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>Again, marginal associations reflect <strong>induced correlation structure</strong>, not only direct causal effects.</p>
+<p>Before Part 3, the big picture is: Part 1 and Part 2 mainly changed associations through <strong>correlated genotypes</strong>. Next we turn to <strong>correlated environments</strong>.</p>
 </div>
 </div>
 </div>
@@ -1980,10 +2024,7 @@ g_c = g_c^{(m)} + g_c^{(p)}
 <p><span class="math display">\[
 \tilde{\beta}_j = \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
 \]</span></p>
-<p>Part 3 is about a new question:</p>
-<p><span class="math display">\[
-\text{What can generate } \text{Cov}(x_j, e)?
-\]</span></p>
+<p>Part 3 is about a new question: <strong>What can generate <span class="math inline">\(\text{Cov}(x_j, e)\)</span>?</strong></p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2000,10 +2041,11 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </section>
 <section id="where-can-textcovx_je-come-from" class="slide level2">
 <h2>Where can <span class="math inline">\(\text{Cov}(x_j,e)\)</span> come from?</h2>
+<div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 40%">
+<col style="width: 60%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -2013,23 +2055,24 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </thead>
 <tbody>
 <tr class="odd">
-<td>Passive rGE</td>
-<td>Parents transmit both genes and family environments</td>
-</tr>
-<tr class="even">
 <td>Indirect genetic effects</td>
 <td>Related people’s genotypes shape the focal person’s environment</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>Stratification / population structure</td>
 <td>Allele frequencies and environments differ across groups</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>Residual confounding</td>
+<td>Selection, ascertainment, measurement, or omitted structure</td>
+</tr>
+<tr class="even">
+<td>Assortative mating</td>
 <td>Selection, ascertainment, measurement, or omitted structure</td>
 </tr>
 </tbody>
 </table>
+</div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2040,6 +2083,23 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </div>
 <div class="callout-content">
 <p>Different mechanisms can produce the <strong>same statistical symptom</strong> in a marginal GWAS coefficient: <span class="math inline">\(\text{Cov}(x_j,e) \neq 0\)</span>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Only passive gene-environment correlation is confounding</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Passive <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because of shared causes (e.g., parents)</li>
+<li><strong>Active / Evocative <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods)</li>
+</ul>
+<p>Crucially, <strong>active and evocative gene-environment correlations are not confounding</strong>. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect.</p>
 </div>
 </div>
 </div>
@@ -2391,6 +2451,18 @@ y = g + e
 <li>much of the rearing environment is shared</li>
 </ul>
 <p>What still differs is the random segregation of alleles from parents to offspring.</p>
+<p>Recall from Session 1:</p>
+<p><span class="math display">\[
+x_{jc} =
+\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\text{paternal transmission}}
++
+\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\text{maternal transmission}}
+\]</span></p>
+<p><span class="math display">\[
+\text{Var}(x_{jc})
+= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm})
++ \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\text{segregation variance}}
+\]</span></p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2400,7 +2472,7 @@ y = g + e
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>This is the callback to Session 1: the <strong>random segregation deviations</strong> do the heavy lifting. Once family background is mostly held fixed, identification comes from the segregation variance created by which alleles each sibling happened to inherit.</p>
+<p>This is the callback to Session 1: the <strong>random segregation deviations</strong> do the heavy lifting. The key term is the segregation variance, and it is <strong>random</strong>. It comes from which alleles happened to be transmitted, not from stable differences in ancestry, parents, or shared family background.</p>
 </div>
 </div>
 </div>
@@ -2413,7 +2485,7 @@ y = g + e
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>So the key idea is simple: family designs use <strong>within-family genetic differences</strong> to get closer to direct effects than ordinary population GWAS.</p>
+<p>Across siblings, the parents are the same, so much of the family background is fixed. What differs is the realized draw of the <span class="math inline">\(\epsilon\)</span> terms. That is why family designs use <strong>within-family random segregation</strong> to get closer to direct effects than ordinary population GWAS.</p>
 </div>
 </div>
 </div>
@@ -2442,7 +2514,7 @@ y = g + e
 </tr>
 <tr class="odd">
 <td>Why can they help with assortative mating?</td>
-<td>The same parental pair generated the compared offspring</td>
+<td>They hold the parental pair fixed, removing much of the between-family assortment signal</td>
 </tr>
 <tr class="even">
 <td>Why are they appealing conceptually?</td>
@@ -2503,9 +2575,14 @@ y = g + e
 <p>Family designs mainly help with the <strong>estimated SNP weight</strong> by making the marginal coefficient closer to a direct effect.</p>
 <p>But many downstream uses depend on both the weight and the realized genotype:</p>
 <p><span class="math display">\[
-\hat S_i^{F} = \sum_j \hat{\tilde{\beta}}_j^{F} x_{ij}
+\mathrm{PGS}_i^{F} = \sum_j \hat{\tilde{\beta}}_j^{F} x_{ij}
 \]</span></p>
-<p>That does <strong>not</strong> mean the score itself is automatically unconfounded.</p>
+<p>That does <strong>not</strong> mean the score itself is automatically unconfounded, because the observed SNPs are not “purified” by the family design.</p>
+<p>Two problems can still remain at the SNP level:</p>
+<ul>
+<li><span class="math inline">\(x_{ij}\)</span> can still be correlated with other causal SNPs through local or long-range LD</li>
+<li><span class="math inline">\(x_{ij}\)</span> can still be correlated with environments, so <span class="math inline">\(\text{Cov}(x_{ij}, e_i)\)</span> need not vanish</li>
+</ul>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2515,24 +2592,119 @@ y = g + e
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>Even if family GWAS improves <span class="math inline">\(\hat{\tilde{\beta}}_j^{F}\)</span>, the SNP itself can still be correlated with environments or with other causal loci through LD. So objects like <span class="math inline">\(\hat{\tilde{\beta}}_j^{F} x_{ij}\)</span> or a within-family polygenic score can still satisfy <span class="math inline">\(\text{Cov}(x_{ij}, e_i) \neq 0\)</span>.</p>
+<p>So even if family GWAS improves <span class="math inline">\(\hat{\tilde{\beta}}_j^{F}\)</span>, a tool built from <strong>weights times observed SNPs</strong> can still inherit bias from the SNP side. In other words, better weights do not guarantee that polygenic scores or other genotype-based predictors are unconfounded.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="another-family-design-m-gcta" class="slide level2">
-<h2>Another family design: M-GCTA</h2>
+<section id="why-adjust-for-parental-or-sibling-polygenic-scores" class="slide level2">
+<h2>Why adjust for parental or sibling polygenic scores?</h2>
+<p>At the polygenic score level, the same segregation logic still applies. A focal person’s score can be written as:</p>
+<p><span class="math display">\[
+\mathrm{PGS}_F = \frac{1}{2}\left(\mathrm{PGS}_p + \mathrm{PGS}_m\right) + \Delta_F
+\]</span></p>
+<p>where:</p>
+<ul>
+<li><span class="math inline">\(\frac{1}{2}(\mathrm{PGS}_p + \mathrm{PGS}_m)\)</span> is the expected family background in the score</li>
+<li><span class="math inline">\(\Delta_F\)</span> is the <strong>random segregation deviation</strong> in the score</li>
+</ul>
+<p>If the focal phenotype depends both on the focal genotype and on family-level genetic background, then regressing <span class="math inline">\(y_F\)</span> on <span class="math inline">\(\mathrm{PGS}_F\)</span> alone will mix those two sources of variation.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>So the problem is the same as before: the observed polygenic score contains both a <strong>between-family component</strong> and a <strong>within-family segregation component</strong>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="why-the-adjustment-helps" class="slide level2">
+<h2>Why the adjustment helps</h2>
+<p>If we fit</p>
+<p><span class="math display">\[
+y_F = b_1 \mathrm{PGS}_F + b_2 \overline{\mathrm{PGS}}_{parent} + \varepsilon_F
+\qquad \text{or} \qquad
+y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
+\]</span></p>
+<p>then the extra family score absorbs part of the shared family-genetic background.</p>
+<p>That means the remaining identifying variation in <span class="math inline">\(\mathrm{PGS}_F\)</span> is closer to the segregation term <span class="math inline">\(\Delta_F\)</span>:</p>
+<ul>
+<li>adjusting for <strong>parental</strong> scores targets the family background more directly</li>
+<li>adjusting for a <strong>sibling</strong> score uses another child of the same parents as a proxy for that shared background</li>
+<li>in both cases, the coefficient on <span class="math inline">\(\mathrm{PGS}_F\)</span> becomes more within-family in spirit</li>
+</ul>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>This is why these controls can help: they soak up the part of the focal score that is predictable from the family, leaving more of the signal that comes from the focal person’s <strong>random segregation draw</strong>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>But again, this is not magic. LD, residual <span class="math inline">\(\text{Cov}(x,e)\)</span>, sibling indirect effects, and measurement error in the scores can still matter.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="mixed-model-family-designs" class="slide level2">
+<h2>Mixed-model family designs</h2>
 <p>Sibling comparisons are one kind of family design. Another is to use relatives inside a <strong>mixed model</strong> to separate direct and indirect genetic pathways.</p>
+</section>
+<section id="intuition-ordinary-greml-vs-m-gcta" class="slide level2">
+<h2>Intuition: ordinary GREML vs M-GCTA</h2>
+<p>Ordinary GREML asks:</p>
+<ul>
+<li>Are focal people who are slightly more genetically similar also slightly more phenotypically similar?</li>
+</ul>
+<p>M-GCTA asks:</p>
+<ul>
+<li>Are focal people whose <strong>mothers</strong> are slightly more genetically similar also slightly more phenotypically similar?</li>
+</ul>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>In both cases the logic is covariance matching. If a source of genetic similarity creates phenotype similarity, give the mixed model the corresponding covariance matrix.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="the-m-gcta-model" class="slide level2">
+<h2>The M-GCTA model</h2>
 <p>In Session 1, GREML used a GRM to model covariance from individuals’ own genotypes:</p>
 <p><span class="math display">\[
-\mathbf{y} = \mathbf{g}_d + \mathbf{e},
+\mathbf{y}_{F} = \mathbf{g}_{F} + \mathbf{e}_{F},
 \qquad
-\mathbf{g}_d \sim \mathcal{N}(\mathbf{0},\; \sigma_d^2 \mathbf{G}_{oo})
+\mathbf{g}_{F} \sim \mathcal{N}(\mathbf{0},\; \sigma_F^2 \mathbf{G}_{F})
 \]</span></p>
-<p>That is fine if genotype-related signal comes only from the offspring’s own direct effects.</p>
-<p>But if maternal genotype helps shape the offspring environment, then part of what we are calling “environment” has its own genetic covariance structure:</p>
+<p>Here <span class="math inline">\(F\)</span> just means the <strong>focal phenotype</strong>. It could be an offspring phenotype, a maternal phenotype, or any other phenotype measured in one family member.</p>
+<p>If a relative’s genotype also helps shape that focal phenotype, then part of what we are calling “environment” has its own genetic covariance structure:</p>
 <p><span class="math display">\[
-\mathbf{y}_o = \mathbf{g}_d + \mathbf{g}_m + \mathbf{e}
+\mathbf{y}_{F} = \mathbf{g}_{F} + \mathbf{g}_{R \rightarrow F} + \mathbf{e}_{F}
 \]</span></p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -2543,14 +2715,14 @@ y = g + e
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>The logic is exactly the same as ordinary GREML: if a pathway creates phenotype covariance, give the model the covariance matrix for that pathway.</p>
+<p>The logic is exactly the same as ordinary GREML: if a pathway creates phenotype covariance, give the model the covariance matrix for that pathway. The only difference is that we now include covariance from a <strong>relative’s</strong> genotype as well as the focal person’s own genotype.</p>
 </div>
 </div>
 </div>
-<p>So M-GCTA extends the direct-only GREML model by adding:</p>
+<p>In today’s practical, the focal phenotype is the offspring and the relevant relative is the mother. So M-GCTA extends the direct-only GREML model by adding:</p>
 <ul>
-<li>an offspring direct component based on <span class="math inline">\(\mathbf{G}_{oo}\)</span></li>
-<li>a maternal indirect component based on <span class="math inline">\(\mathbf{G}_{mm}\)</span></li>
+<li>a focal direct component based on <span class="math inline">\(\mathbf{G}_{F} = \mathbf{G}_{oo}\)</span></li>
+<li>a maternal indirect component based on <span class="math inline">\(\mathbf{G}_{R} = \mathbf{G}_{mm}\)</span></li>
 <li>a covariance component for overlap between direct and maternal effects</li>
 </ul>
 <div class="callout callout-important callout-titled callout-style-default">
@@ -2562,7 +2734,20 @@ y = g + e
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>This is why M-GCTA belongs in the family-design toolbox: it uses known family roles and multiple related genomes to ask whether maternal genotypes shape offspring outcomes through the environment, rather than forcing all genotype-related covariance into the offspring’s direct effect.</p>
+<p>Following Eilertsen et al. (2021), this logic is not inherently tied to an offspring phenotype. The framework is defined relative to a <strong>focal phenotype</strong> and can be applied to phenotypes measured in different family members.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<p>This is why M-GCTA belongs in the family-design toolbox: it uses known family roles and multiple related genomes to ask whether a relative’s genotype shapes the focal outcome through the environment, rather than forcing all genotype-related covariance into the focal person’s direct effect.</p>
 </div>
 </div>
 </div>
@@ -2597,12 +2782,10 @@ y = g + e
 </section>
 <section id="practical-1-greml-and-m-gcta-with-simulated-trios" class="slide level2 scrollable">
 <h2>Practical 1: GREML and M-GCTA with simulated trios</h2>
-<p>Run <code>practical/sim_genomic.R</code> (or <code>practical/sim_genomic.jl</code>) end-to-end:</p>
+<p>Session 2 continues the same <code>practical/sim_genomic.R</code> (or <code>practical/sim_genomic.jl</code>) script used in Session 1.</p>
+<p>Today’s new extension is:</p>
 <ol type="1">
-<li>Simulate genotypes for <code>N</code> trios at <code>M</code> SNPs</li>
-<li>Simulate phenotypes with direct SNP effects and <code>h^2 = 0.5</code></li>
-<li>Estimate <code>h^2</code> by parent-offspring regression</li>
-<li>Estimate <code>h^2</code> by GREML</li>
+<li>Start from the direct-only setup already covered in Session 1</li>
 <li>Simulate an offspring phenotype with a maternal indirect genetic effect</li>
 <li>Refit the wrong direct-only GREML model</li>
 <li>Fit the maternal model (M-GCTA) and compare the variance components</li>
@@ -2616,209 +2799,90 @@ y = g + e
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>Parts 1-4 match the Session 1 practical. The new Session 2 material is the extension in parts 5-7.</p>
-<p>As before, computing the GRM is the slow step. Use that time to discuss what <code>G</code> contains and why GREML treats it as the covariance structure for genetic values.</p>
+<p>Parts 1-4 of the script are the same setup from Session 1, so they are not repeated on the slides here. If needed, rerun them in the script to recreate <code>X_tilde</code>, <code>yo</code>, <code>G</code>, <code>Goo</code>, and the direct-only GREML fit.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="part-1-simulate-genotypes" class="slide level2 smaller">
-<h2>Part 1: Simulate genotypes</h2>
-<div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-1-1">R</a></li><li><a href="#tabset-1-2">Julia</a></li></ul>
-<div class="tab-content">
-<div id="tabset-1-1">
-<div class="cell">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href></a><span class="fu">set.seed</span>(<span class="dv">080318</span>)</span>
-<span id="cb1-2"><a href></a><span class="fu">library</span>(gaston)</span>
-<span id="cb1-3"><a href></a></span>
-<span id="cb1-4"><a href></a>N <span class="ot">=</span> <span class="dv">3000</span>  <span class="co"># Trios</span></span>
-<span id="cb1-5"><a href></a>M <span class="ot">=</span> <span class="dv">12000</span> <span class="co"># SNPs</span></span>
-<span id="cb1-6"><a href></a>p <span class="ot">=</span> <span class="fl">0.5</span></span>
-<span id="cb1-7"><a href></a>Xf <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rbinom</span>(N <span class="sc">*</span> M, <span class="dv">2</span>, p), N, M)</span>
-<span id="cb1-8"><a href></a>Xm <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rbinom</span>(N <span class="sc">*</span> M, <span class="dv">2</span>, p), N, M)</span>
-<span id="cb1-9"><a href></a>Xo <span class="ot">=</span> <span class="fu">matrix</span>(</span>
-<span id="cb1-10"><a href></a>  <span class="fu">rbinom</span>(N <span class="sc">*</span> M, <span class="dv">1</span>, <span class="fu">as.vector</span>(Xf) <span class="sc">/</span> <span class="dv">2</span>) <span class="sc">+</span></span>
-<span id="cb1-11"><a href></a>  <span class="fu">rbinom</span>(N <span class="sc">*</span> M, <span class="dv">1</span>, <span class="fu">as.vector</span>(Xm) <span class="sc">/</span> <span class="dv">2</span>), N, M)</span>
-<span id="cb1-12"><a href></a>X <span class="ot">=</span> <span class="fu">rbind</span>(Xf, Xm, Xo)</span>
+<section id="starting-point-from-session-1" class="slide level2 smaller">
+<h2>Starting point from Session 1</h2>
+<p>By this point, you should already have the direct-only objects from the Session 1 practical:</p>
+<ul>
+<li>standardized genotypes <code>X_tilde</code></li>
+<li>offspring phenotype <code>yo</code></li>
+<li>genomic relationship matrix <code>G</code></li>
+<li>offspring block <code>Goo</code></li>
+<li>direct-only GREML fit</li>
+</ul>
+<p>The slides below focus only on the <strong>new Session 2 extension</strong>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href></a><span class="co">#| echo: false</span></span>
+<span id="cb1-2"><a href></a><span class="co">#| eval: false</span></span>
+<span id="cb1-3"><a href></a><span class="im">using</span> <span class="bu">LinearAlgebra</span>, <span class="bu">Distributions</span>, <span class="bu">DataFrames</span>, <span class="bu">GLM</span></span>
+<span id="cb1-4"><a href></a><span class="im">using</span> <span class="bu">GREMLModels</span>, <span class="bu">Random</span></span>
+<span id="cb1-5"><a href></a><span class="bu">Random</span>.<span class="fu">seed!</span>(<span class="fl">080318</span>)</span>
+<span id="cb1-6"><a href></a></span>
+<span id="cb1-7"><a href></a>N, M <span class="op">=</span> <span class="fl">3000</span>, <span class="fl">12000</span></span>
+<span id="cb1-8"><a href></a>p <span class="op">=</span> <span class="fl">0.5</span></span>
+<span id="cb1-9"><a href></a>Xf <span class="op">=</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M) <span class="op">.+</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M)</span>
+<span id="cb1-10"><a href></a>Xm <span class="op">=</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M) <span class="op">.+</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M)</span>
+<span id="cb1-11"><a href></a>Xo <span class="op">=</span> <span class="fu">rand</span>.(<span class="fu">Bernoulli</span>.(Xf <span class="op">./</span> <span class="fl">2</span>)) <span class="op">.+</span> <span class="fu">rand</span>.(<span class="fu">Bernoulli</span>.(Xm <span class="op">./</span> <span class="fl">2</span>))</span>
+<span id="cb1-12"><a href></a>X <span class="op">=</span> <span class="fu">vcat</span>(Xf, Xm, Xo)</span>
 <span id="cb1-13"><a href></a></span>
-<span id="cb1-14"><a href></a>idf <span class="ot">=</span> <span class="dv">1</span><span class="sc">:</span>N</span>
-<span id="cb1-15"><a href></a>idm <span class="ot">=</span> (N <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">2</span> <span class="sc">*</span> N)</span>
-<span id="cb1-16"><a href></a>ido <span class="ot">=</span> (<span class="dv">2</span> <span class="sc">*</span> N <span class="sc">+</span> <span class="dv">1</span>)<span class="sc">:</span>(<span class="dv">3</span> <span class="sc">*</span> N)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-<div id="tabset-1-2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb2-1"><a href></a><span class="im">using</span> <span class="bu">LinearAlgebra</span>, <span class="bu">Distributions</span>, <span class="bu">DataFrames</span>, <span class="bu">GLM</span></span>
-<span id="cb2-2"><a href></a><span class="im">using</span> <span class="bu">GREMLModels</span>, <span class="bu">Random</span></span>
-<span id="cb2-3"><a href></a><span class="bu">Random</span>.<span class="fu">seed!</span>(<span class="fl">080318</span>)</span>
-<span id="cb2-4"><a href></a></span>
-<span id="cb2-5"><a href></a>N, M <span class="op">=</span> <span class="fl">3000</span>, <span class="fl">12000</span></span>
-<span id="cb2-6"><a href></a>p <span class="op">=</span> <span class="fl">0.5</span></span>
-<span id="cb2-7"><a href></a>Xf <span class="op">=</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M) <span class="op">.+</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M)</span>
-<span id="cb2-8"><a href></a>Xm <span class="op">=</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M) <span class="op">.+</span> <span class="fu">rand</span>(<span class="fu">Bernoulli</span>(p), N, M)</span>
-<span id="cb2-9"><a href></a>Xo <span class="op">=</span> <span class="fu">rand</span>.(<span class="fu">Bernoulli</span>.(Xf <span class="op">./</span> <span class="fl">2</span>)) <span class="op">.+</span> <span class="fu">rand</span>.(<span class="fu">Bernoulli</span>.(Xm <span class="op">./</span> <span class="fl">2</span>))</span>
-<span id="cb2-10"><a href></a>X <span class="op">=</span> <span class="fu">vcat</span>(Xf, Xm, Xo)</span>
-<span id="cb2-11"><a href></a></span>
-<span id="cb2-12"><a href></a>idf <span class="op">=</span> <span class="fl">1</span><span class="op">:</span>N</span>
-<span id="cb2-13"><a href></a>idm <span class="op">=</span> N<span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>N</span>
-<span id="cb2-14"><a href></a>ido <span class="op">=</span> <span class="fl">2</span>N<span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>N</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-</section>
-<section id="part-2-simulate-phenotypes" class="slide level2 smaller">
-<h2>Part 2: Simulate phenotypes</h2>
-<div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-2-1">R</a></li><li><a href="#tabset-2-2">Julia</a></li></ul>
-<div class="tab-content">
-<div id="tabset-2-1">
-<div class="cell columns column-output-location">
-<div class="column">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href></a>p_est <span class="ot">=</span> <span class="fu">colMeans</span>(X) <span class="sc">/</span> <span class="dv">2</span></span>
-<span id="cb3-2"><a href></a>X_tilde <span class="ot">=</span> <span class="fu">scale</span>(X, <span class="dv">2</span> <span class="sc">*</span> p_est, <span class="fu">sqrt</span>(<span class="dv">2</span> <span class="sc">*</span> p_est <span class="sc">*</span> (<span class="dv">1</span> <span class="sc">-</span> p_est)))</span>
-<span id="cb3-3"><a href></a>s2_g <span class="ot">=</span> <span class="fl">0.5</span></span>
-<span id="cb3-4"><a href></a>s2_e <span class="ot">=</span> <span class="fl">0.5</span></span>
-<span id="cb3-5"><a href></a>b <span class="ot">=</span> <span class="fu">rnorm</span>(M, <span class="dv">0</span>, <span class="fu">sqrt</span>(s2_g <span class="sc">/</span> M))</span>
-<span id="cb3-6"><a href></a>g <span class="ot">=</span> <span class="fu">as.vector</span>(X_tilde <span class="sc">%*%</span> b)</span>
-<span id="cb3-7"><a href></a>e <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="dv">3</span> <span class="sc">*</span> N, <span class="dv">0</span>, <span class="fu">sqrt</span>(s2_e))</span>
-<span id="cb3-8"><a href></a>y <span class="ot">=</span> g <span class="sc">+</span> e</span>
-<span id="cb3-9"><a href></a></span>
-<span id="cb3-10"><a href></a><span class="fu">cor</span>(<span class="fu">cbind</span>(g[idf], g[idm], g[ido]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div><div class="column">
-<div class="cell-output cell-output-stdout">
-<pre><code>           [,1]       [,2]      [,3]
-[1,]  1.0000000 -0.0235797 0.4687054
-[2,] -0.0235797  1.0000000 0.4939061
-[3,]  0.4687054  0.4939061 1.0000000</code></pre>
-</div>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href></a><span class="fu">cov</span>(<span class="fu">cbind</span>(g[idf], g[idm], g[ido]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>            [,1]        [,2]      [,3]
-[1,]  0.48251619 -0.01137793 0.2255605
-[2,] -0.01137793  0.48254504 0.2376952
-[3,]  0.22556055  0.23769524 0.4799704</code></pre>
-</div>
-</div></div>
-</div>
-<div id="tabset-2-2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb7-1"><a href></a>p_est <span class="op">=</span> <span class="fu">vec</span>(<span class="fu">mean</span>(X, dims <span class="op">=</span> <span class="fl">1</span>)) <span class="op">./</span> <span class="fl">2</span></span>
-<span id="cb7-2"><a href></a>X_tilde <span class="op">=</span> (<span class="fu">Float64</span>.(X) <span class="op">.-</span> (<span class="fl">2</span> <span class="op">.*</span> p_est)<span class="ch">&#39;) ./ sqrt.(2 .* p_est .* (1 .- p_est))&#39;</span></span>
-<span id="cb7-3"><a href></a></span>
-<span id="cb7-4"><a href></a>sigma2_g, sigma2_e <span class="op">=</span> <span class="fl">0.5</span>, <span class="fl">0.5</span></span>
-<span id="cb7-5"><a href></a>b <span class="op">=</span> <span class="fu">randn</span>(M) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_g <span class="op">/</span> M)</span>
-<span id="cb7-6"><a href></a>g <span class="op">=</span> X_tilde <span class="op">*</span> b</span>
-<span id="cb7-7"><a href></a><span class="cn">e</span> <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">3</span>N) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_e)</span>
-<span id="cb7-8"><a href></a>y <span class="op">=</span> g <span class="op">+</span> <span class="cn">e</span></span>
-<span id="cb7-9"><a href></a></span>
-<span id="cb7-10"><a href></a><span class="fu">cor</span>(<span class="fu">hcat</span>(g[idf], g[idm], g[ido]))</span>
-<span id="cb7-11"><a href></a><span class="fu">cov</span>(<span class="fu">hcat</span>(g[idf], g[idm], g[ido]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-</section>
-<section id="part-3-parent-offspring-regression" class="slide level2 smaller">
-<h2>Part 3: Parent-offspring regression</h2>
-<div class="panel-tabset">
-<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-3-1">R</a></li><li><a href="#tabset-3-2">Julia</a></li></ul>
-<div class="tab-content">
-<div id="tabset-3-1">
-<div class="cell columns column-output-location">
-<div class="column">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href></a>yp <span class="ot">=</span> <span class="fl">0.5</span> <span class="sc">*</span> (y[idf] <span class="sc">+</span> y[idm])</span>
-<span id="cb8-2"><a href></a>yo <span class="ot">=</span> y[ido]</span>
-<span id="cb8-3"><a href></a>m_po <span class="ot">=</span> <span class="fu">lm</span>(yo <span class="sc">~</span> yp)</span>
-<span id="cb8-4"><a href></a><span class="fu">summary</span>(m_po)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div><div class="column">
-<div class="cell-output cell-output-stdout">
-<pre><code>
-Call:
-lm(formula = yo ~ yp)
-
-Residuals:
-    Min      1Q  Median      3Q     Max 
--2.9114 -0.6556  0.0087  0.6526  3.4581 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) -0.00442    0.01715  -0.258    0.797    
-yp           0.48668    0.02429  20.034   &lt;2e-16 ***
----
-Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
-
-Residual standard error: 0.9394 on 2998 degrees of freedom
-Multiple R-squared:  0.1181,    Adjusted R-squared:  0.1178 
-F-statistic: 401.4 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
-</div>
-</div></div>
-</div>
-<div id="tabset-3-2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb10-1"><a href></a>yp <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> (y[idf] <span class="op">+</span> y[idm])</span>
-<span id="cb10-2"><a href></a>yo <span class="op">=</span> y[ido]</span>
-<span id="cb10-3"><a href></a>df1 <span class="op">=</span> <span class="fu">DataFrame</span>(yo <span class="op">=</span> yo, yp <span class="op">=</span> yp)</span>
-<span id="cb10-4"><a href></a>mpo <span class="op">=</span> <span class="fu">lm</span>(<span class="pp">@formula</span>(yo <span class="op">~</span> yp), df1)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
-</section>
-<section id="part-4-greml-direct-model" class="slide level2 smaller">
-<h2>Part 4: GREML direct model</h2>
-<div class="panel-tabset">
-<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-4-1">R</a></li><li><a href="#tabset-4-2">Julia</a></li></ul>
-<div class="tab-content">
-<div id="tabset-4-1">
-<div class="cell columns column-output-location">
-<div class="column">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb11"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href></a>G <span class="ot">=</span> <span class="fu">tcrossprod</span>(X_tilde) <span class="sc">/</span> M</span>
-<span id="cb11-2"><a href></a>Goo <span class="ot">=</span> G[ido, ido]</span>
-<span id="cb11-3"><a href></a>m_direct <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo, <span class="at">K =</span> Goo, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb11-4"><a href></a>m_direct<span class="sc">$</span>tau</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div><div class="column">
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.4651665</code></pre>
-</div>
-</div></div>
-</div>
-<div id="tabset-4-2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb13-1"><a href></a>G <span class="op">=</span> (X_tilde <span class="op">*</span> X_tilde<span class="op">&#39;</span>) <span class="op">/</span> M</span>
-<span id="cb13-2"><a href></a>Goo <span class="op">=</span> G[ido, ido]</span>
-<span id="cb13-3"><a href></a>Id <span class="op">=</span> <span class="fu">Diagonal</span>(<span class="fu">ones</span>(N))</span>
-<span id="cb13-4"><a href></a>r <span class="op">=</span> [Goo, Id]</span>
-<span id="cb13-5"><a href></a>mdirect <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(yo <span class="op">~</span> <span class="fl">1</span>), df1, r; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-</div>
-</div>
-</div>
+<span id="cb1-14"><a href></a>idf <span class="op">=</span> <span class="fl">1</span><span class="op">:</span>N</span>
+<span id="cb1-15"><a href></a>idm <span class="op">=</span> N<span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">2</span>N</span>
+<span id="cb1-16"><a href></a>ido <span class="op">=</span> <span class="fl">2</span>N<span class="op">+</span><span class="fl">1</span><span class="op">:</span><span class="fl">3</span>N</span>
+<span id="cb1-17"><a href></a></span>
+<span id="cb1-18"><a href></a>p_est <span class="op">=</span> <span class="fu">vec</span>(<span class="fu">mean</span>(X, dims <span class="op">=</span> <span class="fl">1</span>)) <span class="op">./</span> <span class="fl">2</span></span>
+<span id="cb1-19"><a href></a>X_tilde <span class="op">=</span> (<span class="fu">Float64</span>.(X) <span class="op">.-</span> (<span class="fl">2</span> <span class="op">.*</span> p_est)<span class="ch">&#39;) ./ sqrt.(2 .* p_est .* (1 .- p_est))&#39;</span></span>
+<span id="cb1-20"><a href></a></span>
+<span id="cb1-21"><a href></a>sigma2_g, sigma2_e <span class="op">=</span> <span class="fl">0.5</span>, <span class="fl">0.5</span></span>
+<span id="cb1-22"><a href></a>b <span class="op">=</span> <span class="fu">randn</span>(M) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_g <span class="op">/</span> M)</span>
+<span id="cb1-23"><a href></a>g <span class="op">=</span> X_tilde <span class="op">*</span> b</span>
+<span id="cb1-24"><a href></a><span class="cn">e</span> <span class="op">=</span> <span class="fu">randn</span>(<span class="fl">3</span>N) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_e)</span>
+<span id="cb1-25"><a href></a>y <span class="op">=</span> g <span class="op">+</span> <span class="cn">e</span></span>
+<span id="cb1-26"><a href></a></span>
+<span id="cb1-27"><a href></a>yp <span class="op">=</span> <span class="fl">0.5</span> <span class="op">*</span> (y[idf] <span class="op">+</span> y[idm])</span>
+<span id="cb1-28"><a href></a>yo <span class="op">=</span> y[ido]</span>
+<span id="cb1-29"><a href></a>df1 <span class="op">=</span> <span class="fu">DataFrame</span>(yo <span class="op">=</span> yo, yp <span class="op">=</span> yp)</span>
+<span id="cb1-30"><a href></a>mpo <span class="op">=</span> <span class="fu">lm</span>(<span class="pp">@formula</span>(yo <span class="op">~</span> yp), df1)</span>
+<span id="cb1-31"><a href></a></span>
+<span id="cb1-32"><a href></a>G <span class="op">=</span> (X_tilde <span class="op">*</span> X_tilde<span class="op">&#39;</span>) <span class="op">/</span> M</span>
+<span id="cb1-33"><a href></a>Goo <span class="op">=</span> G[ido, ido]</span>
+<span id="cb1-34"><a href></a>Id <span class="op">=</span> <span class="fu">Diagonal</span>(<span class="fu">ones</span>(N))</span>
+<span id="cb1-35"><a href></a>r <span class="op">=</span> [Goo, Id]</span>
+<span id="cb1-36"><a href></a>mdirect <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(yo <span class="op">~</span> <span class="fl">1</span>), df1, r; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="part-5-simulate-a-maternal-indirect-genetic-effect" class="slide level2 smaller">
 <h2>Part 5: Simulate a maternal indirect genetic effect</h2>
 <div class="panel-tabset">
-<ul id="tabset-5" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-5-1">R</a></li><li><a href="#tabset-5-2">Julia</a></li></ul>
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-1-1">R</a></li><li><a href="#tabset-1-2">Julia</a></li></ul>
 <div class="tab-content">
-<div id="tabset-5-1">
+<div id="tabset-1-1">
 <div class="cell columns column-output-location">
 <div class="column">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href></a>Sg <span class="ot">=</span> <span class="fu">rbind</span>(</span>
-<span id="cb14-2"><a href></a>  <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.2</span>),</span>
-<span id="cb14-3"><a href></a>  <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.5</span>)</span>
-<span id="cb14-4"><a href></a>)</span>
-<span id="cb14-5"><a href></a>s2_e <span class="ot">=</span> <span class="fl">0.1</span></span>
-<span id="cb14-6"><a href></a>B <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">2</span> <span class="sc">*</span> M), M, <span class="dv">2</span>) <span class="sc">%*%</span> <span class="fu">chol</span>(Sg <span class="sc">/</span> M)</span>
-<span id="cb14-7"><a href></a>g_m <span class="ot">=</span> X_tilde <span class="sc">%*%</span> B[, <span class="dv">1</span>]</span>
-<span id="cb14-8"><a href></a>g_d <span class="ot">=</span> X_tilde <span class="sc">%*%</span> B[, <span class="dv">2</span>]</span>
-<span id="cb14-9"><a href></a>e_2 <span class="ot">=</span> g_m[idm] <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="dv">0</span>, <span class="fu">sqrt</span>(s2_e))</span>
-<span id="cb14-10"><a href></a>yo_2 <span class="ot">=</span> g_d[ido] <span class="sc">+</span> e_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href></a>Sg <span class="ot">=</span> <span class="fu">rbind</span>(</span>
+<span id="cb2-2"><a href></a>  <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.2</span>),</span>
+<span id="cb2-3"><a href></a>  <span class="fu">c</span>(<span class="fl">0.2</span>, <span class="fl">0.5</span>)</span>
+<span id="cb2-4"><a href></a>)</span>
+<span id="cb2-5"><a href></a>s2_e <span class="ot">=</span> <span class="fl">0.1</span></span>
+<span id="cb2-6"><a href></a>B <span class="ot">=</span> <span class="fu">matrix</span>(<span class="fu">rnorm</span>(<span class="dv">2</span> <span class="sc">*</span> M), M, <span class="dv">2</span>) <span class="sc">%*%</span> <span class="fu">chol</span>(Sg <span class="sc">/</span> M)</span>
+<span id="cb2-7"><a href></a>g_m <span class="ot">=</span> X_tilde <span class="sc">%*%</span> B[, <span class="dv">1</span>]</span>
+<span id="cb2-8"><a href></a>g_d <span class="ot">=</span> X_tilde <span class="sc">%*%</span> B[, <span class="dv">2</span>]</span>
+<span id="cb2-9"><a href></a>e_2 <span class="ot">=</span> g_m[idm] <span class="sc">+</span> <span class="fu">rnorm</span>(N, <span class="dv">0</span>, <span class="fu">sqrt</span>(s2_e))</span>
+<span id="cb2-10"><a href></a>yo_2 <span class="ot">=</span> g_d[ido] <span class="sc">+</span> e_2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div><div class="column">
 
 </div></div>
 </div>
-<div id="tabset-5-2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb15-1"><a href></a>Sigma_g <span class="op">=</span> [<span class="fl">0.2</span> <span class="fl">0.2</span>; <span class="fl">0.2</span> <span class="fl">0.5</span>]</span>
-<span id="cb15-2"><a href></a>sigma2_e <span class="op">=</span> <span class="fl">0.1</span></span>
-<span id="cb15-3"><a href></a>C <span class="op">=</span> <span class="fu">cholesky</span>(<span class="fu">Symmetric</span>(Sigma_g <span class="op">/</span> M)).U</span>
-<span id="cb15-4"><a href></a>B <span class="op">=</span> <span class="fu">randn</span>(M, <span class="fl">2</span>) <span class="op">*</span> C</span>
-<span id="cb15-5"><a href></a>g_m <span class="op">=</span> X_tilde <span class="op">*</span> B[<span class="op">:</span>, <span class="fl">1</span>]</span>
-<span id="cb15-6"><a href></a>g_d <span class="op">=</span> X_tilde <span class="op">*</span> B[<span class="op">:</span>, <span class="fl">2</span>]</span>
-<span id="cb15-7"><a href></a>e2 <span class="op">=</span> g_m[idm] <span class="op">+</span> <span class="fu">randn</span>(N) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_e)</span>
-<span id="cb15-8"><a href></a>yo2 <span class="op">=</span> g_d[ido] <span class="op">+</span> e2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tabset-1-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href></a>Sigma_g <span class="op">=</span> [<span class="fl">0.2</span> <span class="fl">0.2</span>; <span class="fl">0.2</span> <span class="fl">0.5</span>]</span>
+<span id="cb3-2"><a href></a>sigma2_e <span class="op">=</span> <span class="fl">0.1</span></span>
+<span id="cb3-3"><a href></a>C <span class="op">=</span> <span class="fu">cholesky</span>(<span class="fu">Symmetric</span>(Sigma_g <span class="op">/</span> M)).U</span>
+<span id="cb3-4"><a href></a>B <span class="op">=</span> <span class="fu">randn</span>(M, <span class="fl">2</span>) <span class="op">*</span> C</span>
+<span id="cb3-5"><a href></a>g_m <span class="op">=</span> X_tilde <span class="op">*</span> B[<span class="op">:</span>, <span class="fl">1</span>]</span>
+<span id="cb3-6"><a href></a>g_d <span class="op">=</span> X_tilde <span class="op">*</span> B[<span class="op">:</span>, <span class="fl">2</span>]</span>
+<span id="cb3-7"><a href></a>e2 <span class="op">=</span> g_m[idm] <span class="op">+</span> <span class="fu">randn</span>(N) <span class="op">*</span> <span class="fu">sqrt</span>(sigma2_e)</span>
+<span id="cb3-8"><a href></a>yo2 <span class="op">=</span> g_d[ido] <span class="op">+</span> e2</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -2826,22 +2890,22 @@ F-statistic: 401.4 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
 <section id="part-6-fit-the-wrong-direct-only-model" class="slide level2 smaller">
 <h2>Part 6: Fit the wrong direct-only model</h2>
 <div class="panel-tabset">
-<ul id="tabset-6" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-6-1">R</a></li><li><a href="#tabset-6-2">Julia</a></li></ul>
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-2-1">R</a></li><li><a href="#tabset-2-2">Julia</a></li></ul>
 <div class="tab-content">
-<div id="tabset-6-1">
+<div id="tabset-2-1">
 <div class="cell columns column-output-location">
 <div class="column">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href></a>m_direct_2 <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo_2, <span class="at">K =</span> Goo, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb16-2"><a href></a>m_direct_2<span class="sc">$</span>tau</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a>m_direct_2 <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo_2, <span class="at">K =</span> Goo, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb4-2"><a href></a>m_direct_2<span class="sc">$</span>tau</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div><div class="column">
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.7453989</code></pre>
+<pre><code>[1] 0.7340484</code></pre>
 </div>
 </div></div>
 </div>
-<div id="tabset-6-2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb18-1"><a href></a>df2 <span class="op">=</span> <span class="fu">DataFrame</span>(y <span class="op">=</span> yo2)</span>
-<span id="cb18-2"><a href></a>mdirect2 <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(y <span class="op">~</span> <span class="fl">1</span>), df2, r; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tabset-2-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href></a>df2 <span class="op">=</span> <span class="fu">DataFrame</span>(y <span class="op">=</span> yo2)</span>
+<span id="cb6-2"><a href></a>mdirect2 <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(y <span class="op">~</span> <span class="fl">1</span>), df2, r; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -2849,26 +2913,26 @@ F-statistic: 401.4 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
 <section id="part-7-fit-the-maternal-model-m-gcta" class="slide level2 smaller">
 <h2>Part 7: Fit the maternal model (M-GCTA)</h2>
 <div class="panel-tabset">
-<ul id="tabset-7" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-7-1">R</a></li><li><a href="#tabset-7-2">Julia</a></li></ul>
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-3-1">R</a></li><li><a href="#tabset-3-2">Julia</a></li></ul>
 <div class="tab-content">
-<div id="tabset-7-1">
+<div id="tabset-3-1">
 <div class="cell columns column-output-location">
 <div class="column">
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb19"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href></a>Gmm <span class="ot">=</span> G[idm, idm]</span>
-<span id="cb19-2"><a href></a>Dom <span class="ot">=</span> G[ido, idm] <span class="sc">+</span> G[idm, ido]</span>
-<span id="cb19-3"><a href></a>m_maternal <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo_2, <span class="at">K =</span> <span class="fu">list</span>(Gmm, Dom, Goo), <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb19-4"><a href></a>m_maternal<span class="sc">$</span>tau</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href></a>Gmm <span class="ot">=</span> G[idm, idm]</span>
+<span id="cb7-2"><a href></a>Dom <span class="ot">=</span> G[ido, idm] <span class="sc">+</span> G[idm, ido]</span>
+<span id="cb7-3"><a href></a>m_maternal <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo_2, <span class="at">K =</span> <span class="fu">list</span>(Gmm, Dom, Goo), <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb7-4"><a href></a>m_maternal<span class="sc">$</span>tau</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div><div class="column">
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.1680804 0.2082500 0.4918884</code></pre>
+<pre><code>[1] 0.2851037 0.1212508 0.5192185</code></pre>
 </div>
 </div></div>
 </div>
-<div id="tabset-7-2">
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb21"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb21-1"><a href></a>Gmm <span class="op">=</span> G[idm, idm]</span>
-<span id="cb21-2"><a href></a>Dom <span class="op">=</span> G[ido, idm] <span class="op">+</span> G[idm, ido]</span>
-<span id="cb21-3"><a href></a>r2 <span class="op">=</span> [Gmm, Dom, Goo, Id]</span>
-<span id="cb21-4"><a href></a>mmaternal <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(y <span class="op">~</span> <span class="fl">1</span>), df2, r2; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div id="tabset-3-2">
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href></a>Gmm <span class="op">=</span> G[idm, idm]</span>
+<span id="cb9-2"><a href></a>Dom <span class="op">=</span> G[ido, idm] <span class="op">+</span> G[idm, ido]</span>
+<span id="cb9-3"><a href></a>r2 <span class="op">=</span> [Gmm, Dom, Goo, Id]</span>
+<span id="cb9-4"><a href></a>mmaternal <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(y <span class="op">~</span> <span class="fl">1</span>), df2, r2; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
 </div>
 </div>
@@ -2928,9 +2992,9 @@ F-statistic: 401.4 on 1 and 2998 DF,  p-value: &lt; 2.2e-16</code></pre>
 <li><code>practical/ldsc/data/ref/weights_hm3_no_hla/</code></li>
 </ul>
 <p>Run the course workflow in this order from the repository root. The practical is intended to work in <strong>Git Bash on Windows</strong>, with the scripts handling the local Python and LDSC setup.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb22"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb22-1"><a href></a><span class="ex">Rscript</span> practical/ldsc/prepare_ldsc_data.R <span class="at">--force</span></span>
-<span id="cb22-2"><a href></a><span class="fu">bash</span> practical/ldsc/install_ldsc.sh</span>
-<span id="cb22-3"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href></a><span class="ex">Rscript</span> practical/ldsc/prepare_ldsc_data.R <span class="at">--force</span></span>
+<span id="cb10-2"><a href></a><span class="fu">bash</span> practical/ldsc/install_ldsc.sh</span>
+<span id="cb10-3"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">

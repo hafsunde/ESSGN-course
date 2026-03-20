@@ -468,7 +468,7 @@ In this lecture, we assume direct assortment where $s=y$, but note that assortme
 
 ## Genetic similarity spreads across many SNP pairs
 
-The genetic value is a weighted sum of SNPs: $g_i = \sum_{j=1}^{M} \beta_j x_{ij}$. Then partner genetic covariance therefore expands as
+The genetic value is a weighted sum of SNPs: $g_i = \sum_{j=1}^{M} \beta_j x_{ij}$. Genotypic covariance between mates therefore expands as
 
 $$
 \text{Cov}(g_m,g_p)
@@ -479,7 +479,7 @@ $$
  \beta_j\beta_k \,\text{Cov}(x_{mj}, x_{pk})
 $$
 
-Phenotype matching therefore induces many small SNP-level correlations across partners. Importantly, all these correlations are **positive** for trait-associated SNPs, because the matching process aligns the genetic values of the partners.
+Assortative mating therefore induces many small SNP-level correlations across partners. Importantly, all these correlations are **positive** for trait-associated SNPs, because the matching process aligns the genetic values of the partners.
 
 ::: {.callout-note}
 To calculate $\text{Cov}(x_{mj}, x_{pk})$, we can use the same regression logic as before where we regress the two SNPs on their phenotype and combine that with the phenotypic covariance: $\frac{\text{Cov}(x_{mj}, y_m)}{\text{Var}(y_m)} \text{Cov}(y_m, y_p) \frac{\text{Cov}(y_p, x_{pk})}{\text{Var}(y_p)}$.
@@ -579,10 +579,33 @@ $$
 | When | Where | Interpretation |
 |--|---|-----|
 | 1 generation | 	Across haplotypes (trans)  | Maternal and paternal contributions become aligned |
-| ≥2 generations | Within haplotypes (cis) | Aligned alleles begin to co-occur within haplotypes |
+| 2+ generations | Within haplotypes (cis) | Aligned alleles begin to co-occur within haplotypes |
 :::
 
-## Why marginal SNP effects now tag distant variants {.smaller}
+## Why should we care? {.huge background-color="#5b0f0f" color="white" .center}
+
+<br>
+
+::: {style="font-size: 1.5em;"}
+Assortative mating in earlier generations means that **trait-associated SNPs are not independent from each other**.
+:::
+
+## Which estimands change once genotype covariance changes? {.smaller}
+
+If assortative mating changes $\text{Cov}(x_j, x_k)$, then any method built on assuming $\text{Cov}(x_j, x_k) = 0$ changes too.
+
+::: {style="font-size: 0.8em;"}
+- **GWAS marginal effects**, because $\tilde{\beta}_j$ absorbs tagged signal from other causal  loci across the genome
+- **LDSC**, because the GWAS test statistics are inflated by long-range LD, which is not accounted for by the local LD score or the regression weights
+- **GREML**, because genome-wide similarity among "unrelated" people can carry trait-relevant covariance
+- **Family resemblance**, because the same induced structure is inherited within pedigrees
+:::
+
+::: {.callout-note}
+Same mechanism, different estimands: once assortative mating changes the correlation structure of genotypes, it changes the targets of several methods at once.
+:::
+
+## Payoff 1: marginal SNP effects no longer look purely local {.smaller}
 
 Again set the rGE term aside and focus on the LD component:
 
@@ -596,53 +619,55 @@ Under local LD, the sum is dominated by nearby loci. Under assortative mating, s
 
 ::: {.callout-note}
 So a marginal hit at SNP $j$ can partly reflect genome-wide covariance structure, not only local biology at SNP $j$.
+
+That means the GWAS summary statistics are already altered before any downstream summary-statistic method is applied.
 :::
 
-## Why $\text{Var}(g)$ increases for a few generations {.smaller}
+## Why this matters for LD score regression {.smaller}
 
-Using the haplotype decomposition,
-
-$$
-\text{Var}(g_c)
-=
-\text{Var}(g_c^{(m)})
-+ \text{Var}(g_c^{(p)})
-+ 2\text{Cov}(g_c^{(m)}, g_c^{(p)})
-$$
-
-After one generation, the increase comes mainly from the positive **trans** term $2\text{Cov}(g_c^{(m)},g_c^{(p)})$. After later generations, each haplotype contribution also contains positive **cis** terms:
+In Part 1, the LDSC logic was:
 
 $$
-\text{Var}(g_c^{(m)})
-=
-\sum_{j=1}^{M}\sum_{k=1}^{M}
-\text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
+E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 $$
 
-and similarly for $g_c^{(p)}$.
+where $\ell_j$ summarizes **local** LD around SNP $j$.
 
-| Generation | Main covariance pattern | Expected $\text{Var}(g)$ |
-|---|---|---|
-| Random mating baseline | Little long-range covariance | Baseline |
-| After 1 generation | Positive trans covariance | Higher |
-| After several generations | Trans + cis covariance | Higher still |
-| Equilibrium | Assortment balanced by recombination | Plateau |
+- Under assortative mating, some of the extra signal in $\chi_j^2$ comes from **distant** trait-relevant loci
+- So the LDSC slope can reflect not only direct polygenic signal, but also AM-induced long-range tagging
+- More generally, summary-statistic methods are working on GWAS results that already contain the AM signal
 
-::: {.callout-note}
-This trajectory is schematic: positive assortment tends to increase genetic variance for a few generations and then approach a new equilibrium, not increase forever.
+::: {.callout-important}
+The key issue is upstream: assortative mating changes the **marginal coefficients themselves**, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.
 :::
 
-## Family resemblance increases under assortative mating
+## Payoff 2: GREML with strangers is not automatically protected {.smaller}
 
-Once parental genomes are more aligned, resemblance among relatives increases for the trait under assortment.
-
-If mates are positively correlated in genetic value, then:
+In Session 1, ordinary GREML used genotype similarity to model phenotype similarity:
 
 $$
-\text{Cov}(g_m, g_p) > 0
+\mathbf{y} = \mathbf{g} + \mathbf{e},
+\qquad
+\mathbf{g} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G})
 $$
 
-and therefore:
+For unrelated pairs, the basic idea is still covariance matching:
+
+$$
+\text{Cov}(y_i, y_{\ell}) \approx \sigma_g^2 G_{i\ell}
+$$
+
+Under assortative mating, slight genome-wide similarity between "strangers" can also carry **trait-relevant long-range covariance**, because the induced LD is population-wide rather than pedigree-specific.
+
+::: {.callout-important}
+Using strangers removes close family relationships, but it does **not** remove population covariance created by mating structure.
+
+So the fitted GREML variance component can absorb AM-induced covariance rather than only the random-mating additive variance.
+:::
+
+## Short bridge: relatives become more similar too
+
+If mates are positively correlated in genetic value, the same covariance structure also increases resemblance among relatives for the assorted trait:
 
 $$
 \text{Var}\!\left(\frac{g_m + g_p}{2}\right)
@@ -652,23 +677,36 @@ $$
 $$
 
 ::: {.callout-note}
-The same induced covariance structure now appears in two places:
-- in GWAS, through long-range tagging
-- in families, through stronger resemblance among relatives
+This is the bridge to Part 4:
+
+- family designs can remove much of the **between-family** assortment signal by holding the parental pair fixed
+- but inherited local and long-range LD do **not** disappear inside families
 :::
 
-## Summary: assortative mating changes GWAS, LD, and family resemblance
+## Teaser: cross-trait assortment can distort $r_g$ {.smaller}
+
+If people sort on one trait, or on a bundle of traits related to both $y_1$ and $y_2$, then alleles increasing trait 1 can become correlated with alleles increasing trait 2 across the genome.
+
+- Cross-trait GWAS summary statistics can then contain covariance not due only to overlap of direct effects
+- So an estimated genetic correlation from marginal data need not equal pure overlap of direct effects
+
+::: {.callout-note}
+This is one place where **score correlation** and **effect correlation** can come apart. We will keep that as a teaser here rather than do the full derivation.
+:::
+
+## Summary: assortative mating changes the inputs to GWAS, LDSC, and GREML
 
 | Step | Main lesson |
 |---|---|
 | Mates match on phenotype | Start with $\text{Cov}(y_m,y_p) > 0$ |
 | First generation | Mostly trans covariance appears |
 | Later generations | Cis covariance and long-range LD build up |
-| Population consequence | $\text{Var}(g)$ rises for a while, then approaches equilibrium |
-| Family consequence | Relatives resemble each other more |
+| GWAS / LDSC consequence | Marginal summary statistics absorb distant tagged signal |
+| GREML consequence | Unrelated-pair similarity can absorb AM-induced covariance |
+| Family-design bridge | Comparing relatives helps with between-family structure, but inherited long-range LD remains |
 
 ::: {.callout-note}
-Again, marginal associations reflect **induced correlation structure**, not only direct causal effects.
+Before Part 3, the big picture is: Part 1 and Part 2 mainly changed associations through **correlated genotypes**. Next we turn to **correlated environments**.
 :::
 
 # Part 3: Gene-Environment Correlations {background-color="#2c3e50" style="color: white;"}
@@ -681,27 +719,32 @@ $$
 \tilde{\beta}_j = \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
 $$
 
-Part 3 is about a new question:
+Part 3 is about a new question: **What can generate $\text{Cov}(x_j, e)$?**
 
-$$
-\text{What can generate } \text{Cov}(x_j, e)?
-$$
 
 ::: {.callout-note}
 In Part 1 and Part 2, the extra terms came mainly from **correlated genotypes**. Here the focus is **correlated environments**.
 :::
 
 ## Where can $\text{Cov}(x_j,e)$ come from?
-
+::: {style="font-size: 0.8em;"}
 | Source | Why genotype and environment become correlated |
-|---|---|
-| Passive rGE | Parents transmit both genes and family environments |
+|--|----|
 | Indirect genetic effects | Related people's genotypes shape the focal person's environment |
 | Stratification / population structure | Allele frequencies and environments differ across groups |
-| Residual confounding | Selection, ascertainment, measurement, or omitted structure |
-
+| Residual confounding | Selection, ascertainment, or measurement structure |
+| Assortative mating | Induced correlation between paternal genotype and maternal environment (and vice versa) |
+:::
 ::: {.callout-note}
 Different mechanisms can produce the **same statistical symptom** in a marginal GWAS coefficient: $\text{Cov}(x_j,e) \neq 0$.
+:::
+::: {.callout-important}
+## Only passive gene-environment correlation is confounding
+- **Passive $r_{ge}$**: Genotype and environment are correlated because of shared causes (e.g., parents)
+- **Active / Evocative $r_{ge}$**: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods)
+
+Crucially, **active and evocative gene-environment correlations are not confounding**. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. 
+
 :::
 
 ## Indirect genetic effects
@@ -875,12 +918,27 @@ Within a family, many background features are held much more constant:
 
 What still differs is the random segregation of alleles from parents to offspring.
 
+Recall from Session 1:
+
+$$
+x_{jc} =
+\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\text{paternal transmission}}
++
+\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\text{maternal transmission}}
+$$
+
+$$
+\text{Var}(x_{jc})
+= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm})
++ \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\text{segregation variance}}
+$$
+
 ::: {.callout-note}
-This is the callback to Session 1: the **random segregation deviations** do the heavy lifting. Once family background is mostly held fixed, identification comes from the segregation variance created by which alleles each sibling happened to inherit.
+This is the callback to Session 1: the **random segregation deviations** do the heavy lifting. The key term is the segregation variance, and it is **random**. It comes from which alleles happened to be transmitted, not from stable differences in ancestry, parents, or shared family background.
 :::
 
 ::: {.callout-note}
-So the key idea is simple: family designs use **within-family genetic differences** to get closer to direct effects than ordinary population GWAS.
+Across siblings, the parents are the same, so much of the family background is fixed. What differs is the realized draw of the $\epsilon$ terms. That is why family designs use **within-family random segregation** to get closer to direct effects than ordinary population GWAS.
 :::
 
 ## What family designs are good for
@@ -889,7 +947,7 @@ So the key idea is simple: family designs use **within-family genetic difference
 |---|---|
 | Why can they help with stratification? | Relatives are compared against each other rather than against people from different ancestry backgrounds |
 | Why can they help with parental genetic nurture? | Siblings share the same parents, so much of the parental background is held fixed |
-| Why can they help with assortative mating? | The same parental pair generated the compared offspring |
+| Why can they help with assortative mating? | They hold the parental pair fixed, removing much of the between-family assortment signal |
 | Why are they appealing conceptually? | They target the same confounding problem we have discussed all day, but by changing the design rather than adding more covariates |
 
 ## What they do **not** magically solve
@@ -914,13 +972,63 @@ Family designs mainly help with the **estimated SNP weight** by making the margi
 But many downstream uses depend on both the weight and the realized genotype:
 
 $$
-\hat S_i^{F} = \sum_j \hat{\tilde{\beta}}_j^{F} x_{ij}
+\mathrm{PGS}_i^{F} = \sum_j \hat{\tilde{\beta}}_j^{F} x_{ij}
 $$
 
-That does **not** mean the score itself is automatically unconfounded.
+That does **not** mean the score itself is automatically unconfounded, because the observed SNPs are not "purified" by the family design.
+
+Two problems can still remain at the SNP level:
+
+- $x_{ij}$ can still be correlated with other causal SNPs through local or long-range LD
+- $x_{ij}$ can still be correlated with environments, so $\text{Cov}(x_{ij}, e_i)$ need not vanish
 
 ::: {.callout-important}
-Even if family GWAS improves $\hat{\tilde{\beta}}_j^{F}$, the SNP itself can still be correlated with environments or with other causal loci through LD. So objects like $\hat{\tilde{\beta}}_j^{F} x_{ij}$ or a within-family polygenic score can still satisfy $\text{Cov}(x_{ij}, e_i) \neq 0$.
+So even if family GWAS improves $\hat{\tilde{\beta}}_j^{F}$, a tool built from **weights times observed SNPs** can still inherit bias from the SNP side. In other words, better weights do not guarantee that polygenic scores or other genotype-based predictors are unconfounded.
+:::
+
+## Why adjust for parental or sibling polygenic scores?
+
+At the polygenic score level, the same segregation logic still applies. A focal person's score can be written as:
+
+$$
+\mathrm{PGS}_F = \frac{1}{2}\left(\mathrm{PGS}_p + \mathrm{PGS}_m\right) + \Delta_F
+$$
+
+where:
+
+- $\frac{1}{2}(\mathrm{PGS}_p + \mathrm{PGS}_m)$ is the expected family background in the score
+- $\Delta_F$ is the **random segregation deviation** in the score
+
+If the focal phenotype depends both on the focal genotype and on family-level genetic background, then regressing $y_F$ on $\mathrm{PGS}_F$ alone will mix those two sources of variation.
+
+::: {.callout-note}
+So the problem is the same as before: the observed polygenic score contains both a **between-family component** and a **within-family segregation component**.
+:::
+
+## Why the adjustment helps
+
+If we fit
+
+$$
+y_F = b_1 \mathrm{PGS}_F + b_2 \overline{\mathrm{PGS}}_{parent} + \varepsilon_F
+\qquad \text{or} \qquad
+y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
+$$
+
+then the extra family score absorbs part of the shared family-genetic background.
+
+That means the remaining identifying variation in $\mathrm{PGS}_F$ is closer to the segregation term $\Delta_F$:
+
+- adjusting for **parental** scores targets the family background more directly
+- adjusting for a **sibling** score uses another child of the same parents as a proxy for that shared background
+- in both cases, the coefficient on $\mathrm{PGS}_F$ becomes more within-family in spirit
+
+::: {.callout-important}
+This is why these controls can help: they soak up the part of the focal score that is predictable from the family, leaving more of the signal that comes from the focal person's **random segregation draw**.
+:::
+
+::: {.callout-note}
+But again, this is not magic. LD, residual $\text{Cov}(x,e)$, sibling indirect effects, and measurement error in the scores can still matter.
 :::
 
 ## Mixed-model family designs
