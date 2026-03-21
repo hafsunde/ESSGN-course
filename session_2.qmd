@@ -35,21 +35,16 @@ $$
 
 ## Before we begin {.smaller}
 
-This lecture is mostly **theoretical**. The goal is to understand why our usual genetic methods can become hard to interpret when correlation structure enters the picture.
-
-- We will focus on mechanisms that can distort marginal SNP associations and variance decompositions.
-- So the main takeaway is not a ready-to-use practical method, but a clearer picture of **what can go wrong** and why.
+This lecture is mostly **theoretical**. The goal is to understand why our usual genetic methods can become hard to interpret when correlation structure enters the picture. So the main takeaway is not a ready-to-use practical method, but a clearer picture of **what can go wrong** and why.
 
 **Quick notation reminder**
 
 - $x_{ij}$: genotype of individual $i$ at SNP / locus $j$
-- $x_j$: shorthand for the genotype at SNP $j$ when the individual index is implicit
 - $\beta_j$: direct causal effect of SNP $j$
 - $\tilde{\beta}_j$: marginal GWAS coefficient at SNP $j$
 - $g_i = \sum_{j=1}^{M} \beta_j x_{ij}$: additive genetic value
 - $e_i$: environmental / residual component
 - $y_i = g_i + e_i$: phenotype
-- $M$: number of SNPs / loci in the model
 
 
 ## What does a GWAS estimate?

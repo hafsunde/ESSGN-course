@@ -1079,21 +1079,15 @@ Espen Eilertsen &amp; Hans Fredrik Sunde
 </section>
 <section id="before-we-begin" class="slide level2 smaller">
 <h2>Before we begin</h2>
-<p>This lecture is mostly <strong>theoretical</strong>. The goal is to understand why our usual genetic methods can become hard to interpret when correlation structure enters the picture.</p>
-<ul>
-<li>We will focus on mechanisms that can distort marginal SNP associations and variance decompositions.</li>
-<li>So the main takeaway is not a ready-to-use practical method, but a clearer picture of <strong>what can go wrong</strong> and why.</li>
-</ul>
+<p>This lecture is mostly <strong>theoretical</strong>. The goal is to understand why our usual genetic methods can become hard to interpret when correlation structure enters the picture. So the main takeaway is not a ready-to-use practical method, but a clearer picture of <strong>what can go wrong</strong> and why.</p>
 <p><strong>Quick notation reminder</strong></p>
 <ul>
 <li><span class="math inline">\(x_{ij}\)</span>: genotype of individual <span class="math inline">\(i\)</span> at SNP / locus <span class="math inline">\(j\)</span></li>
-<li><span class="math inline">\(x_j\)</span>: shorthand for the genotype at SNP <span class="math inline">\(j\)</span> when the individual index is implicit</li>
 <li><span class="math inline">\(\beta_j\)</span>: direct causal effect of SNP <span class="math inline">\(j\)</span></li>
 <li><span class="math inline">\(\tilde{\beta}_j\)</span>: marginal GWAS coefficient at SNP <span class="math inline">\(j\)</span></li>
 <li><span class="math inline">\(g_i = \sum_{j=1}^{M} \beta_j x_{ij}\)</span>: additive genetic value</li>
 <li><span class="math inline">\(e_i\)</span>: environmental / residual component</li>
 <li><span class="math inline">\(y_i = g_i + e_i\)</span>: phenotype</li>
-<li><span class="math inline">\(M\)</span>: number of SNPs / loci in the model</li>
 </ul>
 </section>
 <section id="what-does-a-gwas-estimate" class="slide level2">
