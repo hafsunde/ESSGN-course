@@ -33,9 +33,27 @@ $$
 $$
 </div>
 
+## Before we begin {.smaller}
+
+This lecture is mostly **theoretical**. The goal is to understand why our usual genetic methods can become hard to interpret when correlation structure enters the picture.
+
+- We will focus on mechanisms that can distort marginal SNP associations and variance decompositions.
+- So the main takeaway is not a ready-to-use practical method, but a clearer picture of **what can go wrong** and why.
+
+**Quick notation reminder**
+
+- $x_{ij}$: genotype of individual $i$ at SNP / locus $j$
+- $x_j$: shorthand for the genotype at SNP $j$ when the individual index is implicit
+- $\beta_j$: direct causal effect of SNP $j$
+- $\tilde{\beta}_j$: marginal GWAS coefficient at SNP $j$
+- $g_i = \sum_{j=1}^{M} \beta_j x_{ij}$: additive genetic value
+- $e_i$: environmental / residual component
+- $y_i = g_i + e_i$: phenotype
+- $M$: number of SNPs / loci in the model
+
 
 ## What does a GWAS estimate?
-The infensimal model says that the phenotype is a sum of many small genetic effects plus an environment:
+The infinitesimal model says that the phenotype is a sum of many small genetic effects plus an environment:
 $$
 y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
 $$
@@ -700,7 +718,7 @@ ggplot(df_var, aes(x = generation, y = sg2)) +
 Changes in genetic variance changes the ratio of genetic to phenotypic variance: 
 $$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2)$$
 
-**Assortative mating therefore changes the heritability**. Usually, it **increases**, but with correlated environmental effects, the net effects are more complex and heritability can decrease:
+**Assortative mating therefore changes the heritability**. Usually, it **increases**, but with correlated environmental effects, the environmental variance changes too and the net effects are more complex:
 $$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2 + 2\sigma_{g,e,\infty})$$
 
 :::
@@ -743,7 +761,9 @@ $$
 Under local LD, the sum is dominated by nearby loci. Under assortative mating, some of those covariance terms can involve **distant** causal variants.
 
 ::: {.callout-note}
-So a marginal hit at SNP $j$ can partly reflect genome-wide covariance structure, not only local biology at SNP $j$.
+So the upward inflation is not generic to every SNP.
+
+It is largest for SNPs that are themselves **causal**, or that sit close enough to causal loci to tag them through LD. For those loci, a marginal hit at SNP $j$ can partly reflect genome-wide covariance structure, not only local biology at SNP $j$.
 
 That means the GWAS summary statistics are already altered before any downstream summary-statistic method is applied.
 :::
@@ -759,11 +779,13 @@ $$
 where $\ell_j$ summarizes **local** LD around SNP $j$.
 
 - Under assortative mating, some of the extra signal in $\chi_j^2$ comes from **distant** trait-relevant loci
-- LDSC works from marginal GWAS statistics plus **local** LD scores, so it does not directly represent that genome-wide dependence
-- Border et al. show upward bias under AM, so LDSC can drift toward the inflated equilibrium signal $h_\infty^2$ rather than the panmictic baseline $h_0^2$
+- LDSC still uses **local** LD scores, so that genome-wide dependence is not well represented in the regression
+- The slope can therefore attribute too much signal to heritability, so LDSC can **overestimate $h^2$**
 
 ::: {.callout-important}
 The key misspecification is upstream: assortative mating changes the **marginal coefficients themselves**, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.
+
+LDSC is therefore not just reading off the new genetic variance after assortative mating; it can overestimate even that.
 :::
 
 ::: {.callout-note appearance="minimal"}
@@ -785,30 +807,27 @@ GREML keeps fitting the Session 1 model $\sigma_g^2 \mathbf{G} + \sigma_e^2 \mat
 
 Under assortative mating, this is the wrong model and estimates will be biased.
 
-- In realistic samples, GREML is generally  **upwardly biased** under assortative mating
+- In realistic samples, GREML is generally **upwardly biased** under assortative mating
   - Unfortunately, the size of that bias can be hard to quantify and is highly dependent on sample size
-- As sample sizes increase, the estimate drift toward the random-mating heritability, $h_0^2$.
-  - In very large samples (N > 200K), the bias can therefore be negative (because $h_0^2 < h_\infty^2$).
+- As sample sizes increase, the estimate drifts toward the random-mating heritability, $h^2_0$
+  - In very large samples (N > 200K), GREML can therefore be **downwardly biased** because $h_0^2 < h_\infty^2$
 
 :::
 
-## Short bridge: relatives really do become more similar
+## Consequence 4: family resemblance changes too {.smaller}
 
-If mates are positively correlated in genetic value, the same covariance structure also increases resemblance among relatives for the assorted trait:
+At equilibrium, the genotypic correlation between $d$-degree relatives becomes
 
 $$
-\text{Var}\!\left(\frac{g_m + g_p}{2}\right)
-= \frac{1}{4}\text{Var}(g_m)
-+ \frac{1}{4}\text{Var}(g_p)
-+ \frac{1}{2}\text{Cov}(g_m, g_p)
+r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 $$
+
+Family-based estimators typically assume $r_{g,d} = (1/2)^d$, but that is only true under random mating
 
 ::: {.callout-note}
-This is a genuine change in covariance structure, not only an estimator problem.
-
-- Within-family designs reduce much of the **between-family** assortment signal by holding the parental pair fixed
-- But inherited local and long-range LD do **not** disappear inside families, so assortative-mating structure is reduced, not erased
+The exact bias is method dependent, but classic twin methods and midparent-offspring regression are **downwardly biased** under positive assortative mating.
 :::
+
 
 ## Generalization: xAM can inflate $r_g$ {.smaller}
 
@@ -836,10 +855,10 @@ Source: Border et al. (2022, *Science*) and Supplementary Information.
 |---|---|
 | Mates match on phenotype | Start with $\text{Cov}(y_m,y_p) > 0$ |
 | Repeated AM | Trans covariance appears first; cis covariance and long-range LD build up over generations |
-| Population target | Heritability can move from $h_0^2$ toward the larger equilibrium quantity $h_\infty^2$ |
+| Population target | Heritability itself can change because long-range LD adds genetic variance |
 | GWAS / LDSC | Marginal summary statistics absorb distant tagged signal, pushing summary-statistic $h^2$ upward |
-| REML / GREML | Standard GREML does not really "see" most of the AM-induced long-range LD in $\mathbf{G}$, so much of that extra variance is left in the residual and the estimate drifts toward $h_0^2$ |
-| Relatives / within-family | Resemblance increases; within-family designs reduce between-family AM signal but inherited LD remains |
+| REML / GREML | In realistic samples the bias is usually upward, but in very large samples GREML can drift toward the random-mating baseline because the AM-induced long-range LD is not well captured by $\mathbf{G}$ |
+| Relatives / family methods | Relatives become more genetically similar, so family-based estimators are affected too; the bias is method dependent |
 | Cross-trait generalization | Score correlation can exceed effect correlation under xAM, inflating estimated $r_g$ |
 
 ::: {.callout-note}
@@ -880,7 +899,7 @@ Different mechanisms can produce the **same statistical symptom** in a marginal 
 - **Passive $r_{ge}$**: Genotype and environment are correlated because of shared causes (e.g., parents)
 - **Active / Evocative $r_{ge}$**: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods)
 
-Crucially, **active and evocative gene-environment correlations are not confounding**. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. 
+Crucially, **active and evocative gene-environment correlations are not confounding**. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. This is also important for how "direct" genetic effects are interpreted.
 
 :::
 
