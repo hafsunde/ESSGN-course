@@ -25,6 +25,14 @@ execute:
   cache: true
 ---
 
+<!-- Edit maternal/paternal math colors here if needed. -->
+<div style="height: 0; overflow: hidden;">
+$$
+\newcommand{\mcol}[1]{\color{red}{#1}}
+\newcommand{\pcol}[1]{\color{darkblue}{#1}}
+$$
+</div>
+
 
 ## What does a GWAS estimate?
 The infensimal model says that the phenotype is a sum of many small genetic effects plus an environment:
@@ -254,7 +262,7 @@ r_g \,\ell_j
 + c_{12}
 $$
 
-where $r_g$ is the **genetic correlation**, summarizing how strongly the additive genetic effects overlap across the two traits.
+where $r_g$ is the **genetic correlation**, summarizing how strongly the two traits share genetic signal.
 
 ::: {.callout-tip}
 ## High-level interpretation
@@ -263,6 +271,7 @@ where $r_g$ is the **genetic correlation**, summarizing how strongly the additiv
   $\mathrm{Cov}(g_1,g_2) = \text{slope} \times M / \sqrt{N_1N_2}$
 - Then standardize that covariance to get the genetic correlation:
   $r_g = \frac{\mathrm{Cov}(g_1,g_2)}{h_{1} h_{2}}$
+- Under random mating and i.i.d. SNP effects, this is often interpreted as overlap of additive effects; in Part 2 we will see how assortative mating can weaken that interpretation.
 :::
 
 ## Summary: local LD both confounds and helps
@@ -500,41 +509,41 @@ Now we will unpack how that happens.
 First, we define the genetic values separately for the maternal and paternal haplotypes:
 
 $$
-g_c^{(m)} = \sum_{j=1}^{M} \beta_j t_{mj}, 
+\mcol{g_c^{m}} = \sum_{j=1}^{M} \beta_j \mcol{x_j^{m}}, 
 \qquad
-g_c^{(p)} = \sum_{j=1}^{M} \beta_j t_{pj},
+\pcol{g_c^{p}} = \sum_{j=1}^{M} \beta_j \pcol{x_j^{p}},
 \qquad
-g_c = g_c^{(m)} + g_c^{(p)}
+g_c = \mcol{g_c^{m}} + \pcol{g_c^{p}}
 $$
 
-where $t_{mj}$ and $t_{pj}$ are the maternally and paternally transmitted alleles at SNP $j$, respectively. 
+where $\mcol{x_j^{m}}$ and $\pcol{x_j^{p}}$ are the maternally and paternally transmitted alleles at SNP $j$, respectively. 
 
 After only one generation of assortment, the transmitted alleles are still independent **within** haplotypes (assuming no relevant local LD):
 
 $$
-\operatorname{Cov}(t_{m j}, t_{m k}) = 0,
+\operatorname{Cov}(\mcol{x_j^{m}}, \mcol{x_k^{m}}) = 0,
 \qquad
-\operatorname{Cov}(t_{p j}, t_{p k}) = 0
+\operatorname{Cov}(\pcol{x_j^{p}}, \pcol{x_k^{p}}) = 0
 \qquad \text{for } j \neq k
 $$
 
 However, the transmitted alleles are correlated **across** haplotypes, because the parental genomes are correlated: 
 
 $$
-\text{Cov}(g_c^{(m)}, g_c^{(p)}) > 0
+\text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}}) > 0
 \qquad
 \Rightarrow
 \qquad
-\text{Cov}(t_{mj}, t_{pk}) > 0 \small \text{ for trait-associated } j,k
+\text{Cov}(\mcol{x_j^{m}}, \pcol{x_k^{p}}) > 0 \small \text{ for trait-associated } j,k
 $$
 
 
 ## Genetic variance after one generation of AM
 Because the transmitted alleles are still independent within haplotypes, the variance of each haplotype contribution is just a sum of single-locus terms:
 $$
-\text{Var}(g_c^{(m)}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj}),
+\text{Var}(\mcol{g_c^{m}}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(\mcol{x_j^{m}}),
 \qquad
-\text{Var}(g_c^{(p)}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{pj})
+\text{Var}(\pcol{g_c^{p}}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(\pcol{x_j^{p}})
 $$
 
 However, because the transmitted alleles from either parent are correlated, the total variance of the genetic value includes a positive covariance term:
@@ -542,9 +551,9 @@ However, because the transmitted alleles from either parent are correlated, the 
 $$
 \text{Var}(g_c)
 =
-\text{Var}(g_c^{(m)})
-+ \text{Var}(g_c^{(p)})
-+ 2\text{Cov}(g_c^{(m)}, g_c^{(p)})
+\text{Var}(\mcol{g_c^{m}})
++ \text{Var}(\pcol{g_c^{p}})
++ 2\text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}})
 $$
 
 
@@ -555,22 +564,32 @@ Covariance **across** the maternal and paternal haplotypes is called **trans** c
 Covariance **within** the maternal or paternal haplotype is called **cis** covariance.
 :::
 
-## What happens after *several* generations of AM
+## What happens after *several* generations of AM {.smaller}
 
-Repeated assortment plus recombination gradually converts the **trans** covariance into **cis** covariance. 
-$$
-\text{Cov}(t_{mj}, t_{mk}) \neq 0
-\qquad
-\text{for distant loci } j,k
-$$
-
-That means the haplotype variance is no longer just a sum of single-locus terms. Instead, the variance now includes off-diagonal covariance terms between trait-associated loci. For example,
+Repeated assortment plus recombination gradually converts part of the inherited **trans** covariance into **cis** covariance. Written out fully, the three variance components become:
 
 $$
-\text{Var}(g_c^{(m)})
+{\scriptsize
+\text{Var}(g_c)
 =
+\underbrace{
 \sum_{j=1}^{M}\sum_{k=1}^{M}
-\text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
+\beta_j\beta_k\,
+\text{Cov}(\mcol{x_j^{m}}, \mcol{x_k^{m}})
+}_{\text{Var}\!\left(\mcol{g_c^{m}}\right)\ \text{(cis)}}
++
+\underbrace{
+\sum_{j=1}^{M}\sum_{k=1}^{M}
+\beta_j\beta_k\,
+\text{Cov}(\pcol{x_j^{p}}, \pcol{x_k^{p}})
+}_{\text{Var}\!\left(\pcol{g_c^{p}}\right)\ \text{(cis)}}
++
+\underbrace{
+2\sum_{j=1}^{M}\sum_{k=1}^{M}
+\beta_j\beta_k\,
+\text{Cov}(\mcol{x_j^{m}}, \pcol{x_k^{p}})
+}_{2\text{Cov}\!\left(\mcol{g_c^{m}}, \pcol{g_c^{p}}\right)\ \text{(trans)}}
+}
 $$
 
 <br>
@@ -579,8 +598,117 @@ $$
 | When | Where | Interpretation |
 |--|---|-----|
 | 1 generation | 	Across haplotypes (trans)  | Maternal and paternal contributions become aligned |
-| 2+ generations | Within haplotypes (cis) | Aligned alleles begin to co-occur within haplotypes |
+| 2+ generations | Within haplotypes (cis) also builds up | Aligned alleles begin to co-occur within haplotypes |
 :::
+
+## Genetic variance across generations {.smaller}
+
+The genetic variance increases asymptotically towards an equilibrium following the recurrence
+
+$$
+\sigma^2_{g,t+1}
+=
+\underbrace{\frac{\sigma^2_{g,0}}{2}}_{\text{within-family}}
++ \quad
+\underbrace{\sigma^2_{g,t}\frac{1 + r_{g,t}^{\mathrm{mates}}}{2}}_{\text{between-family}}
+\quad
+\Rightarrow
+\quad
+\sigma^2_{g,\infty}
+=
+\frac{\sigma^2_{g,0}}{1-r_{g,\infty}^{\mathrm{mates}}}
+$$
+
+::: {.columns  }
+::: {.column width="66%"}
+```{r}
+#| label: s2-am-variance-trajectory
+#| echo: false
+#| cache: true
+#| fig-align: center
+#| fig-width: 8
+#| fig-height: 5
+#| fig-cap: ""
+sg2_0 = 1
+VE = 1
+ry = 0.5
+generations = 0:12
+
+sg2 = numeric(length(generations))
+sg2[1] = sg2_0
+for (i in seq_len(length(generations) - 1)) {
+  rg_mates = ry * sg2[i] / (sg2[i] + VE)
+  sg2[i + 1] = sg2_0 / 2 + sg2[i] / 2 * (1 + rg_mates)
+}
+
+sg2_eq = uniroot(
+  function(v) v - (sg2_0 / 2 + v / 2 * (1 + ry * v / (v + VE))),
+  lower = sg2_0,
+  upper = 10 * sg2_0
+)$root
+
+library(ggplot2)
+
+df_var = data.frame(
+  generation = generations,
+  sg2 = sg2,
+  baseline = sg2_0
+)
+
+ggplot(df_var, aes(x = generation, y = sg2)) +
+  geom_ribbon(aes(ymin = baseline, ymax = sg2), fill = "#5b0f0f") +
+  geom_ribbon(aes(ymin = 0, ymax = baseline), fill = "#cecece") +
+  geom_line(color = "black", linewidth = 1.2) +
+  geom_hline(aes(yintercept = sg2_0), color = "black",
+             linewidth = 1, linetype = "dashed") +
+  geom_hline(aes(yintercept = sg2_eq), color = "black",
+             linewidth = 1, linetype = "dotted") +
+  annotate(
+    "text",
+    x = 7.2,
+    y = sg2_0 + 0.25 * (sg2_eq - sg2_0),
+    label = "Added by LD between causal SNPs",
+    color = "#ffffff",
+    size = 8
+  ) +
+  scale_x_continuous(
+    limits = c(0, max(generations)),
+    breaks = generations
+  ) +
+  scale_y_continuous(
+    breaks = seq(0,2,.25)
+  ) +
+  coord_cartesian(ylim = c(0, 1.08 * sg2_eq), clip = "off", expand = F) +
+  labs(
+    x = "Generations of assortment: (t)",
+    caption = "Assuming baseline heritability of 50% and partner correlation of 0.5",
+    y = expression(Genetic~variance:~sigma[g]^2)
+  ) +
+  theme_classic(base_size = 17) +
+  theme(
+    text = element_text(color = "black"),
+    legend.position = "none" )
+```
+
+:::
+::: {.column width="34%"}
+
+
+
+::: {.callout-important}
+## Heritability changes too
+Changes in genetic variance changes the ratio of genetic to phenotypic variance: 
+$$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2)$$
+
+**Assortative mating therefore changes the heritability**. Usually, it **increases**, but with correlated environmental effects, the net effects are more complex and heritability can decrease:
+$$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2 + 2\sigma_{g,e,\infty})$$
+
+:::
+
+:::
+:::
+
+
 
 ## Why should we care? {.huge background-color="#5b0f0f" color="white" .center}
 
@@ -592,20 +720,17 @@ Assortative mating in earlier generations means that **trait-associated SNPs are
 
 ## Which estimands change once genotype covariance changes? {.smaller}
 
-If assortative mating changes $\text{Cov}(x_j, x_k)$, then any method built on assuming $\text{Cov}(x_j, x_k) = 0$ changes too.
+If assortative mating changes $\text{Cov}(x_j, x_k)$, then two things can change at once:
 
 ::: {style="font-size: 0.8em;"}
-- **GWAS marginal effects**, because $\tilde{\beta}_j$ absorbs tagged signal from other causal  loci across the genome
-- **LDSC**, because the GWAS test statistics are inflated by long-range LD, which is not accounted for by the local LD score or the regression weights
-- **GREML**, because genome-wide similarity among "unrelated" people can carry trait-relevant covariance
-- **Family resemblance**, because the same induced structure is inherited within pedigrees
+- **GWAS marginal effects**: $\tilde{\beta}_j$ absorbs long-range tagged signal, so hits look less purely local
+- **LDSC $h^2$**: the summary statistics and local LD scores no longer line up as cleanly as under random mating
+- **REML / GREML $h^2$**: Session 1's $\sigma_g^2 \mathbf{G}$ model no longer spans all of the AM-induced covariance
+- **Family resemblance**: relatives inherit the AM-induced covariance structure, so resemblance increases
+- **Cross-trait $r_g$**: score correlation can rise without more effect correlation, so bivariate estimators can overstate overlap
 :::
 
-::: {.callout-note}
-Same mechanism, different estimands: once assortative mating changes the correlation structure of genotypes, it changes the targets of several methods at once.
-:::
-
-## Payoff 1: marginal SNP effects no longer look purely local {.smaller}
+## Consequence 1: marginal SNP effects are no longer just local {.smaller}
 
 Again set the rGE term aside and focus on the LD component:
 
@@ -623,7 +748,7 @@ So a marginal hit at SNP $j$ can partly reflect genome-wide covariance structure
 That means the GWAS summary statistics are already altered before any downstream summary-statistic method is applied.
 :::
 
-## Why this matters for LD score regression {.smaller}
+## Consequence 2: LDSC can overstate $h^2$ {.smaller}
 
 In Part 1, the LDSC logic was:
 
@@ -634,38 +759,40 @@ $$
 where $\ell_j$ summarizes **local** LD around SNP $j$.
 
 - Under assortative mating, some of the extra signal in $\chi_j^2$ comes from **distant** trait-relevant loci
-- So the LDSC slope can reflect not only direct polygenic signal, but also AM-induced long-range tagging
-- More generally, summary-statistic methods are working on GWAS results that already contain the AM signal
+- LDSC works from marginal GWAS statistics plus **local** LD scores, so it does not directly represent that genome-wide dependence
+- Border et al. show upward bias under AM, so LDSC can drift toward the inflated equilibrium signal $h_\infty^2$ rather than the panmictic baseline $h_0^2$
 
 ::: {.callout-important}
-The key issue is upstream: assortative mating changes the **marginal coefficients themselves**, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.
+The key misspecification is upstream: assortative mating changes the **marginal coefficients themselves**, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.
 :::
 
-## Payoff 2: GREML with strangers is not automatically protected {.smaller}
+::: {.callout-note appearance="minimal"}
+Source: Border et al. (2022, *Nature Communications*) and Supplementary Information.
+:::
 
-In Session 1, ordinary GREML used genotype similarity to model phenotype similarity:
+## Consequence 3: GREML behaves differently {.smaller}
 
-$$
-\mathbf{y} = \mathbf{g} + \mathbf{e},
-\qquad
-\mathbf{g} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G})
-$$
+In Session 1, GREML used the genomic relatedness matrix $\mathbf{G}$ to capture genetic similarity among unrelated people.
 
-For unrelated pairs, the basic idea is still covariance matching:
-
-$$
-\text{Cov}(y_i, y_{\ell}) \approx \sigma_g^2 G_{i\ell}
-$$
-
-Under assortative mating, slight genome-wide similarity between "strangers" can also carry **trait-relevant long-range covariance**, because the induced LD is population-wide rather than pedigree-specific.
+::: {style="font-size: 0.8em;"}
+- $\mathbf{G}$ is built from **same-SNP, cross-person** similarity
+- Assortative mating mainly adds **long-range LD between different SNPs**
+- AM-induced extra genetic variance is not well captured by the GRM used by GREML
+:::
 
 ::: {.callout-important}
-Using strangers removes close family relationships, but it does **not** remove population covariance created by mating structure.
+GREML keeps fitting the Session 1 model $\sigma_g^2 \mathbf{G} + \sigma_e^2 \mathbf{I}$.
 
-So the fitted GREML variance component can absorb AM-induced covariance rather than only the random-mating additive variance.
+Under assortative mating, this is the wrong model and estimates will be biased.
+
+- In realistic samples, GREML is generally  **upwardly biased** under assortative mating
+  - Unfortunately, the size of that bias can be hard to quantify and is highly dependent on sample size
+- As sample sizes increase, the estimate drift toward the random-mating heritability, $h_0^2$.
+  - In very large samples (N > 200K), the bias can therefore be negative (because $h_0^2 < h_\infty^2$).
+
 :::
 
-## Short bridge: relatives become more similar too
+## Short bridge: relatives really do become more similar
 
 If mates are positively correlated in genetic value, the same covariance structure also increases resemblance among relatives for the assorted trait:
 
@@ -677,33 +804,43 @@ $$
 $$
 
 ::: {.callout-note}
-This is the bridge to Part 4:
+This is a genuine change in covariance structure, not only an estimator problem.
 
-- family designs can remove much of the **between-family** assortment signal by holding the parental pair fixed
-- but inherited local and long-range LD do **not** disappear inside families
+- Within-family designs reduce much of the **between-family** assortment signal by holding the parental pair fixed
+- But inherited local and long-range LD do **not** disappear inside families, so assortative-mating structure is reduced, not erased
 :::
 
-## Teaser: cross-trait assortment can distort $r_g$ {.smaller}
+## Generalization: xAM can inflate $r_g$ {.smaller}
+
+Session 1 distinguished two related ideas:
+
+- *Score correlation*, $\text{Corr}(g_1, g_2)$
+- *Effect correlation*, $\text{Corr}(\boldsymbol{\beta}_1, \boldsymbol{\beta}_2)$
+
+::: {.callout-note}
+If SNPs were i.i.d., these would line up. Part 2 has now given one concrete reason they can separate: assortative mating creates long-range LD across loci.
+:::
 
 If people sort on one trait, or on a bundle of traits related to both $y_1$ and $y_2$, then alleles increasing trait 1 can become correlated with alleles increasing trait 2 across the genome.
 
-- Cross-trait GWAS summary statistics can then contain covariance not due only to overlap of direct effects
-- So an estimated genetic correlation from marginal data need not equal pure overlap of direct effects
+- Score correlation can therefore increase even when effect correlation does not
+- So bivariate GWAS / LDSC can overstate biological overlap or pleiotropy when working from marginal summary statistics
 
-::: {.callout-note}
-This is one place where **score correlation** and **effect correlation** can come apart. We will keep that as a teaser here rather than do the full derivation.
+::: {.callout-note appearance="minimal"}
+Source: Border et al. (2022, *Science*) and Supplementary Information.
 :::
 
-## Summary: assortative mating changes the inputs to GWAS, LDSC, and GREML
+## Summary: assortative mating changes targets and estimators
 
 | Step | Main lesson |
 |---|---|
 | Mates match on phenotype | Start with $\text{Cov}(y_m,y_p) > 0$ |
-| First generation | Mostly trans covariance appears |
-| Later generations | Cis covariance and long-range LD build up |
-| GWAS / LDSC consequence | Marginal summary statistics absorb distant tagged signal |
-| GREML consequence | Unrelated-pair similarity can absorb AM-induced covariance |
-| Family-design bridge | Comparing relatives helps with between-family structure, but inherited long-range LD remains |
+| Repeated AM | Trans covariance appears first; cis covariance and long-range LD build up over generations |
+| Population target | Heritability can move from $h_0^2$ toward the larger equilibrium quantity $h_\infty^2$ |
+| GWAS / LDSC | Marginal summary statistics absorb distant tagged signal, pushing summary-statistic $h^2$ upward |
+| REML / GREML | Standard GREML does not really "see" most of the AM-induced long-range LD in $\mathbf{G}$, so much of that extra variance is left in the residual and the estimate drifts toward $h_0^2$ |
+| Relatives / within-family | Resemblance increases; within-family designs reduce between-family AM signal but inherited LD remains |
+| Cross-trait generalization | Score correlation can exceed effect correlation under xAM, inflating estimated $r_g$ |
 
 ::: {.callout-note}
 Before Part 3, the big picture is: Part 1 and Part 2 mainly changed associations through **correlated genotypes**. Next we turn to **correlated environments**.
@@ -922,9 +1059,9 @@ Recall from Session 1:
 
 $$
 x_{jc} =
-\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\text{paternal transmission}}
+\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\pcol{x_j^{p}}}
 +
-\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\text{maternal transmission}}
+\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\mcol{x_j^{m}}}
 $$
 
 $$
@@ -1400,7 +1537,11 @@ The main log file is:
 
 - `practical/ldsc/data/results/intelligence_p_factor_rg.log`
 
-For these traits, we expect a **negative** genetic correlation.
+For these traits, we expect a **negative** estimated genetic correlation.
+
+::: {.callout-note}
+After Part 2, keep one interpretation caveat in mind: an LDSC estimate of $r_g$ from marginal summary statistics is not automatically pure effect overlap / pleiotropy if cross-trait assortative mating or other covariance structure is present.
+:::
 
 ## Interpretation checkpoint
 

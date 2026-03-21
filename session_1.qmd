@@ -25,6 +25,14 @@ execute:
   cache: true
 ---
 
+<!-- Edit maternal/paternal math colors here if needed. -->
+<div style="height: 0; overflow: hidden;">
+$$
+\newcommand{\mcol}[1]{\color{red}{#1}}
+\newcommand{\pcol}[1]{\color{darkblue}{#1}}
+$$
+</div>
+
 ## Lecture Outline
 
 1. **Part 0: Statistical tools**
@@ -301,7 +309,7 @@ y_{1i} = g_{1i} + e_{1i}
 y_{2i} = g_{2i} + e_{2i}
 $$
 
-with genetic values built from the same genome but trait-specific weights:
+with genetic values built from the same loci but trait-specific weights:
 
 $$
 g_{1i} = \sum_{j=1}^{M} \beta_{1j} x_{ij}
@@ -377,20 +385,20 @@ The model makes **clear predictions** about how much relatives should resemble e
 
 ## Genetic transmission 101
 
-At SNP $j$, the offspring gets **one allele** from the focal parent. Let $t_{jp} \in \{0,1\}$ be the transmitted allele from that parent.
+At SNP $j$, the offspring gets **one allele** from the father. Let $\pcol{x_{jc}^{p}} \in \{0,1\}$ be the paternally transmitted allele.
 
-The parental genotype $x_{jp} \in \{0,1,2\}$ determines the distribution of $t_{jp}$:
+The paternal genotype $x_{jp} \in \{0,1,2\}$ determines the distribution of $\pcol{x_{jc}^{p}}$:
 
 | Parental genotype | Transmitted allele |
 |--|-----|
-| $x_{jp} = 0$ | $t_{jp} = 0$ |
-| $x_{jp} = 1$ |  $t_{jp} \sim \mathrm{Bernoulli}(\frac{1}{2})$ |
-| $x_{jp} = 2$ | $t_{jp} = 1$ |
+| $x_{jp} = 0$ | $\pcol{x_{jc}^{p}} = 0$ |
+| $x_{jp} = 1$ |  $\pcol{x_{jc}^{p}} \sim \mathrm{Bernoulli}(\frac{1}{2})$ |
+| $x_{jp} = 2$ | $\pcol{x_{jc}^{p}} = 1$ |
 
 So the **expected** transmitted allele from the parent is:
 
 $$
-E[t_{jp} \mid x_{jp}] = \frac{1}{2}x_{jp}
+E[\pcol{x_{jc}^{p}} \mid x_{jp}] = \frac{1}{2}x_{jp}
 $$
 
 ## How do relatives become correlated?
@@ -399,9 +407,9 @@ The offspring genotype at SNP $j$ is the sum of the transmitted alleles from the
 
 $$
 x_{jc} =
-\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\text{paternal allele $t_{jp}$}}
+\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\pcol{x_{jc}^{p}}}
 +
-\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\text{maternal allele $t_{jm}$}}
+\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\mcol{x_{jc}^{m}}}
 $$
 
 Here, $\epsilon_{jp}$ and $\epsilon_{jm}$ are the random segregation deviations from the parental genotypes at SNP $j$. Under random mating, $\text{Cov}(x_{jp}, x_{jm})=0$, so:
@@ -410,13 +418,17 @@ $$
 	\text{Cov}(x_{jc}, x_{jp}) = \frac{1}{2}\text{Var}(x_{jp})
 $$
 
+::: {.callout-note}
+## The variance of the offspring genotype
+Variance at SNP $j$ can be decomposed into components determined by the paternal and maternal genotype, and random segregation:
+
 $$
 \text{Var}(x_{jc})
 = \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm})
 + \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\frac{1}{2}\text{Var}(x_j)}
 = \text{Var}(x_j)
 $$
-
+:::
 
 
 

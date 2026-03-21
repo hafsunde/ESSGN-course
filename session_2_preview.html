@@ -1067,6 +1067,16 @@ Espen Eilertsen &amp; Hans Fredrik Sunde
 
   <p class="date">2026-03-25</p>
 </section>
+<section class="slide level2">
+
+<!-- Edit maternal/paternal math colors here if needed. -->
+<div style="height: 0; overflow: hidden;">
+<p><span class="math display">\[
+\newcommand{\mcol}[1]{\color{red}{#1}}
+\newcommand{\pcol}[1]{\color{darkblue}{#1}}
+\]</span></p>
+</div>
+</section>
 <section id="what-does-a-gwas-estimate" class="slide level2">
 <h2>What does a GWAS estimate?</h2>
 <p>The infensimal model says that the phenotype is a sum of many small genetic effects plus an environment: <span class="math display">\[
@@ -1360,7 +1370,7 @@ r_g \,\ell_j
 \right)
 + c_{12}
 \]</span></p>
-<p>where <span class="math inline">\(r_g\)</span> is the <strong>genetic correlation</strong>, summarizing how strongly the additive genetic effects overlap across the two traits.</p>
+<p>where <span class="math inline">\(r_g\)</span> is the <strong>genetic correlation</strong>, summarizing how strongly the two traits share genetic signal.</p>
 <div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1374,6 +1384,7 @@ r_g \,\ell_j
 <li>Regress cross-trait <span class="math inline">\(z\)</span>-score products on LD scores</li>
 <li>The slope tracks <strong>shared genetic signal</strong> across the two traits, but it first has to be rescaled to get the genetic covariance: <span class="math inline">\(\mathrm{Cov}(g_1,g_2) = \text{slope} \times M / \sqrt{N_1N_2}\)</span></li>
 <li>Then standardize that covariance to get the genetic correlation: <span class="math inline">\(r_g = \frac{\mathrm{Cov}(g_1,g_2)}{h_{1} h_{2}}\)</span></li>
+<li>Under random mating and i.i.d. SNP effects, this is often interpreted as overlap of additive effects; in Part 2 we will see how assortative mating can weaken that interpretation.</li>
 </ul>
 </div>
 </div>
@@ -1708,43 +1719,43 @@ r_g^{\mathrm{mates}}
 <h2>What happens after <em>one</em> generation of AM</h2>
 <p>First, we define the genetic values separately for the maternal and paternal haplotypes:</p>
 <p><span class="math display">\[
-g_c^{(m)} = \sum_{j=1}^{M} \beta_j t_{mj},
+\mcol{g_c^{m}} = \sum_{j=1}^{M} \beta_j \mcol{x_j^{m}},
 \qquad
-g_c^{(p)} = \sum_{j=1}^{M} \beta_j t_{pj},
+\pcol{g_c^{p}} = \sum_{j=1}^{M} \beta_j \pcol{x_j^{p}},
 \qquad
-g_c = g_c^{(m)} + g_c^{(p)}
+g_c = \mcol{g_c^{m}} + \pcol{g_c^{p}}
 \]</span></p>
-<p>where <span class="math inline">\(t_{mj}\)</span> and <span class="math inline">\(t_{pj}\)</span> are the maternally and paternally transmitted alleles at SNP <span class="math inline">\(j\)</span>, respectively.</p>
+<p>where <span class="math inline">\(\mcol{x_j^{m}}\)</span> and <span class="math inline">\(\pcol{x_j^{p}}\)</span> are the maternally and paternally transmitted alleles at SNP <span class="math inline">\(j\)</span>, respectively.</p>
 <p>After only one generation of assortment, the transmitted alleles are still independent <strong>within</strong> haplotypes (assuming no relevant local LD):</p>
 <p><span class="math display">\[
-\operatorname{Cov}(t_{m j}, t_{m k}) = 0,
+\operatorname{Cov}(\mcol{x_j^{m}}, \mcol{x_k^{m}}) = 0,
 \qquad
-\operatorname{Cov}(t_{p j}, t_{p k}) = 0
+\operatorname{Cov}(\pcol{x_j^{p}}, \pcol{x_k^{p}}) = 0
 \qquad \text{for } j \neq k
 \]</span></p>
 <p>However, the transmitted alleles are correlated <strong>across</strong> haplotypes, because the parental genomes are correlated:</p>
 <p><span class="math display">\[
-\text{Cov}(g_c^{(m)}, g_c^{(p)}) &gt; 0
+\text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}}) &gt; 0
 \qquad
 \Rightarrow
 \qquad
-\text{Cov}(t_{mj}, t_{pk}) &gt; 0 \small \text{ for trait-associated } j,k
+\text{Cov}(\mcol{x_j^{m}}, \pcol{x_k^{p}}) &gt; 0 \small \text{ for trait-associated } j,k
 \]</span></p>
 </section>
 <section id="genetic-variance-after-one-generation-of-am" class="slide level2">
 <h2>Genetic variance after one generation of AM</h2>
 <p>Because the transmitted alleles are still independent within haplotypes, the variance of each haplotype contribution is just a sum of single-locus terms: <span class="math display">\[
-\text{Var}(g_c^{(m)}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{mj}),
+\text{Var}(\mcol{g_c^{m}}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(\mcol{x_j^{m}}),
 \qquad
-\text{Var}(g_c^{(p)}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(t_{pj})
+\text{Var}(\pcol{g_c^{p}}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(\pcol{x_j^{p}})
 \]</span></p>
 <p>However, because the transmitted alleles from either parent are correlated, the total variance of the genetic value includes a positive covariance term:</p>
 <p><span class="math display">\[
 \text{Var}(g_c)
 =
-\text{Var}(g_c^{(m)})
-+ \text{Var}(g_c^{(p)})
-+ 2\text{Cov}(g_c^{(m)}, g_c^{(p)})
+\text{Var}(\mcol{g_c^{m}})
++ \text{Var}(\pcol{g_c^{p}})
++ 2\text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}})
 \]</span></p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -1761,19 +1772,31 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </div>
 </div>
 </section>
-<section id="what-happens-after-several-generations-of-am" class="slide level2">
+<section id="what-happens-after-several-generations-of-am" class="slide level2 smaller">
 <h2>What happens after <em>several</em> generations of AM</h2>
-<p>Repeated assortment plus recombination gradually converts the <strong>trans</strong> covariance into <strong>cis</strong> covariance. <span class="math display">\[
-\text{Cov}(t_{mj}, t_{mk}) \neq 0
-\qquad
-\text{for distant loci } j,k
-\]</span></p>
-<p>That means the haplotype variance is no longer just a sum of single-locus terms. Instead, the variance now includes off-diagonal covariance terms between trait-associated loci. For example,</p>
+<p>Repeated assortment plus recombination gradually converts part of the inherited <strong>trans</strong> covariance into <strong>cis</strong> covariance. Written out fully, the three variance components become:</p>
 <p><span class="math display">\[
-\text{Var}(g_c^{(m)})
+{\scriptsize
+\text{Var}(g_c)
 =
+\underbrace{
 \sum_{j=1}^{M}\sum_{k=1}^{M}
-\text{Cov}(\beta_j t_{mj}, \beta_k t_{mk})
+\beta_j\beta_k\,
+\text{Cov}(\mcol{x_j^{m}}, \mcol{x_k^{m}})
+}_{\text{Var}\!\left(\mcol{g_c^{m}}\right)\ \text{(cis)}}
++
+\underbrace{
+\sum_{j=1}^{M}\sum_{k=1}^{M}
+\beta_j\beta_k\,
+\text{Cov}(\pcol{x_j^{p}}, \pcol{x_k^{p}})
+}_{\text{Var}\!\left(\pcol{g_c^{p}}\right)\ \text{(cis)}}
++
+\underbrace{
+2\sum_{j=1}^{M}\sum_{k=1}^{M}
+\beta_j\beta_k\,
+\text{Cov}(\mcol{x_j^{m}}, \pcol{x_k^{p}})
+}_{2\text{Cov}\!\left(\mcol{g_c^{m}}, \pcol{g_c^{p}}\right)\ \text{(trans)}}
+}
 \]</span></p>
 <p><br></p>
 <div style="font-size: 0.8em;">
@@ -1798,37 +1821,90 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </tr>
 <tr class="even">
 <td>2+ generations</td>
-<td>Within haplotypes (cis)</td>
+<td>Within haplotypes (cis) also builds up</td>
 <td>Aligned alleles begin to co-occur within haplotypes</td>
 </tr>
 </tbody>
 </table>
 </div>
 </section>
-<section id="conclusion-so-far" class="slide level2 huge center" data-background-color="#5b0f0f" color="white">
-<h2>Conclusion so far</h2>
-<p><br></p>
-<p>Assortative mating in earlier generations means that <strong>trait-related SNPs are not independent from each other</strong>.</p>
-</section>
-<section id="which-estimands-change-once-genotype-covariance-changes" class="slide level2 smaller">
-<h2>Which estimands change once genotype covariance changes?</h2>
-<p>If assortative mating changes <span class="math inline">\(\text{Cov}(x_j, x_k)\)</span>, then any method built from genotype covariance changes too.</p>
-<ul>
-<li><strong>GWAS marginal effects</strong>, because <span class="math inline">\(\tilde{\beta}_j\)</span> absorbs tagged signal from correlated loci</li>
-<li><strong>LDSC</strong>, because the summary statistics are already shaped by long-range structure before the regression starts</li>
-<li><strong>GREML</strong>, because genome-wide similarity among “unrelated” people can carry trait-relevant covariance</li>
-<li><strong>Family resemblance</strong>, because the same induced structure is inherited within pedigrees</li>
-</ul>
-<div class="callout callout-note callout-titled callout-style-default">
+<section id="genetic-variance-across-generations" class="slide level2 smaller">
+<h2>Genetic variance across generations</h2>
+<p>The genetic variance increases asymptotically towards an equilibrium following the recurrence</p>
+<p><span class="math display">\[
+\sigma^2_{g,t+1}
+=
+\underbrace{\frac{\sigma^2_{g,0}}{2}}_{\text{within-family}}
++ \quad
+\underbrace{\sigma^2_{g,t}\frac{1 + r_{g,t}^{\mathrm{mates}}}{2}}_{\text{between-family}}
+\quad
+\Rightarrow
+\quad
+\sigma^2_{g,\infty}
+=
+\frac{\sigma^2_{g,0}}{1-r_{g,\infty}^{\mathrm{mates}}}
+\]</span></p>
+<div class="columns">
+<div class="column" style="width:66%;">
+<div class="cell" data-layout-align="center">
+<div class="cell-output-display">
+<div class="quarto-figure quarto-figure-center">
+<figure>
+<p><img role="img" data-src="data:image/png;base64,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" class="quarto-figure quarto-figure-center" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</div><div class="column" style="width:34%;">
+<div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Heritability changes too</strong></p>
 </div>
 <div class="callout-content">
-<p>Same mechanism, different estimands: once assortative mating changes the correlation structure of genotypes, it changes the targets of several methods at once.</p>
+<p>Changes in genetic variance changes the ratio of genetic to phenotypic variance: <span class="math display">\[h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2)\]</span></p>
+<p><strong>Assortative mating therefore changes the heritability</strong>. Usually, it <strong>increases</strong>, but with correlated environmental effects, the net effects are more complex and heritability can decrease: <span class="math display">\[h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2 + 2\sigma_{g,e,\infty})\]</span></p>
+</div>
+</div>
+</div>
+</div></div>
+</section>
+<section id="why-should-we-care" class="slide level2 huge center" data-background-color="#5b0f0f" color="white">
+<h2>Why should we care?</h2>
+<p><br></p>
+<div style="font-size: 1.5em;">
+<p>Assortative mating in earlier generations means that <strong>trait-associated SNPs are not independent from each other</strong>.</p>
+</div>
+</section>
+<section id="which-estimands-change-once-genotype-covariance-changes" class="slide level2 smaller">
+<h2>Which estimands change once genotype covariance changes?</h2>
+<p>If assortative mating changes <span class="math inline">\(\text{Cov}(x_j, x_k)\)</span>, then two things can change at once:</p>
+<div style="font-size: 0.8em;">
+<ul>
+<li><strong>GWAS marginal effects</strong>: <span class="math inline">\(\tilde{\beta}_j\)</span> absorbs long-range tagged signal, so hits look less purely local</li>
+<li><strong>LDSC <span class="math inline">\(h^2\)</span></strong>: the summary statistics and local LD scores no longer line up as cleanly as under random mating</li>
+<li><strong>REML / GREML <span class="math inline">\(h^2\)</span></strong>: Session 1’s <span class="math inline">\(\sigma_g^2 \mathbf{G}\)</span> model no longer spans all of the AM-induced covariance</li>
+<li><strong>Family resemblance</strong>: relatives inherit the AM-induced covariance structure, so resemblance increases</li>
+<li><strong>Cross-trait <span class="math inline">\(r_g\)</span></strong>: score correlation can rise without more effect correlation, so bivariate estimators can overstate overlap</li>
+</ul>
+</div>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>We will distinguish two heritability targets</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><span class="math inline">\(h_0^2\)</span>: panmictic heritability under random mating</li>
+<li><span class="math inline">\(h_\infty^2\)</span>: equilibrium heritability after sustained assortative mating</li>
+</ul>
+<p>For the assorted trait, the extra long-range covariance among trait-increasing alleles tends to make <span class="math inline">\(h_\infty^2 &gt; h_0^2\)</span>.</p>
 </div>
 </div>
 </div>
@@ -1857,8 +1933,8 @@ g_c = g_c^{(m)} + g_c^{(p)}
 </div>
 </div>
 </section>
-<section id="why-this-matters-for-ld-score-regression" class="slide level2 smaller">
-<h2>Why this matters for LD score regression</h2>
+<section id="payoff-2-ldsc-can-overstate-h2" class="slide level2 smaller">
+<h2>Payoff 2: LDSC can overstate <span class="math inline">\(h^2\)</span></h2>
 <p>In Part 1, the LDSC logic was:</p>
 <p><span class="math display">\[
 E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
@@ -1866,8 +1942,8 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <p>where <span class="math inline">\(\ell_j\)</span> summarizes <strong>local</strong> LD around SNP <span class="math inline">\(j\)</span>.</p>
 <ul>
 <li>Under assortative mating, some of the extra signal in <span class="math inline">\(\chi_j^2\)</span> comes from <strong>distant</strong> trait-relevant loci</li>
-<li>So the LDSC slope can reflect not only direct polygenic signal, but also AM-induced long-range tagging</li>
-<li>More generally, summary-statistic methods are working on GWAS results that already contain the AM signal</li>
+<li>LDSC works from marginal GWAS statistics plus <strong>local</strong> LD scores, so it does not directly represent that genome-wide dependence</li>
+<li>Border et al. show upward bias under AM, so LDSC can drift toward the inflated equilibrium signal <span class="math inline">\(h_\infty^2\)</span> rather than the panmictic baseline <span class="math inline">\(h_0^2\)</span></li>
 </ul>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
@@ -1878,24 +1954,28 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>The key issue is upstream: assortative mating changes the <strong>marginal coefficients themselves</strong>, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.</p>
+<p>The key misspecification is upstream: assortative mating changes the <strong>marginal coefficients themselves</strong>, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>Source: Border et al. (2022, <em>Nature Communications</em>) and Supplementary Information.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="payoff-2-greml-with-strangers-is-not-automatically-protected" class="slide level2 smaller">
-<h2>Payoff 2: GREML with strangers is not automatically protected</h2>
-<p>In Session 1, ordinary GREML used genotype similarity to model phenotype similarity:</p>
-<p><span class="math display">\[
-\mathbf{y} = \mathbf{g} + \mathbf{e},
-\qquad
-\mathbf{g} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G})
-\]</span></p>
-<p>For unrelated pairs, the basic idea is still covariance matching:</p>
-<p><span class="math display">\[
-\text{Cov}(y_i, y_{\ell}) \approx \sigma_g^2 G_{i\ell}
-\]</span></p>
-<p>Under assortative mating, slight genome-wide similarity between “strangers” can also carry <strong>trait-relevant long-range covariance</strong>, because the induced LD is population-wide rather than pedigree-specific.</p>
+<section id="payoff-3-reml-greml-behaves-differently" class="slide level2 smaller">
+<h2>Payoff 3: REML / GREML behaves differently</h2>
+<p>In Session 1, GREML used the genomic relatedness matrix <span class="math inline">\(\mathbf{G}\)</span> to capture genetic similarity among unrelated people.</p>
+<div style="font-size: 0.8em;">
+<ul>
+<li><span class="math inline">\(\mathbf{G}\)</span> is built from <strong>same-SNP, cross-person</strong> similarity</li>
+<li>assortative mating mainly adds <strong>long-range LD between different SNPs</strong></li>
+<li>so much of the AM-induced extra genetic variance lies <strong>outside</strong> the GRM used by GREML</li>
+</ul>
+</div>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1905,14 +1985,30 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>Using strangers removes close family relationships, but it does <strong>not</strong> remove population covariance created by mating structure.</p>
-<p>So the fitted GREML variance component can absorb AM-induced covariance rather than only the random-mating additive variance.</p>
+<p>GREML keeps fitting the Session 1 model <span class="math inline">\(\sigma_g^2 \mathbf{G} + \sigma_e^2 \mathbf{I}\)</span>.</p>
+<p>If AM creates extra covariance outside that model, GREML attributes too little of it to <span class="math inline">\(\mathbf{G}\)</span> and too much to the residual.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li>In realistic samples, GREML is generally still <strong>upwardly biased</strong> under assortative mating, and the size of that bias can be hard to quantify</li>
+<li>Only in very large samples does the estimate drift toward the panmictic target <span class="math inline">\(h_0^2\)</span></li>
+</ul>
 </div>
 </div>
 </div>
 </section>
-<section id="short-bridge-relatives-become-more-similar-too" class="slide level2">
-<h2>Short bridge: relatives become more similar too</h2>
+<section id="short-bridge-relatives-really-do-become-more-similar" class="slide level2">
+<h2>Short bridge: relatives really do become more similar</h2>
 <p>If mates are positively correlated in genetic value, the same covariance structure also increases resemblance among relatives for the assorted trait:</p>
 <p><span class="math display">\[
 \text{Var}\!\left(\frac{g_m + g_p}{2}\right)
@@ -1929,21 +2025,21 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>This is the bridge to Part 4:</p>
+<p>This is a genuine change in covariance structure, not only an estimator problem.</p>
 <ul>
-<li>family designs can remove much of the <strong>between-family</strong> assortment signal by holding the parental pair fixed</li>
-<li>but inherited local and long-range LD do <strong>not</strong> disappear inside families</li>
+<li>Within-family designs reduce much of the <strong>between-family</strong> assortment signal by holding the parental pair fixed</li>
+<li>But inherited local and long-range LD do <strong>not</strong> disappear inside families, so assortative-mating structure is reduced, not erased</li>
 </ul>
 </div>
 </div>
 </div>
 </section>
-<section id="teaser-cross-trait-assortment-can-distort-r_g" class="slide level2 smaller">
-<h2>Teaser: cross-trait assortment can distort <span class="math inline">\(r_g\)</span></h2>
-<p>If people sort on one trait, or on a bundle of traits related to both <span class="math inline">\(y_1\)</span> and <span class="math inline">\(y_2\)</span>, then alleles increasing trait 1 can become correlated with alleles increasing trait 2 across the genome.</p>
+<section id="generalization-xam-can-inflate-r_g" class="slide level2 smaller">
+<h2>Generalization: xAM can inflate <span class="math inline">\(r_g\)</span></h2>
+<p>Session 1 distinguished two related ideas:</p>
 <ul>
-<li>Cross-trait GWAS summary statistics can then contain covariance not due only to overlap of direct effects</li>
-<li>So an estimated genetic correlation from marginal data need not equal pure overlap of direct effects</li>
+<li><em>Score correlation</em>, <span class="math inline">\(\text{Corr}(g_1, g_2)\)</span></li>
+<li><em>Effect correlation</em>, <span class="math inline">\(\text{Corr}(\boldsymbol{\beta}_1, \boldsymbol{\beta}_2)\)</span></li>
 </ul>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
@@ -1954,13 +2050,25 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>This is one place where <strong>score correlation</strong> and <strong>effect correlation</strong> can come apart. We will keep that as a teaser here rather than do the full derivation.</p>
+<p>If SNPs were i.i.d., these would line up. Part 2 has now given one concrete reason they can separate: assortative mating creates long-range LD across loci.</p>
+</div>
+</div>
+</div>
+<p>If people sort on one trait, or on a bundle of traits related to both <span class="math inline">\(y_1\)</span> and <span class="math inline">\(y_2\)</span>, then alleles increasing trait 1 can become correlated with alleles increasing trait 2 across the genome.</p>
+<ul>
+<li>Score correlation can therefore increase even when effect correlation does not</li>
+<li>So bivariate GWAS / LDSC can overstate biological overlap or pleiotropy when working from marginal summary statistics</li>
+</ul>
+<div class="callout callout-note no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>Source: Border et al. (2022, <em>Science</em>) and Supplementary Information.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="summary-assortative-mating-changes-the-inputs-to-gwas-ldsc-and-greml" class="slide level2">
-<h2>Summary: assortative mating changes the inputs to GWAS, LDSC, and GREML</h2>
+<section id="summary-assortative-mating-changes-targets-and-estimators" class="slide level2">
+<h2>Summary: assortative mating changes targets and estimators</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 50%">
@@ -1978,24 +2086,28 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <td>Start with <span class="math inline">\(\text{Cov}(y_m,y_p) &gt; 0\)</span></td>
 </tr>
 <tr class="even">
-<td>First generation</td>
-<td>Mostly trans covariance appears</td>
+<td>Repeated AM</td>
+<td>Trans covariance appears first; cis covariance and long-range LD build up over generations</td>
 </tr>
 <tr class="odd">
-<td>Later generations</td>
-<td>Cis covariance and long-range LD build up</td>
+<td>Population target</td>
+<td>Heritability can move from <span class="math inline">\(h_0^2\)</span> toward the larger equilibrium quantity <span class="math inline">\(h_\infty^2\)</span></td>
 </tr>
 <tr class="even">
-<td>GWAS / LDSC consequence</td>
-<td>Marginal summary statistics absorb distant tagged signal</td>
+<td>GWAS / LDSC</td>
+<td>Marginal summary statistics absorb distant tagged signal, pushing summary-statistic <span class="math inline">\(h^2\)</span> upward</td>
 </tr>
 <tr class="odd">
-<td>GREML consequence</td>
-<td>Unrelated-pair similarity can absorb AM-induced covariance</td>
+<td>REML / GREML</td>
+<td>Standard GREML does not really “see” most of the AM-induced long-range LD in <span class="math inline">\(\mathbf{G}\)</span>, so much of that extra variance is left in the residual and the estimate drifts toward <span class="math inline">\(h_0^2\)</span></td>
 </tr>
 <tr class="even">
-<td>Family-design bridge</td>
-<td>Comparing relatives helps with between-family structure, but inherited long-range LD remains</td>
+<td>Relatives / within-family</td>
+<td>Resemblance increases; within-family designs reduce between-family AM signal but inherited LD remains</td>
+</tr>
+<tr class="odd">
+<td>Cross-trait generalization</td>
+<td>Score correlation can exceed effect correlation under xAM, inflating estimated <span class="math inline">\(r_g\)</span></td>
 </tr>
 </tbody>
 </table>
@@ -2044,8 +2156,8 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 40%">
-<col style="width: 60%">
+<col style="width: 33%">
+<col style="width: 66%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -2064,11 +2176,11 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 </tr>
 <tr class="odd">
 <td>Residual confounding</td>
-<td>Selection, ascertainment, measurement, or omitted structure</td>
+<td>Selection, ascertainment, or measurement structure</td>
 </tr>
 <tr class="even">
 <td>Assortative mating</td>
-<td>Selection, ascertainment, measurement, or omitted structure</td>
+<td>Induced correlation between paternal genotype and maternal environment (and vice versa)</td>
 </tr>
 </tbody>
 </table>
@@ -2454,13 +2566,13 @@ y = g + e
 <p>Recall from Session 1:</p>
 <p><span class="math display">\[
 x_{jc} =
-\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\text{paternal transmission}}
+\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\pcol{x_j^{p}}}
 +
-\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\text{maternal transmission}}
+\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\mcol{x_j^{m}}}
 \]</span></p>
 <p><span class="math display">\[
 \text{Var}(x_{jc})
-= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm})
+= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm}) + \frac{1}{2}\text{Cov}(x_{jp}, x_{jm})
 + \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\text{segregation variance}}
 \]</span></p>
 <div class="callout callout-note callout-titled callout-style-default">
@@ -2577,7 +2689,7 @@ x_{jc} =
 <p><span class="math display">\[
 \mathrm{PGS}_i^{F} = \sum_j \hat{\tilde{\beta}}_j^{F} x_{ij}
 \]</span></p>
-<p>That does <strong>not</strong> mean the score itself is automatically unconfounded, because the observed SNPs are not “purified” by the family design.</p>
+<p>That does <strong>not</strong> mean the score itself is automatically unconfounded.</p>
 <p>Two problems can still remain at the SNP level:</p>
 <ul>
 <li><span class="math inline">\(x_{ij}\)</span> can still be correlated with other causal SNPs through local or long-range LD</li>
@@ -2592,7 +2704,7 @@ x_{jc} =
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>So even if family GWAS improves <span class="math inline">\(\hat{\tilde{\beta}}_j^{F}\)</span>, a tool built from <strong>weights times observed SNPs</strong> can still inherit bias from the SNP side. In other words, better weights do not guarantee that polygenic scores or other genotype-based predictors are unconfounded.</p>
+<p>Even a perfectly measured genetic value <span class="math inline">\(g\)</span> would still be associated with the phenotype through both direct and indirect pathways. A polygenic score has the same problem, so better SNP weights alone do not make it unconfounded.</p>
 </div>
 </div>
 </div>
@@ -3061,7 +3173,20 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <ul>
 <li><code>practical/ldsc/data/results/intelligence_p_factor_rg.log</code></li>
 </ul>
-<p>For these traits, we expect a <strong>negative</strong> genetic correlation.</p>
+<p>For these traits, we expect a <strong>negative</strong> estimated genetic correlation.</p>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Note</strong></p>
+</div>
+<div class="callout-content">
+<p>After Part 2, keep one interpretation caveat in mind: an LDSC estimate of <span class="math inline">\(r_g\)</span> from marginal summary statistics is not automatically pure effect overlap / pleiotropy if cross-trait assortative mating or other covariance structure is present.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="interpretation-checkpoint-1" class="slide level2 scrollable">
 <h2>Interpretation checkpoint</h2>

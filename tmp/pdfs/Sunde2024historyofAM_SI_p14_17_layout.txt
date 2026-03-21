@@ -1,0 +1,139 @@
+Supplementary Information: Genetic similarity between relatives (...)                                14
+
+2.1 Genetic variance across generations
+
+Supplementary Figure 5 Unstandardized path diagram of genetic inheritance under assortative mating.
+
+Because assortative mating will change genetic variance before equilibrium, we can no longer assume unit variances as we
+did in the previous note. Supplementary Figure 5 therefore uses explicit variance components. This changes how we
+derive correlations, because tracing all valid chains between two variables will give us the covariance, not the correlation.
+To turn a covariance into a correlation, we need to divide by the geometric mean of the two variables' variances. To find
+the variances, we must trace all valid chains leading from the two variables back to themselves.
+
+      (, )                                                                                           (2.1)
+() × ()
+
+To understand the correlation between relatives under disequilibrium, we must therefore first understand how the
+variance changes. The equations for changes in genetic variance across generations are available elsewhere13-15, but because
+we will be extending the model to see how gene-environment correlations and the use of polygenic indices affects this
+process, it will be useful to re-derive them from first principles using path analysis.
+
+We let  denote the number of prior generations of assortative mating, where  = 0 is the generation where partners first
+match on the phenotype. Note that this would imply that partners in generation  = 1 (the first generation after
+assortment began) would be the second generation to assort on the phenotype. Supplementary Figure 5 shows a mother-
+father-offspring trio (subscripted , , and , respectively) where the parents are in generation . The genetic variance
+in generation  is denoted (), and the recombination variance is denoted . The recombination variance will depend
+on the genetic variance in the base population ( = 0, before assortative mating) and will be13-16:
+
+                                           =  (0)                                                    (2.2)
+                                                2
+Supplementary Information: Genetic similarity between relatives (...)                15
+
+The genetic and environmental effects are for simplicity's sake assumed to be constant across generations and therefore
+set to 1. We are also assuming that the environmental variance, denoted , is constant across generations, and that there
+are no sex differences. If you want to relax these assumptions, you can replace them by appropriate parameters (e.g.,
+()) and redo the path tracing with these changes.
+
+As always, the heritability in generation  is the proportion of phenotypic variance attributable to genetic variance:
+
+               2()                                       =     ()                    (2.3)
+                                                            () +
+
+The partner similarity is slightly more complicated because the copath coefficient is neither the covariance nor the
+correlation between partners when variances are not equal to one. Instead, it is a special coefficient denoting the strength
+of assortment. Because we have already defined  as the phenotypic correlation, the assortment strength in generation 
+is now denoted  to avoid confusion. We can use path tracing to find the phenotypic partner correlation:
+
+     =  (() + )2                                               =   ( ()     +   )    (2.4)
+           () + 
+
+We can apply similar logic to the genotypic correlation between partners:
+
+        ()        =                                       2 ()    =    ()            (2.5)
+                                                          ()
+
+Because heritability will change across generations, all else being equal, so will the genotypic correlation between partners
+­ even when keeping the phenotypic correlation constant. Note also that we can transform Equation (S2.5) using
+Equation (S2.3) and Equation (S2.4) and find that () = 2(), thus matching Equation (1) in the main paper.
+Finally, to keep  constant while  increases,  will have to decrease accordingly. It is an open question whether it is
+more realistic to keep  or  constant when investigating assortative mating across generations, but here we follow
+previous work and let  be constant6,13. This does not affect the equations, but it would change the resulting figures
+somewhat.
+
+We are now ready to derive the genetic variance in the offspring generation. We do that by tracing all paths leading from
+ back to itself:
+
+              ( + 1) = ()
+
+=    +  ()        +                                      ()    +  2()    +   2 ()
+          4                                                4          4         4
+
+           =      +                                      ()    1  +  ()              (2.6)
+                                                                      2
+
+If we substitute (S2.2) and (S2.5) into (S2.6), we get:
+
+(       +  1)  =  (0)                                       +  ()     1  +     ()    (2.7)
+                    2                                                (      2     )
+
+This equation matches what is reported in other sources13-15.
+Supplementary Information: Genetic similarity between relatives (...)                                  16
+
+We will also define the intergenerational genetic variance ratio, (), as we will refer to that later:
+
+()  =  ( + 1)                                                                                          (2.8)
+         ()
+
+To see how genetic variance changes across generations under different scenarios, we apply Equation (S2.7) recurrently.
+In Supplementary Figure 6, we see how the genetic variance () increases in successive generations of assortative mating
+following Equation (S2.7) for three different phenotypic partner correlations. All three example assume that the
+heritability is 50% in the base population, and that the genetic variance starts at unit variance (0) = 1. Panel A shows
+how the variance increases asymptotically towards equilibrium (indicated by the dashed grey lines), and Panel B shows
+the intergeneration variance ratio (). Overall, variance increases in the initial generations of assortment before reaching
+equilibrium after between 6 to 10 generations, practically speaking, depending on assortment strength. Larger partner
+correlations lead to more generations in disequilibrium in part because increased genetic variance leads to increased
+heritability (all else equal), which in turn leads to an increased genotypic correlation between partners, which in turn
+increases the variance further.
+
+Supplementary Figure 6 Genetic variance in successive generations of assortative mating.
+
+Note that we can simplify Equation (S2.7) further if we are interested in the first generation of assortment, where
+() = (0), or the equilibrium variance, where () = ( + 1) = ():
+
+(1) = (0) (1 + 2(0))                                                                                   (2.9)
+
+()  =  1  (0)                                                                                          (2.9)
+          - ()
+
+These simplifications match equations reported elsewhere4,13.
+Supplementary Information: Genetic similarity between relatives (...)  17
+
+2.2 Gene-environment correlations during disequilibrium
+
+ Supplementary Figure 7 This path diagram adapts Supplementary Figure 5 by also adding cultural and phenotypic transmission
+  (in addition to genetic transmission). Under disequilibrium, the environmental variance, (), and gene-environment covariance,
+
+                    (), will change across generations too, necessitating generation-specific notation for these as well.
+
+In Supplementary Figure 7, the offspring environment are caused by various factors. Most importantly, there are causal
+effects from the parental environments (denoted , coloured red) and from the parental phenotypes (denoted , coloured
+teal). Note that these are unstandardized effects and will depend on the variance of the parental environment and
+phenotype respectively. There are also two sources of environmental variance that are not shared between parents and
+offspring:  indicates environmental variance shared by siblings (not drawn), and  denotes environmental variance
+unique to the individual. Both of those are for simplicity assumed to be constant across generations.
+
+As we saw in Note 1.2, environmental transmission will induce gene-environment correlations, especially when coupled
+with assortative mating. Because we have already defined  as the gene-environment correlation, Supplementary Figure
+7 uses () to denote the gene-environment covariance in generation .
+
+                                                   Genetic variance
+
+Supplementary Figure 6 assumed that similarity between offspring was entirely attributed to genetic transmission. What
+if there were environmental transmission as well? If this is the case, then the equations for the resulting variances and
+gene-environment correlations become quite complicated, in part because the environmental variance and gene-
+environment covariance will also change across generations (which is why they have generation-specific notation in
+Supplementary Figure 7). However, as we shall see, the genetic variance in generation  + 1 is still just a function of the
+genetic variance and the genotypic partner correlation in the preceding generation. In other words, gene-environment
+correlations will, just as during equilibrium, mimic the effect of higher heritability. Let us start by tracing the genotypic
+correlation between partners (i.e., the genotypic covariance divided by the genetic variance):
+

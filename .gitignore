@@ -6,6 +6,9 @@ __pycache__/
 # --- Manim generated output ---
 media/
 
+# --- PDFs ---
+sources/
+
 # --- Quarto generated output ---
 .quarto/
 
