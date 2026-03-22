@@ -1193,7 +1193,7 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 </tr>
 <tr>
 <td style="border: none; text-align: right;">
-<b><span class="math inline">\(t_{grandmother}\)</span></b>
+<b>Haplotype 1</b>
 </td>
 <td style="background:#d6eaf8; border:1px solid #ccc;">
 1
@@ -1228,7 +1228,7 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 </tr>
 <tr>
 <td style="border: none; text-align: right;">
-<b><span class="math inline">\(t_{grandfather}\)</span></b>
+<b>Haplotype 2</b>
 </td>
 <td style="border:1px solid #ccc;">
 0
@@ -1267,7 +1267,7 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 </tr>
 <tr>
 <td style="border: none; text-align: right;">
-<b><span class="math inline">\(t_{parent}\)</span></b>
+<b>Transmitted</b>
 </td>
 <td style="background:#d6eaf8; border:1px solid #ccc;">
 <b>1</b>
@@ -1912,7 +1912,7 @@ g_c = \mcol{g_c^{m}} + \pcol{g_c^{p}}
 <p><strong>Heritability changes too</strong></p>
 </div>
 <div class="callout-content">
-<p>Changes in genetic variance changes the ratio of genetic to phenotypic variance: <span class="math display">\[h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2)\]</span></p>
+<p>Changes in genetic variance changes the ratio of genetic to phenotypic variance: <span class="math display">\[h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,}^2)\]</span></p>
 <p><strong>Assortative mating therefore changes the heritability</strong>.</p>
 <p>It typically <strong>increases</strong>, but with environmental transmission, the environmental variance changes too and the net effects are more complex: <span class="math display">\[h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2 + 2\sigma_{g,e,\infty})\]</span></p>
 </div>
@@ -2177,8 +2177,8 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 <h1>Part 3: Gene-Environment Correlations</h1>
 
 </section>
-<section id="same-regression-new-covariance-sources" class="slide level2">
-<h2>Same regression, new covariance sources</h2>
+<section id="same-problem-new-covariance-sources" class="slide level2">
+<h2>Same problem, new covariance sources</h2>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2208,7 +2208,8 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </div>
 </div>
 </div>
-<p>In Part 1 and Part 2, we focused on the LD term. In Part 3, we set that aside and focus on gene-environment correlation: <strong>What can generate <span class="math inline">\(\text{Cov}(x_j, e)\)</span> and why does it matter?</strong></p>
+<p>In Part 1 and Part 2, we focused on the LD term.</p>
+<p>In Part 3, we set that aside and focus on gene-environment correlation: <strong>What can generate <span class="math inline">\(\text{Cov}(x_j, e)\)</span> and why does it matter?</strong></p>
 </section>
 <section id="where-can-textcovx_je-come-from" class="slide level2">
 <h2>Where can <span class="math inline">\(\text{Cov}(x_j,e)\)</span> come from?</h2>
@@ -2244,19 +2245,7 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </tbody>
 </table>
 </div>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
 <p>Different mechanisms can produce the <strong>same statistical symptom</strong> in a marginal GWAS coefficient: <span class="math inline">\(\text{Cov}(x_j,e) \neq 0\)</span>.</p>
-</div>
-</div>
-</div>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2437,27 +2426,6 @@ g_i^{\text{direct}} = \sum_{j=1}^{M}\beta_j x_{ij}
 </div>
 </div>
 </section>
-<section id="back-to-the-marginal-snp-coefficient" class="slide level2 smaller">
-<h2>Back to the marginal SNP coefficient</h2>
-<p>For this part, the relevant simplification is:</p>
-<p><span class="math display">\[
-\tilde{\beta}_j
-= \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
-\]</span></p>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>The orange term can now reflect many different things: - passive, evocative, or active gene-environment correlation - indirect genetic effects from parents, siblings, peers, or partners - stratification and population structure - other residual confounding</p>
-</div>
-</div>
-</div>
-</section>
 <section id="from-snp-confounding-to-variance-decomposition" class="slide level2">
 <h2>From SNP confounding to variance decomposition</h2>
 <p>For the next two slides, let <span class="math inline">\(g\)</span> denote the focal individual’s <strong>direct additive genetic value</strong>:</p>
@@ -2529,6 +2497,7 @@ y = g + e
 </section>
 <section id="take-home-map" class="slide level2">
 <h2>Take-home map</h2>
+<div style="font-size: 0.86em;">
 <table class="caption-top">
 <colgroup>
 <col style="width: 33%">
@@ -2570,6 +2539,20 @@ y = g + e
 </tr>
 </tbody>
 </table>
+</div>
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Warning</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Caution:</strong> <code>rGE</code> and <code>GxE</code> are not the same thing. <code>rGE</code> means genes and environments are correlated (for example, <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>), while <code>GxE</code> means genetic effects change across environments (an interaction).</p>
+</div>
+</div>
+</div>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">

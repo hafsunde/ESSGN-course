@@ -125,7 +125,7 @@ Recombination shuffles **chromosome segments**, not isolated SNPs. Loci that are
 <table style="border-collapse: collapse; font-family: Lato;">
   <tr><td colspan="11" style="height:10px;"></td></tr>
    <tr>
-    <td style="border: none; text-align: right;"><b>$t_{grandmother}$</b></td>
+    <td style="border: none; text-align: right;"><b>Haplotype 1</b></td>
     <td style="background:#d6eaf8; border:1px solid #ccc;">1</td>
     <td style="background:#d6eaf8; border:1px solid #ccc;">0</td>
     <td style="background:#d6eaf8; border:1px solid #ccc;">1</td>
@@ -139,7 +139,7 @@ Recombination shuffles **chromosome segments**, not isolated SNPs. Loci that are
   </tr>
 
   <tr>
-    <td style="border: none; text-align: right;"><b>$t_{grandfather}$</b></td>
+    <td style="border: none; text-align: right;"><b>Haplotype 2</b></td>
     <td style="border:1px solid #ccc;">0</td>
     <td style="border:1px solid #ccc;">1</td>
     <td style="border:1px solid #ccc;">0</td>
@@ -155,7 +155,7 @@ Recombination shuffles **chromosome segments**, not isolated SNPs. Loci that are
   <tr><td colspan="11" style="height:10px;"></td></tr>
 
   <tr>
-    <td style="border: none; text-align: right;"><b>$t_{parent}$</b></td>
+    <td style="border: none; text-align: right;"><b>Transmitted</b></td>
     <td style="background:#d6eaf8; border:1px solid #ccc;"><b>1</b></td>
     <td style="background:#d6eaf8; border:1px solid #ccc;"><b>0</b></td>
     <td style="background:#d6eaf8; border:1px solid #ccc;"><b>1</b></td>
@@ -729,7 +729,7 @@ ggplot(df_var, aes(x = generation, y = sg2)) +
 ::: {.callout-important}
 ## Heritability changes too
 Changes in genetic variance changes the ratio of genetic to phenotypic variance: 
-$$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2)$$
+$$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,}^2)$$
 
 **Assortative mating therefore changes the heritability**. 
 
@@ -1049,22 +1049,6 @@ digraph strat {
 Stratification is **confounding**, not nurture. It can create $\text{Cov}(x_j,e)$ even when there is no within-family environmental pathway from genotype to phenotype.
 :::
 
-## Back to the marginal SNP coefficient {.smaller}
-
-For this part, the relevant simplification is:
-
-$$
-\tilde{\beta}_j
-= \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
-$$
-
-::: {.callout-note}
-The orange term can now reflect many different things:
-- passive, evocative, or active gene-environment correlation
-- indirect genetic effects from parents, siblings, peers, or partners
-- stratification and population structure
-- other residual confounding
-:::
 
 ## From SNP confounding to variance decomposition
 
@@ -1107,6 +1091,7 @@ $\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)$ is a **statis
 
 ## Take-home map
 
+::: {style="font-size: 0.86em;"}
 | Quantity | What it means | What it does not automatically mean |
 |---|---|---|
 | Direct effect $\beta_j$ | Causal effect of locus $j$ in the full model | The same thing as the marginal coefficient |
@@ -1114,6 +1099,11 @@ $\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)$ is a **statis
 | Indirect genetic effect | Other people's genotypes shape the focal environment | Population stratification |
 | Stratification | Group structure aligns genotypes and environments | Genetic nurture |
 | $\text{Cov}(g,e)$ | Statistical alignment of genetic values and environments | A causal share of variance |
+:::
+
+::: {.callout-warning}
+**Caution:** `rGE` and `GxE` are not the same thing. `rGE` means genes and environments are correlated (for example, $\text{Cov}(g,e) \neq 0$), while `GxE` means genetic effects change across environments (an interaction).
+:::
 
 ::: {.callout-note}
 Across local LD, assortative mating, and gene-environment correlation, the same lesson keeps returning: **marginal regression coefficients are shaped by correlation structure**.
