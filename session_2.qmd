@@ -1140,6 +1140,8 @@ Across unrelated people, SNP associations can reflect:
 - stratification
 - parental genetic nurture and other shared family environments
 
+One could, in principle, try to adjust for all of these things by adding more and more covariates. But that is unrealistic, even for observed confounders like other SNPS let lonen unobserved confounders.
+
 ::: {.callout-note}
 Family-based designs matter because they change the comparison. Instead of asking why people from different families differ, they compare relatives who share much of their background.
 :::
