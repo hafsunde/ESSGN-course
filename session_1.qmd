@@ -23,15 +23,19 @@ execute:
   warning: false
   message: false
   cache: true
+include-in-header:
+  text: |
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      TeX: {
+        Macros: {
+          mcol: ["{\\color{red}{#1}}", 1],
+          pcol: ["{\\color{darkblue}{#1}}", 1]
+        }
+      }
+    });
+    </script>
 ---
-
-<!-- Edit maternal/paternal math colors here if needed. -->
-<div style="height: 0; overflow: hidden;">
-$$
-\newcommand{\mcol}[1]{\color{red}{#1}}
-\newcommand{\pcol}[1]{\color{darkblue}{#1}}
-$$
-</div>
 
 ## Lecture Outline
 
