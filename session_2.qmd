@@ -51,8 +51,8 @@ include-in-header:
 | **Part 1: Local linkage disequilibrium (LD)** | Why nearby correlated SNPs both distort and inform marginal effect estimates |
 | **Part 2: Assortative mating and long-range LD** | How non-random mating affects correlations between distant loci |
 | **Part 3: Gene-environment correlations** | How correlations between genetic and environmental factors affect marginal associations and variance decompositions |
-| **Part 4: Family-based methods** | What family-based methods can and cannot solve |
-| **Part 5: Practical** | Practical 1: GREML and maternal indirect genetic effects with M-GCTA<br>Practical 2: SNP heritability and a genetic correlation with LD score regression |
+| **Part 4: What to do? Use families!** | What family-based methods can and cannot solve |
+| **Part 5: Practical** | GREML and maternal indirect genetic effects with M-GCTA |
 :::
 
 
@@ -729,7 +729,7 @@ ggplot(df_var, aes(x = generation, y = sg2)) +
 ::: {.callout-important}
 ## Heritability changes too
 Changes in genetic variance changes the ratio of genetic to phenotypic variance: 
-$$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,}^2)$$
+$$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e}^2)$$
 
 **Assortative mating therefore changes the heritability**. 
 
@@ -923,7 +923,10 @@ Notably, the resulting estimates do not correspond to either the *score correlat
 
 # Part 3: Gene-Environment Correlations {background-color="#2c3e50" style="color: white;"}
 
-## Same problem, new covariance sources
+## Same equation, now isolate the rGE term
+
+rGE means genes and environments co-vary.
+If $\mathrm{Cov}(x_j,e)\neq 0$, marginal SNP associations mix direct effects and rGE.
 
 ::: {.callout-note}
 ## Reminder: the marginal association at SNP $j$ is
@@ -948,10 +951,15 @@ $$
 
 :::
 
-In Part 1 and Part 2, we focused on the LD term. 
+In Part 1 and Part 2, we focused on the LD term.
 
-In Part 3, we set that aside and focus on gene-environment correlation: **What can generate $\text{Cov}(x_j, e)$ and why does it matter?**
+In Part 3, we keep that in the background and isolate the third term:
 
+$$
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}.
+$$
+
+This is where gene-environment correlation enters the marginal SNP association.
 
 ## Where can $\text{Cov}(x_j,e)$ come from?
 ::: {style="font-size: 0.8em;"}
@@ -960,122 +968,102 @@ In Part 3, we set that aside and focus on gene-environment correlation: **What c
 | Indirect genetic effects | Related people's genotypes shape the focal person's environment |
 | Stratification / population structure | Allele frequencies and environments differ across groups |
 | Residual confounding | Selection, ascertainment, or measurement structure |
-| Assortative mating | Induced correlation between paternal genotype and maternal environment (and vice versa) |
+| Assortative mating | Can increase and even induce covariance between inherited alleles and family environments |
 :::
 
-Different mechanisms can produce the **same statistical symptom** in a marginal GWAS coefficient: $\text{Cov}(x_j,e) \neq 0$.
-
+Different mechanisms can produce the **same statistical symptom**: $\text{Cov}(x_j,e) \neq 0$.
+Across many loci, this can aggregate into $\text{Cov}(g,e) \neq 0$.
 
 ::: {.callout-important}
 ## Only passive gene-environment correlation is confounding
 - **Passive $r_{ge}$**: Genotype and environment are correlated because of shared causes (e.g., parents)
 - **Active / Evocative $r_{ge}$**: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods)
-
 Crucially, **active and evocative gene-environment correlations are not confounding**. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. This is also important for how "direct" genetic effects are interpreted.
-
 :::
 
-## Indirect genetic effects
+## Why relatives' environmental effects induce $\mathrm{Cov}(g,e)$ {.smaller}
 
-A focal person's phenotype can be affected not only by their own genotype, but also by the genotypes of parents, siblings, peers, or partners through the environments those people create.
-
-$$
-y_i = g_i^{\text{direct}} + g_i^{\text{indirect}} + e_i
-\qquad
-g_i^{\text{direct}} = \sum_{j=1}^{M}\beta_j x_{ij}
-$$
-
-:::: {.columns}
-::: {.column width="50%"}
-```{dot}
-//| fig-width: 5
-//| fig-height: 3.1
-//| echo: false
-digraph ige {
-  rankdir=LR;
-  graph [margin=0.08, nodesep=0.45, ranksep=0.7];
-  node [shape=circle, style=filled, fixedsize=true, width=0.85, height=0.85,
-        fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
-  edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
-
-  xr [label="x_rel", fillcolor="#e74c3c", color="#c0392b"];
-  env [label="env", fillcolor="#e67e22", color="#ca6f1e"];
-  xi [label="x_i", fillcolor="#3498db", color="#2980b9"];
-  yi [label="y_i", fillcolor="#7f8c8d", color="#707b7c"];
-
-  xr -> env [label=" indirect"];
-  env -> yi [label=" environment"];
-  xi -> yi [label=" direct"];
-}
-```
-:::
-::: {.column width="50%"}
-
-- Your own genotype can affect your phenotype directly
-- Other people's genotypes can affect your phenotype indirectly by shaping your environment
-- That is why indirect genetic effects are not the same thing as stratification
-
-:::
-::::
-
-## Stratification and population structure
-
-Stratification can also induce correlation between genotype and environment, but through group-level differences rather than through other people's genotypes creating the focal environment.
-
-```{dot}
-//| fig-width: 5.2
-//| fig-height: 3
-//| echo: false
-digraph strat {
-  rankdir=TB;
-  graph [margin=0.08, nodesep=0.5, ranksep=0.7];
-  node [shape=circle, style=filled, fixedsize=true, width=0.9, height=0.9,
-        fontsize=17, fontcolor=white, fontname="Helvetica-Bold", penwidth=2];
-  edge [penwidth=2, fontsize=15, fontname="Helvetica-Bold"];
-
-  anc [label="group", fillcolor="#8e44ad", color="#7d3c98"];
-  xj  [label="x_j", fillcolor="#3498db", color="#2980b9"];
-  e   [label="e", fillcolor="#e67e22", color="#ca6f1e"];
-  y   [label="y", fillcolor="#7f8c8d", color="#707b7c"];
-
-  anc -> xj;
-  anc -> e;
-  xj -> y [label=" marginal"];
-  e  -> y [label=" env"];
-}
-```
-
-::: {.callout-important}
-Stratification is **confounding**, not nurture. It can create $\text{Cov}(x_j,e)$ even when there is no within-family environmental pathway from genotype to phenotype.
-:::
-
-
-## From SNP confounding to variance decomposition
-
-For the next two slides, let $g$ denote the focal individual's **direct additive genetic value**:
+Write the phenotype as
 
 $$
-g_i = \sum_{j=1}^{M} \beta_j x_{ij}
+y_i = g_i + e_i,\qquad
+e_i = e_i^{I} + e_i^*,\qquad
+e_i^{I} = \sum_{k=1}^{M}\gamma_k x_{i\ell k}.
 $$
 
-Then:
+Here $e_i^{I}$ is the part of the focal person's environment created by relatives.
+
+For a specific relative $\ell$, shared inheritance implies a same-locus correlation
+$\mathrm{Cov}(x_{ij},x_{i\ell j}) \neq 0$.
+Therefore
+
+$$
+\mathrm{Cov}(x_{ij},e_i^{I})
+=
+\sum_{k=1}^{M}\gamma_k\,\mathrm{Cov}(x_{ij},x_{i\ell k})
+\neq 0.
+$$
+
+At minimum, the $k=j$ term contributes; with long-range covariance structure (for example from AM), some $k\neq j$ terms can also contribute.
+
+Aggregating over loci with $g_i = \sum_{j=1}^{M}\beta_j x_{ij}$:
+
+$$
+\mathrm{Cov}(g_i,e_i^{I})
+=
+\sum_{j=1}^{M}\sum_{k=1}^{M}\beta_j\gamma_k\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
+$$
+
+This is the direct route from relatives' environmental effects to nonzero $\mathrm{Cov}(g,e)$.
+
+## Consequence 1: marginal SNP associations include rGE
+
+$$
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+& = &
+\beta_j
+& + &
+\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+& + &
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
+& &
+\scriptstyle {\text{True Effect}}
+& &
+\scriptstyle {\text{Linkage Disequilibrium}}
+& &
+\scriptstyle {\text{rGE}}
+\end{array}
+$$
+
+If $\mathrm{Cov}(x_j,e)\neq 0$, the marginal SNP association absorbs rGE and is no longer a pure direct effect.
+
+## Consequence 2: $\text{Cov}(g,y)$ is also affected
 
 $$
 y = g + e
 \qquad \Longrightarrow \qquad
-\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)
+\text{Cov}(g,y)
+=
+\text{Cov}(g,g+e)
+=
+\text{Var}(g) + \text{Cov}(g,e)
 $$
 
-::: {.callout-note}
-If you split indirect genetic effects out as their own term, you get more covariance terms, not fewer. The interpretational problem does not disappear.
-:::
+So with rGE, $\text{Cov}(g,y)$ no longer equals $\text{Var}(g)$.
 
-## Why covariance terms complicate interpretation
+## Consequence 3: variance decomposition becomes awkward
 
 Keep these quantities conceptually separate:
 
 $$
 \text{Var}(g) \qquad \text{Var}(e) \qquad \text{Cov}(g,e) \qquad \text{Var}(y)
+$$
+
+With $y=g+e$:
+
+$$
+\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)
 $$
 
 The sign of the covariance matters:
@@ -1089,16 +1077,46 @@ The sign of the covariance matters:
 $\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)$ is a **statistical identity**, not a clean causal partition of phenotypic variation.
 :::
 
-## Take-home map
+## Mini example: negative rGE
+
+Take:
+
+$$
+\text{Var}(g)=0.40,\quad
+\text{Var}(e)=0.80,\quad
+\text{Cov}(g,e)=-0.10.
+$$
+
+This can happen when environments partially compensate for genetic liability.
+
+Then:
+
+$$
+\text{Var}(y)=0.40+0.80+2(-0.10)=1.00
+$$
+
+$$
+\text{Cov}(g,y)=\text{Var}(g)+\text{Cov}(g,e)=0.40-0.10=0.30
+$$
+
+Without rGE (same $\text{Var}(g)$ and $\text{Var}(e)$), we would instead have:
+
+$$
+\text{Var}(y)=1.20,\qquad
+\text{Cov}(g,y)=0.40.
+$$
+
+Negative rGE therefore moves both quantities downward.
+
+## Take-home map and bridge
 
 ::: {style="font-size: 0.86em;"}
-| Quantity | What it means | What it does not automatically mean |
+| Quantity | What it means | What it does **not** automatically mean |
 |---|---|---|
-| Direct effect $\beta_j$ | Causal effect of locus $j$ in the full model | The same thing as the marginal coefficient |
-| Marginal coefficient $\tilde{\beta}_j$ | Association between SNP $j$ and phenotype | A pure direct effect |
-| Indirect genetic effect | Other people's genotypes shape the focal environment | Population stratification |
-| Stratification | Group structure aligns genotypes and environments | Genetic nurture |
-| $\text{Cov}(g,e)$ | Statistical alignment of genetic values and environments | A causal share of variance |
+| $\text{Cov}(x_j,e)$ | SNP-level genotype-environment alignment | A direct SNP effect |
+| $\tilde{\beta}_j$ | Marginal SNP association | A pure direct effect |
+| $\text{Cov}(g,y)$ | Genetic value-phenotype association | Automatically equal to $\text{Var}(g)$ (equality only if $\text{Cov}(g,e)=0$) |
+| $\text{Cov}(g,e)$ | Trait-level genetic-environmental alignment | A causal variance component by itself |
 :::
 
 ::: {.callout-warning}
@@ -1106,7 +1124,7 @@ $\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)$ is a **statis
 :::
 
 ::: {.callout-note}
-Across local LD, assortative mating, and gene-environment correlation, the same lesson keeps returning: **marginal regression coefficients are shaped by correlation structure**.
+Part 4 follows naturally: family designs change the comparison (toward within-family variation), which helps with several between-family rGE sources but does not remove all covariance structure.
 :::
 
 # Part 4: Family-based designs (overview) {background-color="#2c3e50" style="color: white;"}
@@ -1346,12 +1364,17 @@ By this point, you should already have the direct-only objects from the Session 
 - offspring block `Goo`
 - direct-only GREML fit
 
-The slides below focus only on the **new Session 2 extension**.
+The following slides focus only on the **new Session 2 extension**.
 
+<details>
+<summary>Show Session 1 code</summary>
+
+:::: {.panel-tabset}
+### R
 ```{r}
 #| label: s2-session1-setup
 #| echo: false
-#| include: false
+#| eval: true
 #| cache: true
 set.seed(080318)
 library(gaston)
@@ -1388,6 +1411,7 @@ Goo = G[ido, ido]
 m_direct = lmm.aireml(yo, K = Goo, verbose = FALSE)
 ```
 
+### Julia
 ```julia
 #| echo: false
 #| eval: false
@@ -1426,6 +1450,10 @@ Id = Diagonal(ones(N))
 r = [Goo, Id]
 mdirect = fit(GREMLModel, @formula(yo ~ 1), df1, r; verbose = false)
 ```
+
+::::
+
+</details>
 
 ## Part 5: Simulate a maternal indirect genetic effect {.smaller}
 
@@ -1526,119 +1554,27 @@ After running the simulation, check that you can answer these questions:
 3. Once you fit the maternal model, do the variance components move closer to the data-generating values?
 4. Why does the direct-only model misattribute part of the maternal effect?
 
-## Practical 2: LD score regression with real GWAS data
 
-In this practical, we will use **LD score regression (LDSC)** to estimate:
+## Backup (optional): direct-indirect covariance derivation {.smaller}
 
-1. observed-scale SNP heritability for **intelligence**
-2. observed-scale SNP heritability for **p_factor**
-3. the genetic correlation between the two traits
+If
 
-The summary statistics come from the **CTG summary statistics archive** and the practical uses a local course installer around the newer Python 3 LDSC workflow from **CBIIT/ldsc**. LDSC itself remains the canonical method originally associated with the **bulik/ldsc** project.
+$$
+g_i^{D} = \sum_{j=1}^{M}\beta_j x_{ij},
+\qquad
+g_i^{I} = \sum_{k=1}^{M}\gamma_k x_{i\ell k},
+$$
 
-- [CTG GWAS summary statistics](https://ctg.thebluebus.nl/software/summary_statistics/)
-- [CBIIT/ldsc repository](https://github.com/CBIIT/ldsc)
-- [Original bulik/ldsc repository](https://github.com/bulik/ldsc)
-- [LDSC heritability and genetic correlation tutorial](https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation)
+then
 
-::: {.callout-note}
-To keep the exercise focused, the instructor has already prepared helper scripts for the repetitive setup work. You will still run the same main LDSC steps used in practice: `munge_sumstats.py`, single-trait `--h2`, and cross-trait `--rg`, but the course scripts handle the local installation and platform details.
-:::
+$$
+\mathrm{Cov}(g_i^{D},g_i^{I})
+=
+\sum_{j=1}^{M}\sum_{k=1}^{M}
+\beta_j\gamma_k\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
+$$
 
-## Setup and inputs {.smaller}
-
-We will work with two pre-harmonized files prepared from the public CTG releases:
-
-- `practical/ldsc/data/course/intelligence_ctg.tsv.gz`
-- `practical/ldsc/data/course/p_factor.tsv.gz`
-
-Each file has the same minimal schema:
-
-`SNP`, `A1`, `A2`, `P`, `N`, `Z`
-
-We also need the LDSC reference files:
-
-- `practical/ldsc/data/ref/w_hm3.snplist`
-- `practical/ldsc/data/ref/eur_w_ld_chr/`
-- `practical/ldsc/data/ref/weights_hm3_no_hla/`
-
-Run the course workflow in this order from the repository root. The practical is intended to work in **Git Bash on Windows**, with the scripts handling the local Python and LDSC setup.
-
-```bash
-Rscript practical/ldsc/prepare_ldsc_data.R --force
-bash practical/ldsc/install_ldsc.sh
-bash practical/ldsc/ldsc_pipeline.sh
-```
-
-::: {.callout-note}
-These LD scores are based on **1000 Genomes Europeans**, so the exercise assumes European-ancestry GWAS summary statistics. In real work, ancestry mismatch between the GWAS and the reference panel can bias interpretation.
-:::
-
-## Part 1: Munge the summary statistics {.smaller}
-
-After running the pipeline above, the first LDSC step is to convert the prepared text files into LDSC's `.sumstats.gz` format. If you want to inspect the script itself, see `practical/ldsc/ldsc_pipeline.sh`.
-
-Look for:
-
-- how many SNPs survive QC and allele matching for `intelligence` and `p_factor`
-- whether the munge logs contain warnings
-- the two output files `intelligence_ctg.sumstats.gz` and `p_factor.sumstats.gz`
-
-## Part 2: Estimate SNP heritability {.smaller}
-
-That same pipeline run then performs single-trait LDSC for each phenotype.
-
-Look for these lines in each log:
-
-- `Total Observed scale h2`
-- `Intercept`
-- `Ratio`
-
-The key log files are:
-
-- `practical/ldsc/data/results/intelligence_h2.log`
-- `practical/ldsc/data/results/p_factor_h2.log`
-
-::: {.callout-note}
-For this short practical we stay on the **observed scale**. We are not doing liability-scale conversion or partitioned heritability here.
-:::
-
-## Part 3: Estimate the genetic correlation {.smaller}
-
-Finally, that same pipeline run performs the cross-trait LDSC regression using the two munged `.sumstats.gz` files.
-
-Look for:
-
-- `Genetic Correlation`
-- its standard error
-- the cross-trait intercept
-- the `P:` line
-
-The main log file is:
-
-- `practical/ldsc/data/results/intelligence_p_factor_rg.log`
-
-For these traits, we expect a **negative** estimated genetic correlation.
-
-::: {.callout-note}
-After Part 2, keep one interpretation caveat in mind: an LDSC estimate of $r_g$ from marginal summary statistics is not automatically pure effect overlap / pleiotropy if cross-trait assortative mating or other covariance structure is present.
-:::
-
-## Interpretation checkpoint
-
-After the run, check that you can answer these questions:
-
-1. Which trait has the larger observed-scale SNP heritability: `intelligence` or `p_factor`?
-2. Are the LDSC intercepts close to 1, or do they suggest substantial inflation beyond polygenicity?
-3. Are the LDSC ratios modest, or do they suggest a large share of inflation is due to confounding?
-4. Is the estimated genetic correlation between `intelligence` and `p_factor` negative, and how large is it in magnitude?
-5. Is the cross-trait intercept close to 0, or could sample overlap / shared confounding be contributing?
-
-::: {.callout-important}
-The important habit is not just to report `h^2` and `r_g`, but also to inspect the **intercepts** and **ratios** and ask whether the analysis assumptions look reasonable.
-:::
-
-
+This is AM-agnostic: long-range LD, relatedness, and other genotype correlation structure all enter through $\mathrm{Cov}(x_{ij},x_{i\ell k})$.
 
 
 

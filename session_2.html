@@ -1118,12 +1118,12 @@ Espen Eilertsen &amp; Hans Fredrik Sunde
 <td>How correlations between genetic and environmental factors affect marginal associations and variance decompositions</td>
 </tr>
 <tr class="even">
-<td><strong>Part 4: Family-based methods</strong></td>
+<td><strong>Part 4: What to do? Use families!</strong></td>
 <td>What family-based methods can and cannot solve</td>
 </tr>
 <tr class="odd">
 <td><strong>Part 5: Practical</strong></td>
-<td>Practical 1: GREML and maternal indirect genetic effects with M-GCTA<br>Practical 2: SNP heritability and a genetic correlation with LD score regression</td>
+<td>GREML and maternal indirect genetic effects with M-GCTA</td>
 </tr>
 </tbody>
 </table>
@@ -1912,7 +1912,7 @@ g_c = \mcol{g_c^{m}} + \pcol{g_c^{p}}
 <p><strong>Heritability changes too</strong></p>
 </div>
 <div class="callout-content">
-<p>Changes in genetic variance changes the ratio of genetic to phenotypic variance: <span class="math display">\[h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,}^2)\]</span></p>
+<p>Changes in genetic variance changes the ratio of genetic to phenotypic variance: <span class="math display">\[h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e}^2)\]</span></p>
 <p><strong>Assortative mating therefore changes the heritability</strong>.</p>
 <p>It typically <strong>increases</strong>, but with environmental transmission, the environmental variance changes too and the net effects are more complex: <span class="math display">\[h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e,\infty}^2 + 2\sigma_{g,e,\infty})\]</span></p>
 </div>
@@ -2177,8 +2177,9 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 <h1>Part 3: Gene-Environment Correlations</h1>
 
 </section>
-<section id="same-problem-new-covariance-sources" class="slide level2">
-<h2>Same problem, new covariance sources</h2>
+<section id="same-equation-now-isolate-the-rge-term" class="slide level2">
+<h2>Same equation, now isolate the rGE term</h2>
+<p>rGE means genes and environments co-vary. If <span class="math inline">\(\mathrm{Cov}(x_j,e)\neq 0\)</span>, marginal SNP associations mix direct effects and rGE.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2209,7 +2210,11 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </div>
 </div>
 <p>In Part 1 and Part 2, we focused on the LD term.</p>
-<p>In Part 3, we set that aside and focus on gene-environment correlation: <strong>What can generate <span class="math inline">\(\text{Cov}(x_j, e)\)</span> and why does it matter?</strong></p>
+<p>In Part 3, we keep that in the background and isolate the third term:</p>
+<p><span class="math display">\[
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}.
+\]</span></p>
+<p>This is where gene-environment correlation enters the marginal SNP association.</p>
 </section>
 <section id="where-can-textcovx_je-come-from" class="slide level2">
 <h2>Where can <span class="math inline">\(\text{Cov}(x_j,e)\)</span> come from?</h2>
@@ -2240,12 +2245,12 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </tr>
 <tr class="even">
 <td>Assortative mating</td>
-<td>Induced correlation between paternal genotype and maternal environment (and vice versa)</td>
+<td>Can increase and even induce covariance between inherited alleles and family environments</td>
 </tr>
 </tbody>
 </table>
 </div>
-<p>Different mechanisms can produce the <strong>same statistical symptom</strong> in a marginal GWAS coefficient: <span class="math inline">\(\text{Cov}(x_j,e) \neq 0\)</span>.</p>
+<p>Different mechanisms can produce the <strong>same statistical symptom</strong>: <span class="math inline">\(\text{Cov}(x_j,e) \neq 0\)</span>. Across many loci, this can aggregate into <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>.</p>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2257,206 +2262,80 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 <div class="callout-content">
 <ul>
 <li><strong>Passive <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because of shared causes (e.g., parents)</li>
-<li><strong>Active / Evocative <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods)</li>
+<li><strong>Active / Evocative <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods) Crucially, <strong>active and evocative gene-environment correlations are not confounding</strong>. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. This is also important for how “direct” genetic effects are interpreted.</li>
 </ul>
-<p>Crucially, <strong>active and evocative gene-environment correlations are not confounding</strong>. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. This is also important for how “direct” genetic effects are interpreted.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="indirect-genetic-effects" class="slide level2">
-<h2>Indirect genetic effects</h2>
-<p>A focal person’s phenotype can be affected not only by their own genotype, but also by the genotypes of parents, siblings, peers, or partners through the environments those people create.</p>
+<section id="why-relatives-environmental-effects-induce-mathrmcovge" class="slide level2 smaller">
+<h2>Why relatives’ environmental effects induce <span class="math inline">\(\mathrm{Cov}(g,e)\)</span></h2>
+<p>Write the phenotype as</p>
 <p><span class="math display">\[
-y_i = g_i^{\text{direct}} + g_i^{\text{indirect}} + e_i
-\qquad
-g_i^{\text{direct}} = \sum_{j=1}^{M}\beta_j x_{ij}
+y_i = g_i + e_i,\qquad
+e_i = e_i^{I} + e_i^*,\qquad
+e_i^{I} = \sum_{k=1}^{M}\gamma_k x_{i\ell k}.
 \]</span></p>
-<div class="columns">
-<div class="column" style="width:50%;">
-<div class="cell" data-fig-width="5" data-fig-height="3.1" data-layout-align="center">
-<div class="cell-output-display">
-<div>
-<p></p><figure class><p></p>
-<div>
-<svg width="480" height="298" viewbox="5.76 5.76 425.89 167.76" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(9.76 163.76)">
-<title>ige</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-158 416.13,-158 416.13,4 -4,4"></polygon>
-<!-- xr -->
-<g id="node1" class="node">
-<title>xr</title>
-<ellipse fill="#e74c3c" stroke="#c0392b" stroke-width="2" cx="30.5" cy="-123.5" rx="30.5" ry="30.5"></ellipse>
-<text text-anchor="middle" x="30.5" y="-118.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">x_rel</text>
-</g>
-<!-- env -->
-<g id="node2" class="node">
-<title>env</title>
-<ellipse fill="#e67e22" stroke="#ca6f1e" stroke-width="2" cx="191.06" cy="-123.5" rx="30.5" ry="30.5"></ellipse>
-<text text-anchor="middle" x="191.06" y="-118.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">env</text>
-</g>
-<!-- xr&#45;&gt;env -->
-<g id="edge1" class="edge">
-<title>xr-&gt;env</title>
-<path fill="none" stroke="black" stroke-width="2" d="M61.32,-123.5C86.46,-123.5 122.64,-123.5 150.25,-123.5" />
-<polygon fill="black" stroke="black" stroke-width="2" points="150.37,-127 160.37,-123.5 150.37,-120 150.37,-127"></polygon>
-<text text-anchor="middle" x="110.78" y="-128" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="15.00"> indirect</text>
-</g>
-<!-- yi -->
-<g id="node4" class="node">
-<title>yi</title>
-<ellipse fill="#7f8c8d" stroke="#707b7c" stroke-width="2" cx="381.63" cy="-57.5" rx="30.5" ry="30.5"></ellipse>
-<text text-anchor="middle" x="381.63" y="-52.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">y_i</text>
-</g>
-<!-- env&#45;&gt;yi -->
-<g id="edge2" class="edge">
-<title>env-&gt;yi</title>
-<path fill="none" stroke="black" stroke-width="2" d="M220.29,-113.62C252.88,-102.21 306.62,-83.4 342.8,-70.74" />
-<polygon fill="black" stroke="black" stroke-width="2" points="344.23,-73.95 352.51,-67.34 341.92,-67.34 344.23,-73.95"></polygon>
-<text text-anchor="middle" x="286.34" y="-109" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="15.00"> environment</text>
-</g>
-<!-- xi -->
-<g id="node3" class="node">
-<title>xi</title>
-<ellipse fill="#3498db" stroke="#2980b9" stroke-width="2" cx="191.06" cy="-30.5" rx="30.5" ry="30.5"></ellipse>
-<text text-anchor="middle" x="191.06" y="-25.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">x_i</text>
-</g>
-<!-- xi&#45;&gt;yi -->
-<g id="edge3" class="edge">
-<title>xi-&gt;yi</title>
-<path fill="none" stroke="black" stroke-width="2" d="M221.45,-33.32C248.67,-36.1 290.25,-40.75 326.13,-46.5 331.18,-47.31 336.48,-48.26 341.7,-49.25" />
-<polygon fill="black" stroke="black" stroke-width="2" points="341.08,-52.69 351.57,-51.19 342.43,-45.82 341.08,-52.69"></polygon>
-<text text-anchor="middle" x="286.34" y="-51" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="15.00"> direct</text>
-</g>
-</g>
-</svg>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-</div><div class="column" style="width:50%;">
-<ul>
-<li>Your own genotype can affect your phenotype directly</li>
-<li>Other people’s genotypes can affect your phenotype indirectly by shaping your environment</li>
-<li>That is why indirect genetic effects are not the same thing as stratification</li>
-</ul>
-</div></div>
-</section>
-<section id="stratification-and-population-structure" class="slide level2">
-<h2>Stratification and population structure</h2>
-<p>Stratification can also induce correlation between genotype and environment, but through group-level differences rather than through other people’s genotypes creating the focal environment.</p>
-<div class="cell" data-fig-width="5.2" data-fig-height="3" data-layout-align="center">
-<div class="cell-output-display">
-<div>
-<p></p><figure class><p></p>
-<div>
-<svg width="499" height="288" viewbox="5.76 5.76 179.76 327.76" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none; display: block; margin: auto auto auto auto">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(9.76 323.76)">
-<title>strat</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-318 170,-318 170,4 -4,4"></polygon>
-<!-- anc -->
-<g id="node1" class="node">
-<title>anc</title>
-<ellipse fill="#8e44ad" stroke="#7d3c98" stroke-width="2" cx="82.5" cy="-281.5" rx="32.5" ry="32.5"></ellipse>
-<text text-anchor="middle" x="82.5" y="-276.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">group</text>
-</g>
-<!-- xj -->
-<g id="node2" class="node">
-<title>xj</title>
-<ellipse fill="#3498db" stroke="#2980b9" stroke-width="2" cx="32.5" cy="-165.5" rx="32.5" ry="32.5"></ellipse>
-<text text-anchor="middle" x="32.5" y="-160.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">x_j</text>
-</g>
-<!-- anc&#45;&gt;xj -->
-<g id="edge1" class="edge">
-<title>anc-&gt;xj</title>
-<path fill="none" stroke="black" stroke-width="2" d="M69.75,-251.44C63.52,-237.23 55.95,-219.96 49.25,-204.7" />
-<polygon fill="black" stroke="black" stroke-width="2" points="52.45,-203.26 45.22,-195.51 46.03,-206.07 52.45,-203.26"></polygon>
-</g>
-<!-- e -->
-<g id="node3" class="node">
-<title>e</title>
-<ellipse fill="#e67e22" stroke="#ca6f1e" stroke-width="2" cx="133.5" cy="-165.5" rx="32.5" ry="32.5"></ellipse>
-<text text-anchor="middle" x="133.5" y="-160.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">e</text>
-</g>
-<!-- anc&#45;&gt;e -->
-<g id="edge2" class="edge">
-<title>anc-&gt;e</title>
-<path fill="none" stroke="black" stroke-width="2" d="M95.5,-251.44C101.86,-237.23 109.59,-219.96 116.41,-204.7" />
-<polygon fill="black" stroke="black" stroke-width="2" points="119.63,-206.07 120.52,-195.51 113.24,-203.21 119.63,-206.07"></polygon>
-</g>
-<!-- y -->
-<g id="node4" class="node">
-<title>y</title>
-<ellipse fill="#7f8c8d" stroke="#707b7c" stroke-width="2" cx="82.5" cy="-32.5" rx="32.5" ry="32.5"></ellipse>
-<text text-anchor="middle" x="82.5" y="-27.4" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="17.00" fill="white">y</text>
-</g>
-<!-- xj&#45;&gt;y -->
-<g id="edge3" class="edge">
-<title>xj-&gt;y</title>
-<path fill="none" stroke="black" stroke-width="2" d="M26.31,-133.48C24.9,-119.73 25.12,-103.62 30.44,-90 34.71,-79.04 42.22,-68.93 50.23,-60.38" />
-<polygon fill="black" stroke="black" stroke-width="2" points="52.72,-62.84 57.32,-53.29 47.77,-57.89 52.72,-62.84"></polygon>
-<text text-anchor="middle" x="59.03" y="-94.5" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="15.00"> marginal</text>
-</g>
-<!-- e&#45;&gt;y -->
-<g id="edge4" class="edge">
-<title>e-&gt;y</title>
-<path fill="none" stroke="black" stroke-width="2" d="M121.93,-134.77C114.75,-116.35 105.46,-92.48 97.7,-72.54" />
-<polygon fill="black" stroke="black" stroke-width="2" points="100.92,-71.16 94.03,-63.11 94.39,-73.7 100.92,-71.16"></polygon>
-<text text-anchor="middle" x="123.2" y="-94.5" font-family="Helvetica,sans-Serif" font-weight="bold" font-size="15.00"> env</text>
-</g>
-</g>
-</svg>
-</div>
-<p></p></figure><p></p>
-</div>
-</div>
-</div>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Important</strong></p>
-</div>
-<div class="callout-content">
-<p>Stratification is <strong>confounding</strong>, not nurture. It can create <span class="math inline">\(\text{Cov}(x_j,e)\)</span> even when there is no within-family environmental pathway from genotype to phenotype.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="from-snp-confounding-to-variance-decomposition" class="slide level2">
-<h2>From SNP confounding to variance decomposition</h2>
-<p>For the next two slides, let <span class="math inline">\(g\)</span> denote the focal individual’s <strong>direct additive genetic value</strong>:</p>
+<p>Here <span class="math inline">\(e_i^{I}\)</span> is the part of the focal person’s environment created by relatives.</p>
+<p>For a specific relative <span class="math inline">\(\ell\)</span>, shared inheritance implies a same-locus correlation <span class="math inline">\(\mathrm{Cov}(x_{ij},x_{i\ell j}) \neq 0\)</span>. Therefore</p>
 <p><span class="math display">\[
-g_i = \sum_{j=1}^{M} \beta_j x_{ij}
+\mathrm{Cov}(x_{ij},e_i^{I})
+=
+\sum_{k=1}^{M}\gamma_k\,\mathrm{Cov}(x_{ij},x_{i\ell k})
+\neq 0.
 \]</span></p>
-<p>Then:</p>
+<p>At minimum, the <span class="math inline">\(k=j\)</span> term contributes; with long-range covariance structure (for example from AM), some <span class="math inline">\(k\neq j\)</span> terms can also contribute.</p>
+<p>Aggregating over loci with <span class="math inline">\(g_i = \sum_{j=1}^{M}\beta_j x_{ij}\)</span>:</p>
+<p><span class="math display">\[
+\mathrm{Cov}(g_i,e_i^{I})
+=
+\sum_{j=1}^{M}\sum_{k=1}^{M}\beta_j\gamma_k\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
+\]</span></p>
+<p>This is the direct route from relatives’ environmental effects to nonzero <span class="math inline">\(\mathrm{Cov}(g,e)\)</span>.</p>
+</section>
+<section id="consequence-1-marginal-snp-associations-include-rge" class="slide level2">
+<h2>Consequence 1: marginal SNP associations include rGE</h2>
+<p><span class="math display">\[
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+&amp; = &amp;
+\beta_j
+&amp; + &amp;
+\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+&amp; + &amp;
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
+&amp; &amp;
+\scriptstyle {\text{True Effect}}
+&amp; &amp;
+\scriptstyle {\text{Linkage Disequilibrium}}
+&amp; &amp;
+\scriptstyle {\text{rGE}}
+\end{array}
+\]</span></p>
+<p>If <span class="math inline">\(\mathrm{Cov}(x_j,e)\neq 0\)</span>, the marginal SNP association absorbs rGE and is no longer a pure direct effect.</p>
+</section>
+<section id="consequence-2-textcovgy-is-also-affected" class="slide level2">
+<h2>Consequence 2: <span class="math inline">\(\text{Cov}(g,y)\)</span> is also affected</h2>
 <p><span class="math display">\[
 y = g + e
 \qquad \Longrightarrow \qquad
-\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)
+\text{Cov}(g,y)
+=
+\text{Cov}(g,g+e)
+=
+\text{Var}(g) + \text{Cov}(g,e)
 \]</span></p>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>If you split indirect genetic effects out as their own term, you get more covariance terms, not fewer. The interpretational problem does not disappear.</p>
-</div>
-</div>
-</div>
+<p>So with rGE, <span class="math inline">\(\text{Cov}(g,y)\)</span> no longer equals <span class="math inline">\(\text{Var}(g)\)</span>.</p>
 </section>
-<section id="why-covariance-terms-complicate-interpretation" class="slide level2">
-<h2>Why covariance terms complicate interpretation</h2>
+<section id="consequence-3-variance-decomposition-becomes-awkward" class="slide level2">
+<h2>Consequence 3: variance decomposition becomes awkward</h2>
 <p>Keep these quantities conceptually separate:</p>
 <p><span class="math display">\[
 \text{Var}(g) \qquad \text{Var}(e) \qquad \text{Cov}(g,e) \qquad \text{Var}(y)
+\]</span></p>
+<p>With <span class="math inline">\(y=g+e\)</span>:</p>
+<p><span class="math display">\[
+\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)
 \]</span></p>
 <p>The sign of the covariance matters:</p>
 <table class="caption-top">
@@ -2495,8 +2374,50 @@ y = g + e
 </div>
 </div>
 </section>
-<section id="take-home-map" class="slide level2">
-<h2>Take-home map</h2>
+<section id="mini-example-negative-rge" class="slide level2">
+<h2>Mini example: negative rGE</h2>
+<p>Take:</p>
+<p><span class="math display">\[
+\text{Var}(g)=0.40,\quad
+\text{Var}(e)=0.80,\quad
+\text{Cov}(g,e)=-0.10.
+\]</span></p>
+<p>This can happen when environments partially compensate for genetic liability.</p>
+<p>Then:</p>
+<p><span class="math display">\[
+\text{Var}(y)=0.40+0.80+2(-0.10)=1.00
+\]</span></p>
+<p><span class="math display">\[
+\text{Cov}(g,y)=\text{Var}(g)+\text{Cov}(g,e)=0.40-0.10=0.30
+\]</span></p>
+<p>Without rGE (same <span class="math inline">\(\text{Var}(g)\)</span> and <span class="math inline">\(\text{Var}(e)\)</span>), we would instead have:</p>
+<p><span class="math display">\[
+\text{Var}(y)=1.20,\qquad
+\text{Cov}(g,y)=0.40.
+\]</span></p>
+<p>Negative rGE therefore moves both quantities downward.</p>
+</section>
+<section id="confounding-vs-mediation-short-version" class="slide level2">
+<h2>Confounding vs mediation (short version)</h2>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Passive rGE</strong>: genotype-environment correlation from shared causes (e.g., parents). This is confounding when the target is the <strong>direct genetic effect</strong>.</li>
+<li><strong>Active / evocative rGE</strong>: genotype partly shapes the environment experienced by the focal person. This is a mediated pathway for the <strong>total genetic effect</strong>, but still not a direct-effect estimand.</li>
+</ul>
+</div>
+</div>
+</div>
+</section>
+<section id="take-home-map-and-bridge" class="slide level2">
+<h2>Take-home map and bridge</h2>
 <div style="font-size: 0.86em;">
 <table class="caption-top">
 <colgroup>
@@ -2508,34 +2429,29 @@ y = g + e
 <tr class="header">
 <th>Quantity</th>
 <th>What it means</th>
-<th>What it does not automatically mean</th>
+<th>What it does <strong>not</strong> automatically mean</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Direct effect <span class="math inline">\(\beta_j\)</span></td>
-<td>Causal effect of locus <span class="math inline">\(j\)</span> in the full model</td>
-<td>The same thing as the marginal coefficient</td>
+<td><span class="math inline">\(\text{Cov}(x_j,e)\)</span></td>
+<td>SNP-level genotype-environment alignment</td>
+<td>A direct SNP effect</td>
 </tr>
 <tr class="even">
-<td>Marginal coefficient <span class="math inline">\(\tilde{\beta}_j\)</span></td>
-<td>Association between SNP <span class="math inline">\(j\)</span> and phenotype</td>
+<td><span class="math inline">\(\tilde{\beta}_j\)</span></td>
+<td>Marginal SNP association</td>
 <td>A pure direct effect</td>
 </tr>
 <tr class="odd">
-<td>Indirect genetic effect</td>
-<td>Other people’s genotypes shape the focal environment</td>
-<td>Population stratification</td>
+<td><span class="math inline">\(\text{Cov}(g,y)\)</span></td>
+<td>Genetic value-phenotype association</td>
+<td>Automatically equal to <span class="math inline">\(\text{Var}(g)\)</span> (equality only if <span class="math inline">\(\text{Cov}(g,e)=0\)</span>)</td>
 </tr>
 <tr class="even">
-<td>Stratification</td>
-<td>Group structure aligns genotypes and environments</td>
-<td>Genetic nurture</td>
-</tr>
-<tr class="odd">
 <td><span class="math inline">\(\text{Cov}(g,e)\)</span></td>
-<td>Statistical alignment of genetic values and environments</td>
-<td>A causal share of variance</td>
+<td>Trait-level genetic-environmental alignment</td>
+<td>A causal variance component by itself</td>
 </tr>
 </tbody>
 </table>
@@ -2562,7 +2478,7 @@ y = g + e
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>Across local LD, assortative mating, and gene-environment correlation, the same lesson keeps returning: <strong>marginal regression coefficients are shaped by correlation structure</strong>.</p>
+<p>Part 4 follows naturally: family designs change the comparison (toward within-family variation), which helps with several between-family rGE sources but does not remove all covariance structure.</p>
 </div>
 </div>
 </div>
@@ -2968,7 +2884,18 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <li>offspring block <code>Goo</code></li>
 <li>direct-only GREML fit</li>
 </ul>
-<p>The slides below focus only on the <strong>new Session 2 extension</strong>.</p>
+<p>The following slides focus only on the <strong>new Session 2 extension</strong>.</p>
+<details>
+<summary>
+Show Session 1 code
+</summary>
+<div class="panel-tabset">
+<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-1-1">R</a></li><li><a href="#tabset-1-2">Julia</a></li></ul>
+<div class="tab-content">
+<div id="tabset-1-1">
+
+</div>
+<div id="tabset-1-2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb1-1"><a href></a><span class="co">#| echo: false</span></span>
 <span id="cb1-2"><a href></a><span class="co">#| eval: false</span></span>
 <span id="cb1-3"><a href></a><span class="im">using</span> <span class="bu">LinearAlgebra</span>, <span class="bu">Distributions</span>, <span class="bu">DataFrames</span>, <span class="bu">GLM</span></span>
@@ -3005,13 +2932,17 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <span id="cb1-34"><a href></a>Id <span class="op">=</span> <span class="fu">Diagonal</span>(<span class="fu">ones</span>(N))</span>
 <span id="cb1-35"><a href></a>r <span class="op">=</span> [Goo, Id]</span>
 <span id="cb1-36"><a href></a>mdirect <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(yo <span class="op">~</span> <span class="fl">1</span>), df1, r; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+</div>
+</div>
+</details>
 </section>
 <section id="part-5-simulate-a-maternal-indirect-genetic-effect" class="slide level2 smaller">
 <h2>Part 5: Simulate a maternal indirect genetic effect</h2>
 <div class="panel-tabset">
-<ul id="tabset-1" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-1-1">R</a></li><li><a href="#tabset-1-2">Julia</a></li></ul>
+<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-2-1">R</a></li><li><a href="#tabset-2-2">Julia</a></li></ul>
 <div class="tab-content">
-<div id="tabset-1-1">
+<div id="tabset-2-1">
 <div class="cell columns column-output-location">
 <div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href></a>Sg <span class="ot">=</span> <span class="fu">rbind</span>(</span>
@@ -3028,7 +2959,7 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 
 </div></div>
 </div>
-<div id="tabset-1-2">
+<div id="tabset-2-2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb3-1"><a href></a>Sigma_g <span class="op">=</span> [<span class="fl">0.2</span> <span class="fl">0.2</span>; <span class="fl">0.2</span> <span class="fl">0.5</span>]</span>
 <span id="cb3-2"><a href></a>sigma2_e <span class="op">=</span> <span class="fl">0.1</span></span>
 <span id="cb3-3"><a href></a>C <span class="op">=</span> <span class="fu">cholesky</span>(<span class="fu">Symmetric</span>(Sigma_g <span class="op">/</span> M)).U</span>
@@ -3044,9 +2975,9 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <section id="part-6-fit-the-wrong-direct-only-model" class="slide level2 smaller">
 <h2>Part 6: Fit the wrong direct-only model</h2>
 <div class="panel-tabset">
-<ul id="tabset-2" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-2-1">R</a></li><li><a href="#tabset-2-2">Julia</a></li></ul>
+<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-3-1">R</a></li><li><a href="#tabset-3-2">Julia</a></li></ul>
 <div class="tab-content">
-<div id="tabset-2-1">
+<div id="tabset-3-1">
 <div class="cell columns column-output-location">
 <div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href></a>m_direct_2 <span class="ot">=</span> <span class="fu">lmm.aireml</span>(yo_2, <span class="at">K =</span> Goo, <span class="at">verbose =</span> <span class="cn">FALSE</span>)</span>
@@ -3057,7 +2988,7 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 </div>
 </div></div>
 </div>
-<div id="tabset-2-2">
+<div id="tabset-3-2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb6-1"><a href></a>df2 <span class="op">=</span> <span class="fu">DataFrame</span>(y <span class="op">=</span> yo2)</span>
 <span id="cb6-2"><a href></a>mdirect2 <span class="op">=</span> <span class="fu">fit</span>(GREMLModel, <span class="pp">@formula</span>(y <span class="op">~</span> <span class="fl">1</span>), df2, r; verbose <span class="op">=</span> <span class="cn">false</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </div>
@@ -3067,9 +2998,9 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <section id="part-7-fit-the-maternal-model-m-gcta" class="slide level2 smaller">
 <h2>Part 7: Fit the maternal model (M-GCTA)</h2>
 <div class="panel-tabset">
-<ul id="tabset-3" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-3-1">R</a></li><li><a href="#tabset-3-2">Julia</a></li></ul>
+<ul id="tabset-4" class="panel-tabset-tabby"><li><a data-tabby-default href="#tabset-4-1">R</a></li><li><a href="#tabset-4-2">Julia</a></li></ul>
 <div class="tab-content">
-<div id="tabset-3-1">
+<div id="tabset-4-1">
 <div class="cell columns column-output-location">
 <div class="column">
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode numberSource r number-lines code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href></a>Gmm <span class="ot">=</span> G[idm, idm]</span>
@@ -3082,7 +3013,7 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 </div>
 </div></div>
 </div>
-<div id="tabset-3-2">
+<div id="tabset-4-2">
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode numberSource julia number-lines code-with-copy"><code class="sourceCode julia"><span id="cb9-1"><a href></a>Gmm <span class="op">=</span> G[idm, idm]</span>
 <span id="cb9-2"><a href></a>Dom <span class="op">=</span> G[ido, idm] <span class="op">+</span> G[idm, ido]</span>
 <span id="cb9-3"><a href></a>r2 <span class="op">=</span> [Gmm, Dom, Goo, Id]</span>
@@ -3101,158 +3032,22 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <li>Why does the direct-only model misattribute part of the maternal effect?</li>
 </ol>
 </section>
-<section id="practical-2-ld-score-regression-with-real-gwas-data" class="slide level2 scrollable">
-<h2>Practical 2: LD score regression with real GWAS data</h2>
-<p>In this practical, we will use <strong>LD score regression (LDSC)</strong> to estimate:</p>
-<ol type="1">
-<li>observed-scale SNP heritability for <strong>intelligence</strong></li>
-<li>observed-scale SNP heritability for <strong>p_factor</strong></li>
-<li>the genetic correlation between the two traits</li>
-</ol>
-<p>The summary statistics come from the <strong>CTG summary statistics archive</strong> and the practical uses a local course installer around the newer Python 3 LDSC workflow from <strong>CBIIT/ldsc</strong>. LDSC itself remains the canonical method originally associated with the <strong>bulik/ldsc</strong> project.</p>
-<ul>
-<li><a href="https://ctg.thebluebus.nl/software/summary_statistics/">CTG GWAS summary statistics</a></li>
-<li><a href="https://github.com/CBIIT/ldsc">CBIIT/ldsc repository</a></li>
-<li><a href="https://github.com/bulik/ldsc">Original bulik/ldsc repository</a></li>
-<li><a href="https://github.com/bulik/ldsc/wiki/Heritability-and-Genetic-Correlation">LDSC heritability and genetic correlation tutorial</a></li>
-</ul>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>To keep the exercise focused, the instructor has already prepared helper scripts for the repetitive setup work. You will still run the same main LDSC steps used in practice: <code>munge_sumstats.py</code>, single-trait <code>--h2</code>, and cross-trait <code>--rg</code>, but the course scripts handle the local installation and platform details.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="setup-and-inputs" class="slide level2 smaller">
-<h2>Setup and inputs</h2>
-<p>We will work with two pre-harmonized files prepared from the public CTG releases:</p>
-<ul>
-<li><code>practical/ldsc/data/course/intelligence_ctg.tsv.gz</code></li>
-<li><code>practical/ldsc/data/course/p_factor.tsv.gz</code></li>
-</ul>
-<p>Each file has the same minimal schema:</p>
-<p><code>SNP</code>, <code>A1</code>, <code>A2</code>, <code>P</code>, <code>N</code>, <code>Z</code></p>
-<p>We also need the LDSC reference files:</p>
-<ul>
-<li><code>practical/ldsc/data/ref/w_hm3.snplist</code></li>
-<li><code>practical/ldsc/data/ref/eur_w_ld_chr/</code></li>
-<li><code>practical/ldsc/data/ref/weights_hm3_no_hla/</code></li>
-</ul>
-<p>Run the course workflow in this order from the repository root. The practical is intended to work in <strong>Git Bash on Windows</strong>, with the scripts handling the local Python and LDSC setup.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode numberSource bash number-lines code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href></a><span class="ex">Rscript</span> practical/ldsc/prepare_ldsc_data.R <span class="at">--force</span></span>
-<span id="cb10-2"><a href></a><span class="fu">bash</span> practical/ldsc/install_ldsc.sh</span>
-<span id="cb10-3"><a href></a><span class="fu">bash</span> practical/ldsc/ldsc_pipeline.sh</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>These LD scores are based on <strong>1000 Genomes Europeans</strong>, so the exercise assumes European-ancestry GWAS summary statistics. In real work, ancestry mismatch between the GWAS and the reference panel can bias interpretation.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="part-1-munge-the-summary-statistics" class="slide level2 smaller">
-<h2>Part 1: Munge the summary statistics</h2>
-<p>After running the pipeline above, the first LDSC step is to convert the prepared text files into LDSC’s <code>.sumstats.gz</code> format. If you want to inspect the script itself, see <code>practical/ldsc/ldsc_pipeline.sh</code>.</p>
-<p>Look for:</p>
-<ul>
-<li>how many SNPs survive QC and allele matching for <code>intelligence</code> and <code>p_factor</code></li>
-<li>whether the munge logs contain warnings</li>
-<li>the two output files <code>intelligence_ctg.sumstats.gz</code> and <code>p_factor.sumstats.gz</code></li>
-</ul>
-</section>
-<section id="part-2-estimate-snp-heritability" class="slide level2 smaller">
-<h2>Part 2: Estimate SNP heritability</h2>
-<p>That same pipeline run then performs single-trait LDSC for each phenotype.</p>
-<p>Look for these lines in each log:</p>
-<ul>
-<li><code>Total Observed scale h2</code></li>
-<li><code>Intercept</code></li>
-<li><code>Ratio</code></li>
-</ul>
-<p>The key log files are:</p>
-<ul>
-<li><code>practical/ldsc/data/results/intelligence_h2.log</code></li>
-<li><code>practical/ldsc/data/results/p_factor_h2.log</code></li>
-</ul>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>For this short practical we stay on the <strong>observed scale</strong>. We are not doing liability-scale conversion or partitioned heritability here.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="part-3-estimate-the-genetic-correlation" class="slide level2 smaller">
-<h2>Part 3: Estimate the genetic correlation</h2>
-<p>Finally, that same pipeline run performs the cross-trait LDSC regression using the two munged <code>.sumstats.gz</code> files.</p>
-<p>Look for:</p>
-<ul>
-<li><code>Genetic Correlation</code></li>
-<li>its standard error</li>
-<li>the cross-trait intercept</li>
-<li>the <code>P:</code> line</li>
-</ul>
-<p>The main log file is:</p>
-<ul>
-<li><code>practical/ldsc/data/results/intelligence_p_factor_rg.log</code></li>
-</ul>
-<p>For these traits, we expect a <strong>negative</strong> estimated genetic correlation.</p>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>After Part 2, keep one interpretation caveat in mind: an LDSC estimate of <span class="math inline">\(r_g\)</span> from marginal summary statistics is not automatically pure effect overlap / pleiotropy if cross-trait assortative mating or other covariance structure is present.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="interpretation-checkpoint-1" class="slide level2 scrollable">
-<h2>Interpretation checkpoint</h2>
-<p>After the run, check that you can answer these questions:</p>
-<ol type="1">
-<li>Which trait has the larger observed-scale SNP heritability: <code>intelligence</code> or <code>p_factor</code>?</li>
-<li>Are the LDSC intercepts close to 1, or do they suggest substantial inflation beyond polygenicity?</li>
-<li>Are the LDSC ratios modest, or do they suggest a large share of inflation is due to confounding?</li>
-<li>Is the estimated genetic correlation between <code>intelligence</code> and <code>p_factor</code> negative, and how large is it in magnitude?</li>
-<li>Is the cross-trait intercept close to 0, or could sample overlap / shared confounding be contributing?</li>
-</ol>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Important</strong></p>
-</div>
-<div class="callout-content">
-<p>The important habit is not just to report <code>h^2</code> and <code>r_g</code>, but also to inspect the <strong>intercepts</strong> and <strong>ratios</strong> and ask whether the analysis assumptions look reasonable.</p>
-</div>
-</div>
-</div>
+<section id="backup-optional-direct-indirect-covariance-derivation" class="slide level2 smaller">
+<h2>Backup (optional): direct-indirect covariance derivation</h2>
+<p>If</p>
+<p><span class="math display">\[
+g_i^{D} = \sum_{j=1}^{M}\beta_j x_{ij},
+\qquad
+g_i^{I} = \sum_{k=1}^{M}\gamma_k x_{i\ell k},
+\]</span></p>
+<p>then</p>
+<p><span class="math display">\[
+\mathrm{Cov}(g_i^{D},g_i^{I})
+=
+\sum_{j=1}^{M}\sum_{k=1}^{M}
+\beta_j\gamma_k\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
+\]</span></p>
+<p>This is AM-agnostic: long-range LD, relatedness, and other genotype correlation structure all enter through <span class="math inline">\(\mathrm{Cov}(x_{ij},x_{i\ell k})\)</span>.</p>
 
 </section></section>
     </div>
