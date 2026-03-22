@@ -783,17 +783,33 @@ If assortative mating changes $\text{Cov}(x_j, x_k)$, then two things can change
 - **Cross-trait $r_g$**: score correlation can rise without more effect correlation, so bivariate estimators can overstate overlap
 :::
 
-## Consequence 1: marginal SNP effects are inflated {.smaller}
+## Consequence 1: Marginal associations are inflated {.smaller}
 
-Again set the rGE term aside and focus on the LD component:
+
+::: {.callout-note}
+## Reminder: the marginal association at SNP $j$ is
 
 $$
+\begin{array}{r c c c c c c}
 \tilde{\beta}_j
-= \beta_j
-+ \sum_{k \ne j} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+& = &
+\beta_j
+& + &
+\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+& + &
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
+& &
+\scriptstyle {\text{True Effect}}
+& &
+\scriptstyle {\text{Linkage Disequilibrium}}
+& &
+\scriptstyle {\text{rGE}}
+\end{array}
 $$
 
-The sum is typically dominated by nearby loci (local LD). Under assortative mating, some of those covariance terms involve **distant** causal variants.
+:::
+
+Again set the rGE term aside and focus on the LD component. The sum is typically dominated by nearby loci (local LD). Under assortative mating, some of those covariance terms involve **distant** causal variants.
 
 ::: {.callout-important}
 ## The upward inflation is *specific to causal loci* (and loci that tag causal loci through local LD).
@@ -801,31 +817,23 @@ The sum is typically dominated by nearby loci (local LD). Under assortative mati
 For these loci, the marginal association at SNP $j$ partly reflects genome-wide covariance structure, not only local biology.
 :::
 
-Because assortative mating changes marginal associations estimated by GWAS, downstream methods using GWAS summary statistics is affected.
+Because assortative mating changes marginal associations estimated by GWAS, downstream methods using GWAS summary statistics are affected.
 
 
 ## Consequence 2: LDSC can overstate $h^2$ {.smaller}
 
-In Part 1, the LDSC logic was:
+In Part 1, LDSC exploited that the expected $\chi^2$ statistic at SNP $j$ is proportional to heritability and its LD score, $\ell_j$:
 
 $$
 E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 $$
 
-where $\ell_j$ summarizes **local** LD around SNP $j$.
 
-- Under assortative mating, some of the extra signal in $\chi_j^2$ comes from **distant** trait-relevant loci
-- LDSC still uses **local** LD scores, so that genome-wide dependence is not well represented in the regression
-- The slope can therefore attribute too much signal to heritability, so LDSC can **overestimate $h^2$**
+- Under assortative mating, $\chi_j^2$ can be inflated by **long-range LD** between causal loci
+- $\ell_j$ only capture **local LD** around SNP $j$
 
 ::: {.callout-important}
-The key misspecification is upstream: assortative mating changes the **marginal coefficients themselves**, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.
-
-LDSC is therefore not just reading off the new genetic variance after assortative mating; it can overestimate even that.
-:::
-
-::: {.callout-note appearance="minimal"}
-Source: Border et al. (2022, *Nature Communications*) and Supplementary Information.
+Because the causal SNPs are in LD *with each other*, all of their marginal effects are inflated by the same long-range covariance structure. Genetic effects are therefore effectively double-counted, and $h^2$ is overestimated.
 :::
 
 ## Consequence 3: GREML behaves differently {.smaller}
@@ -838,11 +846,13 @@ In Session 1, GREML used the genomic relatedness matrix $\mathbf{G}$ to capture 
 - AM-induced extra genetic variance is not well captured by the GRM used by GREML
 :::
 
-::: {.callout-important}
+
 GREML keeps fitting the Session 1 model $\sigma_g^2 \mathbf{G} + \sigma_e^2 \mathbf{I}$.
 
 Under assortative mating, this is the wrong model and estimates will be biased.
 
+
+::: {.callout-important}
 - In realistic samples, GREML is generally **upwardly biased** under assortative mating
   - Unfortunately, the size of that bias can be hard to quantify and is highly dependent on sample size
 - As sample sizes increase, the estimate drifts toward the random-mating heritability, $h^2_0$
@@ -865,58 +875,83 @@ The exact bias is method dependent, but classic twin methods and midparent-offsp
 :::
 
 
-## Generalization: xAM can inflate $r_g$ {.smaller}
+## Consequence 5: Cross-trait assortment affects $r_g$ {.smaller}
 
-Session 1 distinguished two related ideas:
+::: {.callout-tip}
+## Reminder: two definitions of genetic correlation
 
-- *Score correlation*, $\text{Corr}(g_1, g_2)$
-- *Effect correlation*, $\text{Corr}(\boldsymbol{\beta}_1, \boldsymbol{\beta}_2)$
+$$
+\text{Score correlation}\ = \text{Corr}(g_1, g_2),
+\qquad
+\text{Effect correlation}\ = \text{Corr}(\boldsymbol{\beta}_1, \boldsymbol{\beta}_2)
+$$
 
-::: {.callout-note}
-If SNPs were i.i.d., these would line up. Part 2 has now given one concrete reason they can separate: assortative mating creates long-range LD across loci.
+
+If SNPs were i.i.d., these would be equal. Assortative mating can break this equivalence.
+
 :::
 
-If people sort on one trait, or on a bundle of traits related to both $y_1$ and $y_2$, then alleles increasing trait 1 can become correlated with alleles increasing trait 2 across the genome.
 
-- Score correlation can therefore increase even when effect correlation does not
-- So bivariate GWAS / LDSC can overstate biological overlap or pleiotropy when working from marginal summary statistics
+**Cross-trait assortative mating (xAM)** means that people sort across two traits, or on a bundle of traits related to both $y_1$ and $y_2$.
 
-::: {.callout-note appearance="minimal"}
-Source: Border et al. (2022, *Science*) and Supplementary Information.
+Across generations, this **builds long-range LD between trait-increasing alleles across $y_1$ and $y_2$**.
+
+This can change the score correlation even when effect correlation is zero
+
+::: {.callout-important}
+Estimators of $r_g$ (e.g., LDSC) are biased under xAM.
+
+Notably, the resulting estimates do not correspond to either the *score correlation* or the *effect correlation*.
 :::
 
-## Summary: assortative mating changes targets and estimators
 
+
+## Summary: <br> assortative mating changes targets and estimators
+
+::: {style="font-size: 0.8em;"}
 | Step | Main lesson |
-|---|---|
-| Mates match on phenotype | Start with $\text{Cov}(y_m,y_p) > 0$ |
-| Repeated AM | Trans covariance appears first; cis covariance and long-range LD build up over generations |
+|--|-----|
+| AM induces genetic similarity | $\text{Cov}(y_m,y_p) > 0 \quad \Rightarrow \quad \text{Cov}(g_m,g_p) > 0$ |
+| Repeated AM | Long-range LD builds up over generations |
 | Population target | Heritability itself can change because long-range LD adds genetic variance |
-| GWAS / LDSC | Marginal summary statistics absorb distant tagged signal, pushing summary-statistic $h^2$ upward |
-| REML / GREML | In realistic samples the bias is usually upward, but in very large samples GREML can drift toward the random-mating baseline because the AM-induced long-range LD is not well captured by $\mathbf{G}$ |
+| GWAS / LDSC | Marginal associations absorb distant tagged signal, pushing summary-statistic $h^2$ upward |
+| GREML | In realistic sample sizes, heritability estimates are usually upwardly biased, but converges to random-mating heritability as sample size increases |
 | Relatives / family methods | Relatives become more genetically similar, so family-based estimators are affected too; the bias is method dependent |
-| Cross-trait generalization | Score correlation can exceed effect correlation under xAM, inflating estimated $r_g$ |
-
-::: {.callout-note}
-Before Part 3, the big picture is: Part 1 and Part 2 mainly changed associations through **correlated genotypes**. Next we turn to **correlated environments**.
+| Cross-trait AM | Score correlation can exceed effect correlation under xAM. Estimators of $r_g$ are biased |
 :::
+
 
 # Part 3: Gene-Environment Correlations {background-color="#2c3e50" style="color: white;"}
 
-## Same regression, new covariance sources
-
-Now set the LD term aside and focus on gene-environment correlation:
-
-$$
-\tilde{\beta}_j = \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
-$$
-
-Part 3 is about a new question: **What can generate $\text{Cov}(x_j, e)$?**
-
+## Same problem, new covariance sources
 
 ::: {.callout-note}
-In Part 1 and Part 2, the extra terms came mainly from **correlated genotypes**. Here the focus is **correlated environments**.
+## Reminder: the marginal association at SNP $j$ is
+
+$$
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+& = &
+\beta_j
+& + &
+\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+& + &
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
+& &
+\scriptstyle {\text{True Effect}}
+& &
+\scriptstyle {\text{Linkage Disequilibrium}}
+& &
+\scriptstyle {\text{rGE}}
+\end{array}
+$$
+
 :::
+
+In Part 1 and Part 2, we focused on the LD term. 
+
+In Part 3, we set that aside and focus on gene-environment correlation: **What can generate $\text{Cov}(x_j, e)$ and why does it matter?**
+
 
 ## Where can $\text{Cov}(x_j,e)$ come from?
 ::: {style="font-size: 0.8em;"}
@@ -927,9 +962,10 @@ In Part 1 and Part 2, the extra terms came mainly from **correlated genotypes**.
 | Residual confounding | Selection, ascertainment, or measurement structure |
 | Assortative mating | Induced correlation between paternal genotype and maternal environment (and vice versa) |
 :::
-::: {.callout-note}
+
 Different mechanisms can produce the **same statistical symptom** in a marginal GWAS coefficient: $\text{Cov}(x_j,e) \neq 0$.
-:::
+
+
 ::: {.callout-important}
 ## Only passive gene-environment correlation is confounding
 - **Passive $r_{ge}$**: Genotype and environment are correlated because of shared causes (e.g., parents)

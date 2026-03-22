@@ -1960,41 +1960,62 @@ Show recurrence equation for genetic variance
 </ul>
 </div>
 </section>
-<section id="consequence-1-marginal-snp-effects-are-inflated" class="slide level2 smaller">
-<h2>Consequence 1: marginal SNP effects are inflated</h2>
-<p>Again set the rGE term aside and focus on the LD component:</p>
+<section id="consequence-1-marginal-associations-are-inflated" class="slide level2 smaller">
+<h2>Consequence 1: Marginal associations are inflated</h2>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Reminder: the marginal association at SNP <span class="math inline">\(j\)</span> is</strong></p>
+</div>
+<div class="callout-content">
 <p><span class="math display">\[
+\begin{array}{r c c c c c c}
 \tilde{\beta}_j
-= \beta_j
-+ \sum_{k \ne j} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+&amp; = &amp;
+\beta_j
+&amp; + &amp;
+\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+&amp; + &amp;
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
+&amp; &amp;
+\scriptstyle {\text{True Effect}}
+&amp; &amp;
+\scriptstyle {\text{Linkage Disequilibrium}}
+&amp; &amp;
+\scriptstyle {\text{rGE}}
+\end{array}
 \]</span></p>
-<p>The sum is typically dominated by nearby loci (local LD). Under assortative mating, some of those covariance terms involve <strong>distant</strong> causal variants.</p>
+</div>
+</div>
+</div>
+<p>Again set the rGE term aside and focus on the LD component. The sum is typically dominated by nearby loci (local LD). Under assortative mating, some of those covariance terms involve <strong>distant</strong> causal variants.</p>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>The upward inflation is <em>specific to causal loci</em> (and loci that tag causal loci through LD).</strong></p>
+<p><strong>The upward inflation is <em>specific to causal loci</em> (and loci that tag causal loci through local LD).</strong></p>
 </div>
 <div class="callout-content">
 <p>For these loci, the marginal association at SNP <span class="math inline">\(j\)</span> partly reflects genome-wide covariance structure, not only local biology.</p>
 </div>
 </div>
 </div>
-<p>Because assortative mating changes marginal associations estimated by GWAS, downstream methods using GWAS summary statistics is affected.</p>
+<p>Because assortative mating changes marginal associations estimated by GWAS, downstream methods using GWAS summary statistics are affected.</p>
 </section>
 <section id="consequence-2-ldsc-can-overstate-h2" class="slide level2 smaller">
 <h2>Consequence 2: LDSC can overstate <span class="math inline">\(h^2\)</span></h2>
-<p>In Part 1, the LDSC logic was:</p>
+<p>In Part 1, LDSC exploited that the expected <span class="math inline">\(\chi^2\)</span> statistic at SNP <span class="math inline">\(j\)</span> is proportional to heritability and its LD score, <span class="math inline">\(\ell_j\)</span>:</p>
 <p><span class="math display">\[
 E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 \]</span></p>
-<p>where <span class="math inline">\(\ell_j\)</span> summarizes <strong>local</strong> LD around SNP <span class="math inline">\(j\)</span>.</p>
 <ul>
-<li>Under assortative mating, some of the extra signal in <span class="math inline">\(\chi_j^2\)</span> comes from <strong>distant</strong> trait-relevant loci</li>
-<li>LDSC still uses <strong>local</strong> LD scores, so that genome-wide dependence is not well represented in the regression</li>
-<li>The slope can therefore attribute too much signal to heritability, so LDSC can <strong>overestimate <span class="math inline">\(h^2\)</span></strong></li>
+<li>Under assortative mating, <span class="math inline">\(\chi_j^2\)</span> can be inflated by <strong>long-range LD</strong> between causal loci</li>
+<li><span class="math inline">\(\ell_j\)</span> only capture <strong>local LD</strong> around SNP <span class="math inline">\(j\)</span></li>
 </ul>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
@@ -2005,15 +2026,7 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>The key misspecification is upstream: assortative mating changes the <strong>marginal coefficients themselves</strong>, so LDSC starts from summary statistics that already mix direct effects with induced long-range covariance.</p>
-<p>LDSC is therefore not just reading off the new genetic variance after assortative mating; it can overestimate even that.</p>
-</div>
-</div>
-</div>
-<div class="callout callout-note no-icon callout-style-simple">
-<div class="callout-body">
-<div class="callout-content">
-<p>Source: Border et al. (2022, <em>Nature Communications</em>) and Supplementary Information.</p>
+<p>Because the causal SNPs are in LD <em>with each other</em>, all of their marginal effects are inflated by the same long-range covariance structure. Genetic effects are therefore effectively double-counted, and <span class="math inline">\(h^2\)</span> is overestimated.</p>
 </div>
 </div>
 </div>
@@ -2028,6 +2041,8 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <li>AM-induced extra genetic variance is not well captured by the GRM used by GREML</li>
 </ul>
 </div>
+<p>GREML keeps fitting the Session 1 model <span class="math inline">\(\sigma_g^2 \mathbf{G} + \sigma_e^2 \mathbf{I}\)</span>.</p>
+<p>Under assortative mating, this is the wrong model and estimates will be biased.</p>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2037,8 +2052,6 @@ E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>GREML keeps fitting the Session 1 model <span class="math inline">\(\sigma_g^2 \mathbf{G} + \sigma_e^2 \mathbf{I}\)</span>.</p>
-<p>Under assortative mating, this is the wrong model and estimates will be biased.</p>
 <ul>
 <li>In realistic samples, GREML is generally <strong>upwardly biased</strong> under assortative mating
 <ul>
@@ -2074,45 +2087,51 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </div>
 </div>
 </section>
-<section id="generalization-xam-can-inflate-r_g" class="slide level2 smaller">
-<h2>Generalization: xAM can inflate <span class="math inline">\(r_g\)</span></h2>
-<p>Session 1 distinguished two related ideas:</p>
-<ul>
-<li><em>Score correlation</em>, <span class="math inline">\(\text{Corr}(g_1, g_2)\)</span></li>
-<li><em>Effect correlation</em>, <span class="math inline">\(\text{Corr}(\boldsymbol{\beta}_1, \boldsymbol{\beta}_2)\)</span></li>
-</ul>
-<div class="callout callout-note callout-titled callout-style-default">
+<section id="consequence-5-cross-trait-assortment-affects-r_g" class="slide level2 smaller">
+<h2>Consequence 5: Cross-trait assortment affects <span class="math inline">\(r_g\)</span></h2>
+<div class="callout callout-tip callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Reminder: two definitions of genetic correlation</strong></p>
 </div>
 <div class="callout-content">
-<p>If SNPs were i.i.d., these would line up. Part 2 has now given one concrete reason they can separate: assortative mating creates long-range LD across loci.</p>
+<p><span class="math display">\[
+\text{Score correlation}\ = \text{Corr}(g_1, g_2),
+\qquad
+\text{Effect correlation}\ = \text{Corr}(\boldsymbol{\beta}_1, \boldsymbol{\beta}_2)
+\]</span></p>
+<p>If SNPs were i.i.d., these would be equal. Assortative mating can break this equivalence.</p>
 </div>
 </div>
 </div>
-<p>If people sort on one trait, or on a bundle of traits related to both <span class="math inline">\(y_1\)</span> and <span class="math inline">\(y_2\)</span>, then alleles increasing trait 1 can become correlated with alleles increasing trait 2 across the genome.</p>
-<ul>
-<li>Score correlation can therefore increase even when effect correlation does not</li>
-<li>So bivariate GWAS / LDSC can overstate biological overlap or pleiotropy when working from marginal summary statistics</li>
-</ul>
-<div class="callout callout-note no-icon callout-style-simple">
+<p><strong>Cross-trait assortative mating (xAM)</strong> means that people sort across two traits, or on a bundle of traits related to both <span class="math inline">\(y_1\)</span> and <span class="math inline">\(y_2\)</span>.</p>
+<p>Across generations, this <strong>builds long-range LD between trait-increasing alleles across <span class="math inline">\(y_1\)</span> and <span class="math inline">\(y_2\)</span></strong>.</p>
+<p>This can change the score correlation even when effect correlation is zero</p>
+<div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Important</strong></p>
+</div>
 <div class="callout-content">
-<p>Source: Border et al. (2022, <em>Science</em>) and Supplementary Information.</p>
+<p>Estimators of <span class="math inline">\(r_g\)</span> (e.g., LDSC) are biased under xAM.</p>
+<p>Notably, the resulting estimates do not correspond to either the <em>score correlation</em> or the <em>effect correlation</em>.</p>
 </div>
 </div>
 </div>
 </section>
 <section id="summary-assortative-mating-changes-targets-and-estimators" class="slide level2">
-<h2>Summary: assortative mating changes targets and estimators</h2>
+<h2>Summary: <br> assortative mating changes targets and estimators</h2>
+<div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 28%">
+<col style="width: 71%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -2122,12 +2141,12 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </thead>
 <tbody>
 <tr class="odd">
-<td>Mates match on phenotype</td>
-<td>Start with <span class="math inline">\(\text{Cov}(y_m,y_p) &gt; 0\)</span></td>
+<td>AM induces genetic similarity</td>
+<td><span class="math inline">\(\text{Cov}(y_m,y_p) &gt; 0 \quad \Rightarrow \quad \text{Cov}(g_m,g_p) &gt; 0\)</span></td>
 </tr>
 <tr class="even">
 <td>Repeated AM</td>
-<td>Trans covariance appears first; cis covariance and long-range LD build up over generations</td>
+<td>Long-range LD builds up over generations</td>
 </tr>
 <tr class="odd">
 <td>Population target</td>
@@ -2135,34 +2154,22 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </tr>
 <tr class="even">
 <td>GWAS / LDSC</td>
-<td>Marginal summary statistics absorb distant tagged signal, pushing summary-statistic <span class="math inline">\(h^2\)</span> upward</td>
+<td>Marginal associations absorb distant tagged signal, pushing summary-statistic <span class="math inline">\(h^2\)</span> upward</td>
 </tr>
 <tr class="odd">
-<td>REML / GREML</td>
-<td>In realistic samples the bias is usually upward, but in very large samples GREML can drift toward the random-mating baseline because the AM-induced long-range LD is not well captured by <span class="math inline">\(\mathbf{G}\)</span></td>
+<td>GREML</td>
+<td>In realistic sample sizes, heritability estimates are usually upwardly biased, but converges to random-mating heritability as sample size increases</td>
 </tr>
 <tr class="even">
 <td>Relatives / family methods</td>
 <td>Relatives become more genetically similar, so family-based estimators are affected too; the bias is method dependent</td>
 </tr>
 <tr class="odd">
-<td>Cross-trait generalization</td>
-<td>Score correlation can exceed effect correlation under xAM, inflating estimated <span class="math inline">\(r_g\)</span></td>
+<td>Cross-trait AM</td>
+<td>Score correlation can exceed effect correlation under xAM. Estimators of <span class="math inline">\(r_g\)</span> are biased</td>
 </tr>
 </tbody>
 </table>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>Before Part 3, the big picture is: Part 1 and Part 2 mainly changed associations through <strong>correlated genotypes</strong>. Next we turn to <strong>correlated environments</strong>.</p>
-</div>
-</div>
 </div>
 </section></section>
 <section>
@@ -2172,24 +2179,36 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </section>
 <section id="same-regression-new-covariance-sources" class="slide level2">
 <h2>Same regression, new covariance sources</h2>
-<p>Now set the LD term aside and focus on gene-environment correlation:</p>
-<p><span class="math display">\[
-\tilde{\beta}_j = \beta_j + \frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}
-\]</span></p>
-<p>Part 3 is about a new question: <strong>What can generate <span class="math inline">\(\text{Cov}(x_j, e)\)</span>?</strong></p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
+<p><strong>Reminder: the marginal association at SNP <span class="math inline">\(j\)</span> is</strong></p>
 </div>
 <div class="callout-content">
-<p>In Part 1 and Part 2, the extra terms came mainly from <strong>correlated genotypes</strong>. Here the focus is <strong>correlated environments</strong>.</p>
+<p><span class="math display">\[
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+&amp; = &amp;
+\beta_j
+&amp; + &amp;
+\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+&amp; + &amp;
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
+&amp; &amp;
+\scriptstyle {\text{True Effect}}
+&amp; &amp;
+\scriptstyle {\text{Linkage Disequilibrium}}
+&amp; &amp;
+\scriptstyle {\text{rGE}}
+\end{array}
+\]</span></p>
 </div>
 </div>
 </div>
+<p>In Part 1 and Part 2, we focused on the LD term. In Part 3, we set that aside and focus on gene-environment correlation: <strong>What can generate <span class="math inline">\(\text{Cov}(x_j, e)\)</span> and why does it matter?</strong></p>
 </section>
 <section id="where-can-textcovx_je-come-from" class="slide level2">
 <h2>Where can <span class="math inline">\(\text{Cov}(x_j,e)\)</span> come from?</h2>
