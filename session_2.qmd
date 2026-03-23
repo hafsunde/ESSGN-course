@@ -519,12 +519,12 @@ In this lecture, we assume direct assortment where $s=y$, but note that assortme
 :::
 
 ::: {.callout-tip}
-You can think of $s$ as a secondary phenotype $y_2$, where genetic similarity depends on the genetic correlation between $y$ and $y_2$, the heritability of $y_2$, and the phenotypic correlation for $y_2$, $r_{y_2}^{\mathrm{mates}}$. Gene-environment correlations complicate things somewhat.
+You can think of $s$ as a secondary phenotype $y_2$, where genetic similarity depends on the genetic correlation between $y$ and $y_2$, the heritability of $y_2$, and the phenotypic partner correlation for $y_2$. Gene-environment correlations complicate things somewhat, but the same logic applies.
 :::
 
-## Genetic similarity spreads across many SNP pairs
+## Genetic similarity spreads across loci
 
-Rememebr, the genetic value is a weighted sum of SNPs: $g_i = \sum_{j=1}^{M} \beta_j x_{ij}$. 
+Rememeber, the genetic value is a weighted sum of SNPs: $g_i = \sum_{j=1}^{M} \beta_j x_{ij}$. 
 
 Covariance between partners' genetic values is therefore the sum of all SNP-level covariances:
 
@@ -778,14 +778,14 @@ Assortative mating in earlier generations means that **trait-associated SNPs are
 
 ## Which estimands change once genotype covariance changes? {.smaller}
 
-If assortative mating changes $\text{Cov}(x_j, x_k)$, then two things can change at once:
+If assortative mating changes $\text{Cov}(x_j, x_k)$, then several things can change at once:
 
 ::: {style="font-size: 0.8em;"}
-- **GWAS marginal effects**: $\tilde{\beta}_j$ absorbs long-range tagged signal, so hits look less purely local
+- **GWAS marginal effects**: $\tilde{\beta}_j$ absorbs long-range tagged signal
 - **LDSC $h^2$**: the summary statistics and local LD scores no longer line up as cleanly as under random mating
-- **REML / GREML $h^2$**: Session 1's $\sigma_g^2 \mathbf{G}$ model no longer spans all of the AM-induced covariance
-- **Family resemblance**: relatives inherit the AM-induced covariance structure, so resemblance increases
-- **Cross-trait $r_g$**: score correlation can rise without more effect correlation, so bivariate estimators can overstate overlap
+- **GREML $h^2$**: Session 1's $\sigma_g^2 \mathbf{G}$ model do not capture the AM-induced covariance
+- **Family resemblance**: relatives share the AM-induced covariance structure, so resemblance increases
+- **Cross-trait $r_g$**: score correlation can rise without more effect correlation
 :::
 
 ## Consequence 1: Marginal associations are inflated {.smaller}
