@@ -29,8 +29,8 @@ include-in-header:
     MathJax.Hub.Config({
       TeX: {
         Macros: {
-          mcol: ["{\\color{red}{#1}}", 1],
-          pcol: ["{\\color{darkblue}{#1}}", 1]
+          mcol: ["{\\color{##5b0f0f}{#1}}", 1],
+          pcol: ["{\\color{##2c3e50}{#1}}", 1]
         }
       }
     });
@@ -73,7 +73,7 @@ This is often not the case.
 
 **This session: What happens when those assumptions are violated?**
 
-This lecture is mostly **theoretical**. The main takeaway is not a ready-to-use practical method, but a clearer picture of **what happens to target parameters and estimated parameters**.
+This lecture is mostly **theoretical**. The main takeaway is not a ready-to-use practical method, but a clearer picture of **what happens to *target* parameters and *estimated* parameters**.
 
 
 
@@ -116,7 +116,7 @@ $$
 Here we ignore sampling error, imperfect genetic overlap between GWAS and target phenotypes, and heterogeneity across GWAS samples
 :::
 
-# Part 1: Local Linkage Disequilibrium {background-color="#2c3e50" style="color: white;"}
+# Part 1: <br> Local Linkage Disequilibrium {background-color="#2c3e50" style="color: white;"}
 
 ## Nearby SNPs correlate
 
@@ -181,7 +181,7 @@ If two nearby SNPs are often inherited together, they are statistically *depende
 :::
 
 
-## A two-SNP toy example
+## A two-loci toy example
 
 
 Assume the true model is:
@@ -190,13 +190,13 @@ $$
 y_i = \beta_1 x_{i1} + e_i
 $$
 
-where $x_1$ is causal and is in LD with $x_2$, a non-causal SNP:
+where $x_1$ is causal and is in LD with a non-causal locus, $x_2$:
 
 $$
 \beta_1 \neq 0, \qquad \beta_2 = 0, \qquad \text{Cov}(x_1,x_2) \neq 0
 $$
 
-A GWAS tests each SNP separately. For $x_2$, the marginal coefficient is:
+A GWAS tests each locus separately. For $x_2$, the marginal coefficient is:
 
 $$
 \tilde{\beta}_2
@@ -209,9 +209,9 @@ $$
 In other words, $x_2$ will be associated with the phenotype even though it has **no direct causal effect**.
 
 
-## Generalizing to many SNPs
+## Generalizing to many loci
 
-Recall that the marginal coefficient at SNP $j$ is (ignoring the rGE term for now):
+Recall that the marginal coefficient at locus $j$ is (ignoring the rGE term for now):
 
 $$
 \tilde{\beta}_j = \beta_j
@@ -232,11 +232,11 @@ So the marginal coefficient at SNP $j$ is a weighted sum of the direct effects a
 
 <br>
 
-If a trait is heritable, then SNPs correlated with many nearby variants should have inflated test statistics on average, because they tag more causal variation in the region.
+If a trait is heritable, then SNPs correlated with many nearby variants should, on average, have inflated test statistics, because they tag more causal variation in the region.
 
-## What is an LD score?
+## Quantifying local LD
 
-For SNP $j$, the **LD score** is the sum of squared correlations with nearby SNPs:
+For SNP $j$, the **LD score** is the **sum of squared correlations** with nearby SNPs:
 
 $$
 \ell_j = \sum_{k \in \mathcal{N}(j)} r_{jk}^2
@@ -253,7 +253,9 @@ A low LD score means the SNP is more isolated and less likely to tag nearby caus
 
 ## LD score regression
 
-If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. This relationship is proportional to the heritability. We can therefore exploit this structure to estimate SNP heritability from GWAS summary statistics, using a method called **LD score regression (LDSC)**.
+If SNPs with higher LD scores tag more nearby causal variation, then their test statistics should be larger on average. **This relationship is proportional to the heritability.** 
+
+This allows us to estimate SNP heritability from GWAS summary statistics, using a method called **LD score regression (LDSC)**.
 
 $$
 E[\chi_j^2 \mid \ell_j] = 1 + h^2 \ell_j \frac{N}{M} + c
@@ -776,7 +778,7 @@ $$
 Assortative mating in earlier generations means that **trait-associated SNPs are not independent from each other**.
 :::
 
-## Which estimands change once genotype covariance changes? {.smaller}
+## What changes with assortative mating? {.smaller}
 
 If assortative mating changes $\text{Cov}(x_j, x_k)$, then several things can change at once:
 
@@ -785,7 +787,7 @@ If assortative mating changes $\text{Cov}(x_j, x_k)$, then several things can ch
 - **LDSC $h^2$**: the summary statistics and local LD scores no longer line up as cleanly as under random mating
 - **GREML $h^2$**: Session 1's $\sigma_g^2 \mathbf{G}$ model do not capture the AM-induced covariance
 - **Family resemblance**: relatives share the AM-induced covariance structure, so resemblance increases
-- **Cross-trait $r_g$**: score correlation can rise without more effect correlation
+- **Cross-trait $r_g$**: score correlation can rise without more effect correlation, and long-range LD can inflate estimates.
 :::
 
 ## Consequence 1: Marginal associations are inflated {.smaller}
