@@ -73,7 +73,7 @@ This is often not the case.
 
 **This session: What happens when those assumptions are violated?**
 
-This lecture is mostly **theoretical**. The main takeaway is not a ready-to-use practical method, but a clearer picture of **what can go wrong** and why.
+This lecture is mostly **theoretical**. The main takeaway is not a ready-to-use practical method, but a clearer picture of **what happens to target parameters and estimated parameters**.
 
 
 
@@ -224,7 +224,7 @@ $$
 \tilde{\beta}_j = \sum_{k=1}^M r_{jk}\beta_k
 $$
 
-So the marginal coefficient at SNP $j$ is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with **many** nearby variants can therefore pick up more tagged signal.
+So the marginal coefficient at SNP $j$ is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with **many** nearby variants can therefore pick up more signal.
 
 
 
@@ -256,7 +256,7 @@ A low LD score means the SNP is more isolated and less likely to tag nearby caus
 If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. This relationship is proportional to the heritability. We can therefore exploit this structure to estimate SNP heritability from GWAS summary statistics, using a method called **LD score regression (LDSC)**.
 
 $$
-E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
+E[\chi_j^2 \mid \ell_j] = 1 + h^2 \ell_j \frac{N}{M} + c
 $$
 
 where $\chi_j^2 = z_j^2$, and $z_j = \hat{\tilde{\beta}}_j/\text{SE}(\hat{\tilde{\beta}}_j)$ for SNP $j$.
@@ -304,7 +304,7 @@ Local LD can blur causal interpretation, but because it is mostly nearby, measur
 
 
 - Nearby SNPs can **tag** causal variants, so we do not need to observe every causal SNP directly
-- Local LD allows **Imputation** of untyped variants from typed ones
+- Local LD allows **imputation** of untyped variants from typed ones
 - Tools like **LDpred** can adjust SNP weights to account for LD structure, improving polygenic prediction
 - **LD-score regression** exploits link between high LD and inflated test statistics to estimate heritability
 - More broadly, local LD is often a **manageable nuisance**, not an arbitrary source of noise
@@ -348,12 +348,8 @@ $$
 
 ## What is assortative mating?
 
-Partner similarity, $\text{Cov}(y_m, y_p) > 0$, can arise for different reasons. 
-
-**Assortative mating (AM)** means that the **matching process itself** induces covariance between partners, rather than that covariance reflecting a shared cause. 
-
-::: {.callout-important}
-## Observed partner covariance is a **symptom**, not yet an explanation.
+::: {.callout-warning}
+## Partner similarity, $\text{Cov}(y_m, y_p) > 0$, can arise for different reasons. 
 
 - **Assortative mating**: matching induces partner covariance
 - **Convergence**: partners become more similar after pairing
@@ -362,11 +358,14 @@ Partner similarity, $\text{Cov}(y_m, y_p) > 0$, can arise for different reasons.
 Here, we assume that partner covariance is due to assortative mating, and we focus on the genetic consequences of that process.
 :::
 
+**Assortative mating (AM)** means that the **matching process itself** induces covariance between partners, rather than that covariance reflecting a shared cause. 
+
+
 ::: {.callout-note}
 ## Disassortative mating?
-Technically, **assortative mating can be negative** if partners are more dissimilar than expected by chance ($\text{Cov}(y_m, y_p) < 0$). 
+Technically, **assortative mating can be negative:** ($\text{Cov}(y_m, y_p) < 0$). However, this is rare in human populations. We therefore focus on positive assortative mating. 
 
-However, that is very rare in human populations. We therefore focus on positive assortative mating. The consequences of negative assortative mating are generally the same, but with opposite signs.
+The consequences of negative assortative mating are generally the same, but with opposite signs.
 :::
 ## Consequences of assortative mating
 
@@ -395,7 +394,8 @@ Assortative mating therefore induces genetic similarity between partners.
 
 
 ## Predicted genetic value given phenotype
-To quantify the induced genetic similarity, we start at the **phenotype** and ask: if we observe someone's phenotype $y$, what genetic value $g$ do we expect?
+To quantify the induced genetic similarity, we **start at the phenotype** and ask: <br>
+if we observe someone's phenotype $y$, what genetic value $g$ do we expect?
 
 Assume centered variables and the simple additive model:
 
@@ -512,9 +512,14 @@ In reality, they may match on a related signal or bundle of traits $s$ that corr
 
 ::: {.callout-note}
 ## Key point
-The genotypic correlation between partners depends on **how strongly $s$ correlates with the genetic value for the focal phenotype**. Indirect assortative mating can imply **more or less** genetic resemblance between partners than you would otherwise expect.
+The genotypic correlation between partners depends on **how strongly the genetic value for the focal phenotype correlates with $s$**. Indirect assortative mating can imply **more or less** genetic resemblance between partners than you would otherwise expect.
 
 In this lecture, we assume direct assortment where $s=y$, but note that assortment is indirect for many social traits (e.g., educational attainment).
+
+:::
+
+::: {.callout-tip}
+You can think of $s$ as a secondary phenotype $y_2$, where genetic similarity depends on the genetic correlation between $y$ and $y_2$, the heritability of $y_2$, and the phenotypic correlation for $y_2$, $r_{y_2}^{\mathrm{mates}}$. Gene-environment correlations complicate things somewhat.
 :::
 
 ## Genetic similarity spreads across many SNP pairs

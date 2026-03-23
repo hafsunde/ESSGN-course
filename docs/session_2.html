@@ -1141,7 +1141,7 @@ Espen Eilertsen &amp; Hans Fredrik Sunde
 <p>This is often not the case.</p>
 <p><br></p>
 <p><strong>This session: What happens when those assumptions are violated?</strong></p>
-<p>This lecture is mostly <strong>theoretical</strong>. The main takeaway is not a ready-to-use practical method, but a clearer picture of <strong>what can go wrong</strong> and why.</p>
+<p>This lecture is mostly <strong>theoretical</strong>. The main takeaway is not a ready-to-use practical method, but a clearer picture of <strong>what happens to target parameters and estimated parameters</strong>.</p>
 </section>
 <section id="direct-effect-vs-marginal-association" class="slide level2">
 <h2>Direct effect <em>vs</em> Marginal association?</h2>
@@ -1352,7 +1352,7 @@ y_i = \beta_1 x_{i1} + e_i
 <p><span class="math display">\[
 \tilde{\beta}_j = \sum_{k=1}^M r_{jk}\beta_k
 \]</span></p>
-<p>So the marginal coefficient at SNP <span class="math inline">\(j\)</span> is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with <strong>many</strong> nearby variants can therefore pick up more tagged signal.</p>
+<p>So the marginal coefficient at SNP <span class="math inline">\(j\)</span> is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with <strong>many</strong> nearby variants can therefore pick up more signal.</p>
 </section>
 <section id="we-can-exploit-this-structure" class="slide level2 huge center" data-background-color="#5b0f0f" color="&quot;white">
 <h2>We can exploit this structure</h2>
@@ -1385,7 +1385,7 @@ y_i = \beta_1 x_{i1} + e_i
 <h2>LD score regression</h2>
 <p>If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. This relationship is proportional to the heritability. We can therefore exploit this structure to estimate SNP heritability from GWAS summary statistics, using a method called <strong>LD score regression (LDSC)</strong>.</p>
 <p><span class="math display">\[
-E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
+E[\chi_j^2 \mid \ell_j] = 1 + h^2 \ell_j \frac{N}{M} + c
 \]</span></p>
 <p>where <span class="math inline">\(\chi_j^2 = z_j^2\)</span>, and <span class="math inline">\(z_j = \hat{\tilde{\beta}}_j/\text{SE}(\hat{\tilde{\beta}}_j)\)</span> for SNP <span class="math inline">\(j\)</span>.</p>
 <div class="callout callout-tip callout-titled callout-style-default">
@@ -1445,7 +1445,7 @@ r_g \,\ell_j
 <p>Local LD can blur causal interpretation, but because it is mostly nearby, measurable, and predictable, we can often model it and use it.</p>
 <ul>
 <li>Nearby SNPs can <strong>tag</strong> causal variants, so we do not need to observe every causal SNP directly</li>
-<li>Local LD allows <strong>Imputation</strong> of untyped variants from typed ones</li>
+<li>Local LD allows <strong>imputation</strong> of untyped variants from typed ones</li>
 <li>Tools like <strong>LDpred</strong> can adjust SNP weights to account for LD structure, improving polygenic prediction</li>
 <li><strong>LD-score regression</strong> exploits link between high LD and inflated test statistics to estimate heritability</li>
 <li>More broadly, local LD is often a <strong>manageable nuisance</strong>, not an arbitrary source of noise</li>
@@ -1527,15 +1527,13 @@ r_g \,\ell_j
 </section>
 <section id="what-is-assortative-mating" class="slide level2">
 <h2>What is assortative mating?</h2>
-<p>Partner similarity, <span class="math inline">\(\text{Cov}(y_m, y_p) &gt; 0\)</span>, can arise for different reasons.</p>
-<p><strong>Assortative mating (AM)</strong> means that the <strong>matching process itself</strong> induces covariance between partners, rather than that covariance reflecting a shared cause.</p>
-<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Observed partner covariance is a <strong>symptom</strong>, not yet an explanation.</strong></p>
+<p><strong>Partner similarity, <span class="math inline">\(\text{Cov}(y_m, y_p) &gt; 0\)</span>, can arise for different reasons.</strong></p>
 </div>
 <div class="callout-content">
 <ul>
@@ -1547,6 +1545,7 @@ r_g \,\ell_j
 </div>
 </div>
 </div>
+<p><strong>Assortative mating (AM)</strong> means that the <strong>matching process itself</strong> induces covariance between partners, rather than that covariance reflecting a shared cause.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1556,8 +1555,8 @@ r_g \,\ell_j
 <p><strong>Disassortative mating?</strong></p>
 </div>
 <div class="callout-content">
-<p>Technically, <strong>assortative mating can be negative</strong> if partners are more dissimilar than expected by chance (<span class="math inline">\(\text{Cov}(y_m, y_p) &lt; 0\)</span>).</p>
-<p>However, that is very rare in human populations. We therefore focus on positive assortative mating. The consequences of negative assortative mating are generally the same, but with opposite signs.</p>
+<p>Technically, <strong>assortative mating can be negative:</strong> (<span class="math inline">\(\text{Cov}(y_m, y_p) &lt; 0\)</span>). However, this is rare in human populations. We therefore focus on positive assortative mating.</p>
+<p>The consequences of negative assortative mating are generally the same, but with opposite signs.</p>
 </div>
 </div>
 </div>
@@ -1587,7 +1586,7 @@ r_g \,\ell_j
 </section>
 <section id="predicted-genetic-value-given-phenotype" class="slide level2">
 <h2>Predicted genetic value given phenotype</h2>
-<p>To quantify the induced genetic similarity, we start at the <strong>phenotype</strong> and ask: if we observe someone’s phenotype <span class="math inline">\(y\)</span>, what genetic value <span class="math inline">\(g\)</span> do we expect?</p>
+<p>To quantify the induced genetic similarity, we <strong>start at the phenotype</strong> and ask: <br> if we observe someone’s phenotype <span class="math inline">\(y\)</span>, what genetic value <span class="math inline">\(g\)</span> do we expect?</p>
 <p>Assume centered variables and the simple additive model:</p>
 <p><span class="math display">\[
 y_i = g_i + e_i;
@@ -1727,8 +1726,21 @@ r_g^{\mathrm{mates}}
 <p><strong>Key point</strong></p>
 </div>
 <div class="callout-content">
-<p>The genotypic correlation between partners depends on <strong>how strongly <span class="math inline">\(s\)</span> correlates with the genetic value for the focal phenotype</strong>. Indirect assortative mating can imply <strong>more or less</strong> genetic resemblance between partners than you would otherwise expect.</p>
+<p>The genotypic correlation between partners depends on <strong>how strongly the genetic value for the focal phenotype correlates with <span class="math inline">\(s\)</span></strong>. Indirect assortative mating can imply <strong>more or less</strong> genetic resemblance between partners than you would otherwise expect.</p>
 <p>In this lecture, we assume direct assortment where <span class="math inline">\(s=y\)</span>, but note that assortment is indirect for many social traits (e.g., educational attainment).</p>
+</div>
+</div>
+</div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Tip</strong></p>
+</div>
+<div class="callout-content">
+<p>You can think of <span class="math inline">\(s\)</span> as a secondary phenotype <span class="math inline">\(y_2\)</span>, where genetic similarity depends on the genetic correlation between <span class="math inline">\(y\)</span> and <span class="math inline">\(y_2\)</span>, the heritability of <span class="math inline">\(y_2\)</span>, and the phenotypic correlation for <span class="math inline">\(y_2\)</span>, <span class="math inline">\(r_{y_2}^{\mathrm{mates}}\)</span>. Gene-environment correlations complicate things somewhat.</p>
 </div>
 </div>
 </div>
