@@ -1052,8 +1052,8 @@ margin-right: 0; }
   MathJax.Hub.Config({
     TeX: {
       Macros: {
-        mcol: ["{\\color{red}{#1}}", 1],
-        pcol: ["{\\color{darkblue}{#1}}", 1]
+        mcol: ["{\\color{##5b0f0f}{#1}}", 1],
+        pcol: ["{\\color{##2c3e50}{#1}}", 1]
       }
     }
   });
@@ -1106,24 +1106,24 @@ Espen Eilertsen &amp; Hans Fredrik Sunde
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Part 1: Local linkage disequilibrium (LD)</strong></td>
-<td>Why nearby correlated SNPs both distort and inform marginal effect estimates</td>
+<td><span class="fragment" data-fragment-index="1"><strong>Part 1: Local linkage disequilibrium (LD)</strong></span></td>
+<td><span class="fragment" data-fragment-index="1">Why nearby correlated SNPs both distort and inform marginal effect estimates</span></td>
 </tr>
 <tr class="even">
-<td><strong>Part 2: Assortative mating and long-range LD</strong></td>
-<td>How non-random mating affects correlations between distant loci</td>
+<td><span class="fragment" data-fragment-index="2"><strong>Part 2: Assortative mating and long-range LD</strong></span></td>
+<td><span class="fragment" data-fragment-index="2">How non-random mating affects correlations between distant loci</span></td>
 </tr>
 <tr class="odd">
-<td><strong>Part 3: Gene-environment correlations</strong></td>
-<td>How correlations between genetic and environmental factors affect marginal associations and variance decompositions</td>
+<td><span class="fragment" data-fragment-index="3"><strong>Part 3: Gene-environment correlations</strong></span></td>
+<td><span class="fragment" data-fragment-index="3">How correlations between genetic and environmental factors affect marginal associations and variance decompositions</span></td>
 </tr>
 <tr class="even">
-<td><strong>Part 4: What to do? Use families!</strong></td>
-<td>What family-based methods can and cannot solve</td>
+<td><span class="fragment" data-fragment-index="4"><strong>Part 4: What to do? Use families!</strong></span></td>
+<td><span class="fragment" data-fragment-index="4">What family-based methods can and cannot solve</span></td>
 </tr>
 <tr class="odd">
-<td><strong>Part 5: Practical</strong></td>
-<td>GREML and maternal indirect genetic effects with M-GCTA</td>
+<td><span class="fragment" data-fragment-index="5"><strong>Part 5: Practical</strong></span></td>
+<td><span class="fragment" data-fragment-index="5">GREML and maternal indirect genetic effects with M-GCTA</span></td>
 </tr>
 </tbody>
 </table>
@@ -1138,20 +1138,26 @@ Espen Eilertsen &amp; Hans Fredrik Sunde
 \underbrace{\text{Cov}(x_j, x_k) = 0}_{\text{No LD}}
 \text{ for } j \neq k
 \]</span></p>
+<div class="fragment">
 <p>This is often not the case.</p>
-<p><br></p>
+</div>
+<div class="fragment">
 <p><strong>This session: What happens when those assumptions are violated?</strong></p>
-<p>This lecture is mostly <strong>theoretical</strong>. The main takeaway is not a ready-to-use practical method, but a clearer picture of <strong>what can go wrong</strong> and why.</p>
+<p>This lecture is mostly <strong>theoretical</strong>. The main takeaway is not a ready-to-use practical method, but a clearer picture of <strong>what happens to <em>target</em> parameters and <em>estimated</em> parameters</strong>.</p>
+</div>
 </section>
 <section id="direct-effect-vs-marginal-association" class="slide level2">
 <h2>Direct effect <em>vs</em> Marginal association?</h2>
 <p>As a reminder, the infinitesimal model says that the phenotype is a sum of many small genetic effects plus a residual (i.e., an environmental effect): <span class="math display">\[
 y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
 \]</span></p>
+<div class="fragment">
 <p>In a GWAS, each SNP <span class="math inline">\(j\)</span> is tested separately in a linear model:</p>
 <p><span class="math display">\[
 y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 \]</span></p>
+</div>
+<div class="fragment">
 <p><span class="math inline">\(\tilde{\beta}_j\)</span> is the <strong>marginal coefficient</strong> measuring the <strong><em>association</em></strong> between <span class="math inline">\(x_{ij}\)</span> and <span class="math inline">\(y_i\)</span>:</p>
 <p><span class="math display">\[
 \begin{array}{r c c c c c c}
@@ -1170,6 +1176,8 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 \scriptstyle {\text{rGE}}
 \end{array}
 \]</span></p>
+</div>
+<div class="fragment">
 <div class="callout callout-note no-icon callout-style-simple">
 <div class="callout-body">
 <div class="callout-content">
@@ -1177,10 +1185,11 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 </div>
 </div>
 </div>
+</div>
 </section>
 <section>
 <section id="part-1-local-linkage-disequilibrium" class="title-slide slide level1 center" data-background-color="#2c3e50" style="color: white;">
-<h1>Part 1: Local Linkage Disequilibrium</h1>
+<h1>Part 1: <br> Local Linkage Disequilibrium</h1>
 
 </section>
 <section id="nearby-snps-correlate" class="slide level2">
@@ -1321,17 +1330,17 @@ y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 </div>
 </div>
 </section>
-<section id="a-two-snp-toy-example" class="slide level2">
-<h2>A two-SNP toy example</h2>
+<section id="a-two-loci-toy-example" class="slide level2">
+<h2>A two-loci toy example</h2>
 <p>Assume the true model is:</p>
 <p><span class="math display">\[
 y_i = \beta_1 x_{i1} + e_i
 \]</span></p>
-<p>where <span class="math inline">\(x_1\)</span> is causal and is in LD with <span class="math inline">\(x_2\)</span>, a non-causal SNP:</p>
+<p>where <span class="math inline">\(x_1\)</span> is causal and is in LD with a non-causal locus, <span class="math inline">\(x_2\)</span>:</p>
 <p><span class="math display">\[
 \beta_1 \neq 0, \qquad \beta_2 = 0, \qquad \text{Cov}(x_1,x_2) \neq 0
 \]</span></p>
-<p>A GWAS tests each SNP separately. For <span class="math inline">\(x_2\)</span>, the marginal coefficient is:</p>
+<p>A GWAS tests each locus separately. For <span class="math inline">\(x_2\)</span>, the marginal coefficient is:</p>
 <p><span class="math display">\[
 \tilde{\beta}_2
 =
@@ -1341,9 +1350,9 @@ y_i = \beta_1 x_{i1} + e_i
 \]</span></p>
 <p>In other words, <span class="math inline">\(x_2\)</span> will be associated with the phenotype even though it has <strong>no direct causal effect</strong>.</p>
 </section>
-<section id="generalizing-to-many-snps" class="slide level2">
-<h2>Generalizing to many SNPs</h2>
-<p>Recall that the marginal coefficient at SNP <span class="math inline">\(j\)</span> is (ignoring the rGE term for now):</p>
+<section id="generalizing-to-many-loci" class="slide level2">
+<h2>Generalizing to many loci</h2>
+<p>Recall that the marginal coefficient at locus <span class="math inline">\(j\)</span> is (ignoring the rGE term for now):</p>
 <p><span class="math display">\[
 \tilde{\beta}_j = \beta_j
 + \sum_{k \ne j} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
@@ -1352,16 +1361,16 @@ y_i = \beta_1 x_{i1} + e_i
 <p><span class="math display">\[
 \tilde{\beta}_j = \sum_{k=1}^M r_{jk}\beta_k
 \]</span></p>
-<p>So the marginal coefficient at SNP <span class="math inline">\(j\)</span> is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with <strong>many</strong> nearby variants can therefore pick up more tagged signal.</p>
+<p>So the marginal coefficient at SNP <span class="math inline">\(j\)</span> is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with <strong>many</strong> nearby variants can therefore pick up more signal.</p>
 </section>
 <section id="we-can-exploit-this-structure" class="slide level2 huge center" data-background-color="#5b0f0f" color="&quot;white">
 <h2>We can exploit this structure</h2>
 <p><br></p>
-<p>If a trait is heritable, then SNPs correlated with many nearby variants should have inflated test statistics on average, because they tag more causal variation in the region.</p>
+<p>If a trait is heritable, then SNPs correlated with many nearby variants should, on average, have inflated test statistics, because they tag more causal variation in the region.</p>
 </section>
-<section id="what-is-an-ld-score" class="slide level2">
-<h2>What is an LD score?</h2>
-<p>For SNP <span class="math inline">\(j\)</span>, the <strong>LD score</strong> is the sum of squared correlations with nearby SNPs:</p>
+<section id="quantifying-local-ld" class="slide level2">
+<h2>Quantifying local LD</h2>
+<p>For SNP <span class="math inline">\(j\)</span>, the <strong>LD score</strong> is the <strong>sum of squared correlations</strong> with nearby SNPs:</p>
 <p><span class="math display">\[
 \ell_j = \sum_{k \in \mathcal{N}(j)} r_{jk}^2
 \]</span></p>
@@ -1383,9 +1392,10 @@ y_i = \beta_1 x_{i1} + e_i
 </section>
 <section id="ld-score-regression" class="slide level2">
 <h2>LD score regression</h2>
-<p>If SNPs with higher LD scores tag more nearby causal variation, then under polygenicity their test statistics should be larger on average. This relationship is proportional to the heritability. We can therefore exploit this structure to estimate SNP heritability from GWAS summary statistics, using a method called <strong>LD score regression (LDSC)</strong>.</p>
+<p>If SNPs with higher LD scores tag more nearby causal variation, then their test statistics should be larger on average. <strong>This relationship is proportional to the heritability.</strong></p>
+<p>This allows us to estimate SNP heritability from GWAS summary statistics, using a method called <strong>LD score regression (LDSC)</strong>.</p>
 <p><span class="math display">\[
-E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
+E[\chi_j^2 \mid \ell_j] = 1 + h^2 \ell_j \frac{N}{M} + c
 \]</span></p>
 <p>where <span class="math inline">\(\chi_j^2 = z_j^2\)</span>, and <span class="math inline">\(z_j = \hat{\tilde{\beta}}_j/\text{SE}(\hat{\tilde{\beta}}_j)\)</span> for SNP <span class="math inline">\(j\)</span>.</p>
 <div class="callout callout-tip callout-titled callout-style-default">
@@ -1445,7 +1455,7 @@ r_g \,\ell_j
 <p>Local LD can blur causal interpretation, but because it is mostly nearby, measurable, and predictable, we can often model it and use it.</p>
 <ul>
 <li>Nearby SNPs can <strong>tag</strong> causal variants, so we do not need to observe every causal SNP directly</li>
-<li>Local LD allows <strong>Imputation</strong> of untyped variants from typed ones</li>
+<li>Local LD allows <strong>imputation</strong> of untyped variants from typed ones</li>
 <li>Tools like <strong>LDpred</strong> can adjust SNP weights to account for LD structure, improving polygenic prediction</li>
 <li><strong>LD-score regression</strong> exploits link between high LD and inflated test statistics to estimate heritability</li>
 <li>More broadly, local LD is often a <strong>manageable nuisance</strong>, not an arbitrary source of noise</li>
@@ -1527,15 +1537,13 @@ r_g \,\ell_j
 </section>
 <section id="what-is-assortative-mating" class="slide level2">
 <h2>What is assortative mating?</h2>
-<p>Partner similarity, <span class="math inline">\(\text{Cov}(y_m, y_p) &gt; 0\)</span>, can arise for different reasons.</p>
-<p><strong>Assortative mating (AM)</strong> means that the <strong>matching process itself</strong> induces covariance between partners, rather than that covariance reflecting a shared cause.</p>
-<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout callout-warning callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
-<p><strong>Observed partner covariance is a <strong>symptom</strong>, not yet an explanation.</strong></p>
+<p><strong>Partner similarity, <span class="math inline">\(\text{Cov}(y_m, y_p) &gt; 0\)</span>, can arise for different reasons.</strong></p>
 </div>
 <div class="callout-content">
 <ul>
@@ -1547,6 +1555,7 @@ r_g \,\ell_j
 </div>
 </div>
 </div>
+<p><strong>Assortative mating (AM)</strong> means that the <strong>matching process itself</strong> induces covariance between partners, rather than that covariance reflecting a shared cause.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -1556,8 +1565,8 @@ r_g \,\ell_j
 <p><strong>Disassortative mating?</strong></p>
 </div>
 <div class="callout-content">
-<p>Technically, <strong>assortative mating can be negative</strong> if partners are more dissimilar than expected by chance (<span class="math inline">\(\text{Cov}(y_m, y_p) &lt; 0\)</span>).</p>
-<p>However, that is very rare in human populations. We therefore focus on positive assortative mating. The consequences of negative assortative mating are generally the same, but with opposite signs.</p>
+<p>Technically, <strong>assortative mating can be negative:</strong> (<span class="math inline">\(\text{Cov}(y_m, y_p) &lt; 0\)</span>). However, this is rare in human populations. We therefore focus on positive assortative mating.</p>
+<p>The consequences of negative assortative mating are generally the same, but with opposite signs.</p>
 </div>
 </div>
 </div>
@@ -1587,7 +1596,7 @@ r_g \,\ell_j
 </section>
 <section id="predicted-genetic-value-given-phenotype" class="slide level2">
 <h2>Predicted genetic value given phenotype</h2>
-<p>To quantify the induced genetic similarity, we start at the <strong>phenotype</strong> and ask: if we observe someone’s phenotype <span class="math inline">\(y\)</span>, what genetic value <span class="math inline">\(g\)</span> do we expect?</p>
+<p>To quantify the induced genetic similarity, we <strong>start at the phenotype</strong> and ask: <br> if we observe someone’s phenotype <span class="math inline">\(y\)</span>, what genetic value <span class="math inline">\(g\)</span> do we expect?</p>
 <p>Assume centered variables and the simple additive model:</p>
 <p><span class="math display">\[
 y_i = g_i + e_i;
@@ -1727,15 +1736,28 @@ r_g^{\mathrm{mates}}
 <p><strong>Key point</strong></p>
 </div>
 <div class="callout-content">
-<p>The genotypic correlation between partners depends on <strong>how strongly <span class="math inline">\(s\)</span> correlates with the genetic value for the focal phenotype</strong>. Indirect assortative mating can imply <strong>more or less</strong> genetic resemblance between partners than you would otherwise expect.</p>
+<p>The genotypic correlation between partners depends on <strong>how strongly the genetic value for the focal phenotype correlates with <span class="math inline">\(s\)</span></strong>. Indirect assortative mating can imply <strong>more or less</strong> genetic resemblance between partners than you would otherwise expect.</p>
 <p>In this lecture, we assume direct assortment where <span class="math inline">\(s=y\)</span>, but note that assortment is indirect for many social traits (e.g., educational attainment).</p>
 </div>
 </div>
 </div>
+<div class="callout callout-tip callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Tip</strong></p>
+</div>
+<div class="callout-content">
+<p>You can think of <span class="math inline">\(s\)</span> as a secondary phenotype <span class="math inline">\(y_2\)</span>, where genetic similarity depends on the genetic correlation between <span class="math inline">\(y\)</span> and <span class="math inline">\(y_2\)</span>, the heritability of <span class="math inline">\(y_2\)</span>, and the phenotypic partner correlation for <span class="math inline">\(y_2\)</span>. Gene-environment correlations complicate things somewhat, but the same logic applies.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="genetic-similarity-spreads-across-many-snp-pairs" class="slide level2">
-<h2>Genetic similarity spreads across many SNP pairs</h2>
-<p>Rememebr, the genetic value is a weighted sum of SNPs: <span class="math inline">\(g_i = \sum_{j=1}^{M} \beta_j x_{ij}\)</span>.</p>
+<section id="genetic-similarity-spreads-across-loci" class="slide level2">
+<h2>Genetic similarity spreads across loci</h2>
+<p>Rememeber, the genetic value is a weighted sum of SNPs: <span class="math inline">\(g_i = \sum_{j=1}^{M} \beta_j x_{ij}\)</span>.</p>
 <p>Covariance between partners’ genetic values is therefore the sum of all SNP-level covariances:</p>
 <p><span class="math display">\[
 \text{Cov}(g_m,g_p)
@@ -1947,16 +1969,16 @@ Show recurrence equation for genetic variance
 <p>Assortative mating in earlier generations means that <strong>trait-associated SNPs are not independent from each other</strong>.</p>
 </div>
 </section>
-<section id="which-estimands-change-once-genotype-covariance-changes" class="slide level2 smaller">
-<h2>Which estimands change once genotype covariance changes?</h2>
-<p>If assortative mating changes <span class="math inline">\(\text{Cov}(x_j, x_k)\)</span>, then two things can change at once:</p>
+<section id="what-changes-with-assortative-mating" class="slide level2 smaller">
+<h2>What changes with assortative mating?</h2>
+<p>If assortative mating changes <span class="math inline">\(\text{Cov}(x_j, x_k)\)</span>, then several things can change at once:</p>
 <div style="font-size: 0.8em;">
 <ul>
-<li><strong>GWAS marginal effects</strong>: <span class="math inline">\(\tilde{\beta}_j\)</span> absorbs long-range tagged signal, so hits look less purely local</li>
+<li><strong>GWAS marginal effects</strong>: <span class="math inline">\(\tilde{\beta}_j\)</span> absorbs long-range tagged signal</li>
 <li><strong>LDSC <span class="math inline">\(h^2\)</span></strong>: the summary statistics and local LD scores no longer line up as cleanly as under random mating</li>
-<li><strong>REML / GREML <span class="math inline">\(h^2\)</span></strong>: Session 1’s <span class="math inline">\(\sigma_g^2 \mathbf{G}\)</span> model no longer spans all of the AM-induced covariance</li>
-<li><strong>Family resemblance</strong>: relatives inherit the AM-induced covariance structure, so resemblance increases</li>
-<li><strong>Cross-trait <span class="math inline">\(r_g\)</span></strong>: score correlation can rise without more effect correlation, so bivariate estimators can overstate overlap</li>
+<li><strong>GREML <span class="math inline">\(h^2\)</span></strong>: Session 1’s <span class="math inline">\(\sigma_g^2 \mathbf{G}\)</span> model do not capture the AM-induced covariance</li>
+<li><strong>Family resemblance</strong>: relatives share the AM-induced covariance structure, so resemblance increases</li>
+<li><strong>Cross-trait <span class="math inline">\(r_g\)</span></strong>: score correlation can rise without more effect correlation, and long-range LD can inflate estimates.</li>
 </ul>
 </div>
 </section>
@@ -2011,7 +2033,7 @@ Show recurrence equation for genetic variance
 <h2>Consequence 2: LDSC can overstate <span class="math inline">\(h^2\)</span></h2>
 <p>In Part 1, LDSC exploited that the expected <span class="math inline">\(\chi^2\)</span> statistic at SNP <span class="math inline">\(j\)</span> is proportional to heritability and its LD score, <span class="math inline">\(\ell_j\)</span>:</p>
 <p><span class="math display">\[
-E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
+E[\chi_j^2 \mid \ell_j] = 1 + h^2 \ell_j \frac{N}{M} + c
 \]</span></p>
 <ul>
 <li>Under assortative mating, <span class="math inline">\(\chi_j^2\)</span> can be inflated by <strong>long-range LD</strong> between causal loci</li>
@@ -2251,6 +2273,22 @@ r_{g,d} = \left(\frac{1 + r_g^{\mathrm{mates}}}{2}\right)^d
 </table>
 </div>
 <p>Different mechanisms can produce the <strong>same statistical symptom</strong>: <span class="math inline">\(\text{Cov}(x_j,e) \neq 0\)</span>. Across many loci, this can aggregate into <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Only passive gene-environment correlation is confounding</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Passive <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because of shared causes (e.g., parents)</li>
+<li><strong>Active / Evocative <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods) Crucially, <strong>active and evocative gene-environment correlations are not confounding</strong>. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. This is also important for how “direct” genetic effects are interpreted.</li>
+</ul>
+</div>
+</div>
+</div>
 </section>
 <section id="why-relatives-environmental-effects-induce-mathrmcovge" class="slide level2 smaller">
 <h2>Why relatives’ environmental effects induce <span class="math inline">\(\mathrm{Cov}(g,e)\)</span></h2>
@@ -2381,25 +2419,6 @@ y = g + e
 \]</span></p>
 <p>Negative rGE therefore moves both quantities downward.</p>
 </section>
-<section id="confounding-vs-mediation-short-version" class="slide level2">
-<h2>Confounding vs mediation (short version)</h2>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Important</strong></p>
-</div>
-<div class="callout-content">
-<ul>
-<li><strong>Passive rGE</strong>: genotype-environment correlation from shared causes (e.g., parents). This is confounding when the target is the <strong>direct genetic effect</strong>.</li>
-<li><strong>Active / evocative rGE</strong>: genotype partly shapes the environment experienced by the focal person. This is a mediated pathway for the <strong>total genetic effect</strong>, but still not a direct-effect estimand.</li>
-</ul>
-</div>
-</div>
-</div>
-</section>
 <section id="take-home-map-and-bridge" class="slide level2">
 <h2>Take-home map and bridge</h2>
 <div style="font-size: 0.86em;">
@@ -2482,6 +2501,7 @@ y = g + e
 <li>stratification</li>
 <li>parental genetic nurture and other shared family environments</li>
 </ul>
+<p>One could, in principle, try to adjust for all of these things by adding more and more covariates. But that is unrealistic, even for observed confounders like other SNPS let lonen unobserved confounders.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">

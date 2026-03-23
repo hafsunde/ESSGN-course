@@ -1,7 +1,7 @@
 ---
 title: "Gene-Environment Correlations and Assortative Mating"
 subtitle: "ESSGN 2026 Workshop"
-author: "Espen Eilertsen & Hans Fredrik Sunde"
+author: "Hans Fredrik Sunde & Espen Eilertsen"
 date: 2026-03-25
 format:
   revealjs:
@@ -58,7 +58,7 @@ include-in-header:
 
 ## Before we begin... {.smaller}
 
- In session 1, we assumed that loci were independent from each other and from environmental effects. 
+In session 1, we assumed that loci were independent from each other and from environmental effects. 
 
 $$
 \underbrace{\text{Cov}(x_j, e) = 0}_{\text{No rGE}}
@@ -67,33 +67,45 @@ $$
 \text{ for } j \neq k
 $$
 
+::: {.fragment}
 This is often not the case.
+:::
 
 <br>
 
+::: {.fragment}
 **This session: What happens when those assumptions are violated?**
+:::
 
-This lecture is mostly **theoretical**. The main takeaway is not a ready-to-use practical method, but a clearer picture of **what happens to *target* parameters and *estimated* parameters**.
+<br>
+
+::: {.fragment}
+This lecture is mostly **theoretical**. <br> The main takeaway is not a ready-to-use practical method, but a clearer picture of **what happens to *target* parameters and *estimated* parameters**.
+:::
 
 
 
 
 
-## Direct effect *vs* Marginal association?
+## Direct effect *vs* marginal association? {.smaller}
 As a reminder, the infinitesimal model says that the phenotype is a sum of many small genetic effects plus a residual (i.e., an environmental effect):
 $$
 y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
 $$
 
+::: {.fragment}
 In a GWAS, each SNP $j$ is tested separately in a linear model:
 
 $$
 y_i = \alpha_j + \tilde{\beta}_j x_{ij} + \dots + \varepsilon_{ij}
 $$
+:::
 
 
+::: {.fragment}
 $\tilde{\beta}_j$ is the **marginal coefficient** measuring the ***association*** between $x_{ij}$ and $y_i$: 
 
+::: {style="font-size: 0.8em;"}
 $$
 \begin{array}{r c c c c c c}
 \tilde{\beta}_j
@@ -111,9 +123,12 @@ $$
 \scriptstyle {\text{rGE}}
 \end{array}
 $$
+:::
+
 
 ::: {.callout-note appearance="minimal"}
 Here we ignore sampling error, imperfect genetic overlap between GWAS and target phenotypes, and heterogeneity across GWAS samples
+:::
 :::
 
 # Part 1: <br> Local Linkage Disequilibrium {background-color="#2c3e50" style="color: white;"}
@@ -171,13 +186,13 @@ Recombination shuffles **chromosome segments**, not isolated SNPs. Loci that are
 
 </table>
 
-
 This makes nearby SNPs correlated in the population: $\text{Cov}(x_j, x_k) \neq 0$ for nearby $j,k$
 
-This is called (local) **linkage disequilibrium (LD)**.
+This is called local **linkage disequilibrium (LD)**.
 
 ::: {.callout-note}
-If two nearby SNPs are often inherited together, they are statistically *dependent*: once you know the allele at one SNP, you can make a good guess about the allele at the other.
+If two nearby SNPs are often inherited together, they are statistically *dependent*: <br> 
+Once you know the allele at one SNP, you can make a good guess about the allele at the other.
 :::
 
 
@@ -211,20 +226,38 @@ In other words, $x_2$ will be associated with the phenotype even though it has *
 
 ## Generalizing to many loci
 
-Recall that the marginal coefficient at locus $j$ is (ignoring the rGE term for now):
+
+::: {.callout-note}
+## Reminder: the marginal association at locus $j$ is:
 
 $$
-\tilde{\beta}_j = \beta_j
-+ \sum_{k \ne j} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+& = &
+\beta_j
+& + &
+\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
+& \color{grey}{+} &
+\color{grey}{\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}} \\
+& &
+\scriptstyle {\text{Direct Effect}}
+& &
+\scriptstyle {\text{Linkage Disequilibrium}}
+& &
+\color{grey}{\scriptstyle {\text{rGE}}}
+\end{array}
 $$
 
-If we standardize the SNPs so that $\text{Var}(x_j)=1$, then $\text{Cov}(x_j,x_k)=r_{jk}$ and this becomes
+:::
+
+If we ignore rGE and standardize all SNPs ($\text{Var}(x_j)=1$, meaning $\text{Cov}(x_j,x_k)=r_{jk}$), the marginal coefficient at SNP $j$ becomes the weighted sum of direct effects at correlated SNPs, including itself: 
 
 $$
 \tilde{\beta}_j = \sum_{k=1}^M r_{jk}\beta_k
 $$
 
-So the marginal coefficient at SNP $j$ is a weighted sum of the direct effects at correlated SNPs (including itself). A SNP that is correlated with **many** nearby variants can therefore pick up more signal.
+A SNP that is correlated with **many** nearby variants can therefore tag more causal variation in the region.
+
 
 
 
@@ -232,7 +265,7 @@ So the marginal coefficient at SNP $j$ is a weighted sum of the direct effects a
 
 <br>
 
-If a trait is heritable, then SNPs correlated with many nearby variants should, on average, have inflated test statistics, because they tag more causal variation in the region.
+If a trait is heritable, then SNPs correlated with many nearby variants should, on average, have more inflated test statistics.
 
 ## Quantifying local LD
 
@@ -302,14 +335,14 @@ where $r_g$ is the **genetic correlation**, summarizing how strongly the two tra
 
 ## Local LD is also useful {.smaller}
 
-Local LD can blur causal interpretation, but because it is mostly nearby, measurable, and predictable, we can often model it and use it.
+Local LD can blur causal interpretation, but because it is  local, measurable, and predictable, we can often model it and use it.
 
 
-- Nearby SNPs can **tag** causal variants, so we do not need to observe every causal SNP directly
-- Local LD allows **imputation** of untyped variants from typed ones
-- Tools like **LDpred** can adjust SNP weights to account for LD structure, improving polygenic prediction
-- **LD-score regression** exploits link between high LD and inflated test statistics to estimate heritability
-- More broadly, local LD is often a **manageable nuisance**, not an arbitrary source of noise
+[- **LD-score regression** exploits link between high LD and inflated test statistics to estimate heritability]{.fragment}<br>
+[- Nearby SNPs can **tag** causal variants, so we do not need to observe every causal SNP directly]{.fragment}<br>
+[- Local LD allows **imputation** of untyped variants from typed ones]{.fragment}<br>
+[- Tools like **LDpred** can adjust SNP weights to account for LD structure, improving polygenic prediction]{.fragment}<br>
+[- More broadly, local LD is often a **manageable nuisance**, not an arbitrary source of noise]{.fragment}<br>
 
 ## Summary: local LD both confounds and helps {.smaller}
 
@@ -360,10 +393,12 @@ $$
 Here, we assume that partner covariance is due to assortative mating, and we focus on the genetic consequences of that process.
 :::
 
+::: {.fragment}
 **Assortative mating (AM)** means that the **matching process itself** induces covariance between partners, rather than that covariance reflecting a shared cause. 
+:::
 
 
-::: {.callout-note}
+::: {.callout-note .fragment}
 ## Disassortative mating?
 Technically, **assortative mating can be negative:** ($\text{Cov}(y_m, y_p) < 0$). However, this is rare in human populations. We therefore focus on positive assortative mating. 
 
@@ -375,29 +410,34 @@ The consequences of negative assortative mating are generally the same, but with
 
 <br>
 
+::: {.fragment}
 **Ordinary family resemblance**: <br> Covariance starts in their **genetic values** (and other causes) and is carried forward into their phenotypes 
 
 ::: {.callout-note appearance="minimal"}
 Correlation flows from $g \to y$.
 :::
+:::
 
 <br>
 
+::: {.fragment}
 **Assortative mating**: <br>
-Covariance starts in their **phenotypes**, and is carried back into their genetic values.
+Covariance starts in their **phenotypes**, and is carried back into their genetic values (and other causes).
 
 ::: {.callout-note appearance="minimal"}
 Correlation flows from $y \to g$.
 :::
 
-
 Assortative mating therefore induces genetic similarity between partners.
+:::
+
+
 
 
 
 ## Predicted genetic value given phenotype
 To quantify the induced genetic similarity, we **start at the phenotype** and ask: <br>
-if we observe someone's phenotype $y$, what genetic value $g$ do we expect?
+*if we observe someone's phenotype $y$, what genetic value $g$ do we expect?*
 
 Assume centered variables and the simple additive model:
 
@@ -500,7 +540,7 @@ The $h^4$ appears on the covariance scale because the phenotype-to-genotype regr
 
 ## Direct versus indirect assortative mating {.smaller}
 
-The preceding (and following) derivations assume that partners match directly on the **focal phenotype** $y$. 
+The preceding (and following) equations assume that partners match directly on the **focal phenotype** $y$. 
 
 In reality, they may match on a related signal or bundle of traits $s$ that correlates with $y$. 
 
@@ -513,16 +553,18 @@ In reality, they may match on a related signal or bundle of traits $s$ that corr
 
 
 ::: {.callout-note}
-## Key point
+## The sorting factor
 The genotypic correlation between partners depends on **how strongly the genetic value for the focal phenotype correlates with $s$**. Indirect assortative mating can imply **more or less** genetic resemblance between partners than you would otherwise expect.
 
-In this lecture, we assume direct assortment where $s=y$, but note that assortment is indirect for many social traits (e.g., educational attainment).
+In this lecture, we assume direct assortment where $s=y$. However, note that assortment is indirect for many social traits (e.g., educational attainment).
 
 :::
 
+<!--
 ::: {.callout-tip}
 You can think of $s$ as a secondary phenotype $y_2$, where genetic similarity depends on the genetic correlation between $y$ and $y_2$, the heritability of $y_2$, and the phenotypic partner correlation for $y_2$. Gene-environment correlations complicate things somewhat, but the same logic applies.
 :::
+-->
 
 ## Genetic similarity spreads across loci
 
@@ -571,7 +613,8 @@ $$
 
 where $\mcol{x_j^{m}}$ and $\pcol{x_j^{p}}$ are the maternally and paternally transmitted alleles at SNP $j$, respectively. 
 
-After only one generation of assortment, the transmitted alleles are still independent **within** haplotypes (assuming no relevant local LD):
+::: {.fragment}
+Assuming no relevant local LD, the transmitted alleles are independent **within** haplotypes:
 
 $$
 \operatorname{Cov}(\mcol{x_j^{m}}, \mcol{x_k^{m}}) = 0,
@@ -579,16 +622,15 @@ $$
 \operatorname{Cov}(\pcol{x_j^{p}}, \pcol{x_k^{p}}) = 0
 \qquad \text{for } j \neq k
 $$
+:::
 
-However, the transmitted alleles are correlated **across** haplotypes, because the parental genomes are correlated: 
+::: {.fragment}
+However, because the parents had correlated genotypes, the transmitted alleles are correlated **across** haplotypes: 
 
 $$
-\text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}}) > 0
-\qquad
-\Rightarrow
-\qquad
 \text{Cov}(\mcol{x_j^{m}}, \pcol{x_k^{p}}) > 0 \small \text{ for trait-associated } j,k
 $$
+:::
 
 
 ## Genetic variance after one generation of AM
@@ -599,6 +641,7 @@ $$
 \text{Var}(\pcol{g_c^{p}}) = \sum_{j=1}^{M} \beta_j^2 \text{Var}(\pcol{x_j^{p}})
 $$
 
+::: {.fragment}
 However, because the transmitted alleles from either parent are correlated, the total variance of the genetic value includes a positive covariance term:
 
 $$
@@ -608,9 +651,9 @@ $$
 + \text{Var}(\pcol{g_c^{p}})
 + 2\text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}})
 $$
+:::
 
-
-::: {.callout-note}
+::: {.callout-note .fragment}
 ## Terminology: trans vs cis covariance
 Covariance **across** the maternal and paternal haplotypes is called **trans** covariance.
 
@@ -647,7 +690,7 @@ $$
 
 <br>
 
-::: {style="font-size: 0.8em;"}
+::: {style="font-size: 0.8em;" .fragment}
 | When | Where | Interpretation |
 |--|---|-----|
 | 1 generation | 	Across haplotypes (trans)  | Maternal and paternal contributions become aligned |
@@ -667,7 +710,7 @@ Genetic variance increases across generations to an equilibrium::
 #| cache: true
 #| fig-align: center
 #| fig-width: 6
-#| fig-height: 5
+#| fig-height: 4.5
 #| fig-cap: ""
 sg2_0 = 1
 VE = 1
@@ -733,7 +776,7 @@ ggplot(df_var, aes(x = generation, y = sg2)) +
 :::
 ::: {.column width="40%"}
 
-::: {.callout-important}
+::: {.callout-important .fragment}
 ## Heritability changes too
 Changes in genetic variance changes the ratio of genetic to phenotypic variance: 
 $$h_\infty^2 = \sigma_{g,\infty}^2 / (\sigma_{g,\infty}^2 + \sigma_{e}^2)$$
@@ -778,24 +821,25 @@ $$
 Assortative mating in earlier generations means that **trait-associated SNPs are not independent from each other**.
 :::
 
+<!--
 ## What changes with assortative mating? {.smaller}
 
 If assortative mating changes $\text{Cov}(x_j, x_k)$, then several things can change at once:
 
 ::: {style="font-size: 0.8em;"}
-- **GWAS marginal effects**: $\tilde{\beta}_j$ absorbs long-range tagged signal
-- **LDSC $h^2$**: the summary statistics and local LD scores no longer line up as cleanly as under random mating
-- **GREML $h^2$**: Session 1's $\sigma_g^2 \mathbf{G}$ model do not capture the AM-induced covariance
-- **Family resemblance**: relatives share the AM-induced covariance structure, so resemblance increases
-- **Cross-trait $r_g$**: score correlation can rise without more effect correlation, and long-range LD can inflate estimates.
+[- **GWAS marginal effects**: $\tilde{\beta}_j$ absorbs long-range tagged signal]{.fragment}<br>
+[- **LDSC $h^2$**: the summary statistics and local LD scores no longer line up as cleanly as under random mating]{.fragment}<br>
+[- **GREML $h^2$**: Session 1's $\sigma_g^2 \mathbf{G}$ model do not capture the AM-induced covariance]{.fragment}<br>
+[- **Family resemblance**: relatives share the AM-induced covariance structure, so resemblance increases]{.fragment}<br>
+[- **Cross-trait $r_g$**: score correlation can rise without more effect correlation, and long-range LD can inflate estimates.]{.fragment}<br>
 :::
+-->
 
 ## Consequence 1: Marginal associations are inflated {.smaller}
 
 
 ::: {.callout-note}
-## Reminder: the marginal association at SNP $j$ is
-
+## Reminder: the marginal association at locus $j$ is
 $$
 \begin{array}{r c c c c c c}
 \tilde{\beta}_j
@@ -803,36 +847,37 @@ $$
 \beta_j
 & + &
 \sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
-& + &
-\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
+& \color{grey}{+} &
+\color{grey}{\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}} \\
 & &
-\scriptstyle {\text{True Effect}}
+\scriptstyle {\text{Direct Effect}}
 & &
 \scriptstyle {\text{Linkage Disequilibrium}}
 & &
-\scriptstyle {\text{rGE}}
+\color{grey}{\scriptstyle {\text{rGE}}}
 \end{array}
 $$
-
 :::
 
 Again set the rGE term aside and focus on the LD component. The sum is typically dominated by nearby loci (local LD). Under assortative mating, some of those covariance terms involve **distant** causal variants.
 
-::: {.callout-important}
-## The upward inflation is *specific to causal loci* (and loci that tag causal loci through local LD).
+::: {.callout-important .fragment}
+## The upward inflation is *specific to causal loci*  [(and loci that tag causal loci through local LD)]{style="color: grey"}.
 
 For these loci, the marginal association at SNP $j$ partly reflects genome-wide covariance structure, not only local biology.
 :::
 
+::: {.fragment}
 Because assortative mating changes marginal associations estimated by GWAS, downstream methods using GWAS summary statistics are affected.
+:::
 
 
 ## Consequence 2: LDSC can overstate $h^2$ {.smaller}
 
-In Part 1, LDSC exploited that the expected $\chi^2$ statistic at SNP $j$ is proportional to heritability and its LD score, $\ell_j$:
+In Part 1, LDSC exploited that $E[\chi^2]$ at SNP $j$ is proportional to heritability and its LD score, $\ell_j$:
 
 $$
-E[\chi_j^2 \mid \ell_j] = 1 + \frac{N h^2}{M}\ell_j + c
+E[\chi_j^2 \mid \ell_j] = 1 + h^2 \ell_j \frac{N}{M} + c
 $$
 
 
@@ -848,18 +893,19 @@ Because the causal SNPs are in LD *with each other*, all of their marginal effec
 In Session 1, GREML used the genomic relatedness matrix $\mathbf{G}$ to capture genetic similarity among unrelated people.
 
 ::: {style="font-size: 0.8em;"}
-- $\mathbf{G}$ is built from **same-SNP, cross-person** similarity
-- Assortative mating mainly adds **long-range LD between different SNPs**
-- AM-induced extra genetic variance is not well captured by the GRM used by GREML
+[- $\mathbf{G}$ is built from **same-SNP, cross-person** similarity]{.fragment}<br>
+[- Assortative mating mainly adds **long-range LD between different SNPs**]{.fragment}<br>
+[- AM-induced extra genetic variance is not well captured by the GRM used by GREML]{.fragment}<br>
 :::
 
-
+::: {.fragment}
 GREML keeps fitting the Session 1 model $\sigma_g^2 \mathbf{G} + \sigma_e^2 \mathbf{I}$.
 
 Under assortative mating, this is the wrong model and estimates will be biased.
+:::
 
 
-::: {.callout-important}
+::: {.callout-important .fragment}
 - In realistic samples, GREML is generally **upwardly biased** under assortative mating
   - Unfortunately, the size of that bias can be hard to quantify and is highly dependent on sample size
 - As sample sizes increase, the estimate drifts toward the random-mating heritability, $h^2_0$
@@ -878,7 +924,7 @@ $$
 Family-based estimators typically assume $r_{g,d} = (1/2)^d$, but that is only true under random mating
 
 ::: {.callout-note}
-The exact bias is method dependent, but classic twin methods and midparent-offspring regression are **downwardly biased** under positive assortative mating.
+The exact bias is method dependent, but classic twin methods are typically **downwardly biased** under positive assortative mating.
 :::
 
 
@@ -898,15 +944,20 @@ If SNPs were i.i.d., these would be equal. Assortative mating can break this equ
 
 :::
 
-
+::: {.fragment}
 **Cross-trait assortative mating (xAM)** means that people sort across two traits, or on a bundle of traits related to both $y_1$ and $y_2$.
+:::
 
+::: {.fragment}
 Across generations, this **builds long-range LD between trait-increasing alleles across $y_1$ and $y_2$**.
+:::
 
-This can change the score correlation even when effect correlation is zero
+::: {.fragment}
+This can change the *score correlation* even when *effect correlation* is zero
+:::
 
-::: {.callout-important}
-Estimators of $r_g$ (e.g., LDSC) are biased under xAM.
+::: {.callout-important .fragment}
+## Estimators of $r_g$ (e.g., LDSC) can be biased under xAM.
 
 Notably, the resulting estimates do not correspond to either the *score correlation* or the *effect correlation*.
 :::
@@ -918,25 +969,27 @@ Notably, the resulting estimates do not correspond to either the *score correlat
 ::: {style="font-size: 0.8em;"}
 | Step | Main lesson |
 |--|-----|
-| AM induces genetic similarity | $\text{Cov}(y_m,y_p) > 0 \quad \Rightarrow \quad \text{Cov}(g_m,g_p) > 0$ |
-| Repeated AM | Long-range LD builds up over generations |
-| Population target | Heritability itself can change because long-range LD adds genetic variance |
-| GWAS / LDSC | Marginal associations absorb distant tagged signal, pushing summary-statistic $h^2$ upward |
-| GREML | In realistic sample sizes, heritability estimates are usually upwardly biased, but converges to random-mating heritability as sample size increases |
-| Relatives / family methods | Relatives become more genetically similar, so family-based estimators are affected too; the bias is method dependent |
-| Cross-trait AM | Score correlation can exceed effect correlation under xAM. Estimators of $r_g$ are biased |
+| **AM induces genetic similarity** | $\text{Cov}(y_m,y_p) > 0 \quad \Rightarrow \quad \text{Cov}(g_m,g_p) > 0$ |
+| **Repeated AM** | Long-range LD builds up over generations |
+| **Population target** | Heritability itself can change because long-range LD adds genetic variance |
+| **GWAS / LDSC** | Marginal associations absorb distant tagged signal, pushing summary-statistic $h^2$ upward |
+| **GREML** | In realistic sample sizes, heritability estimates are usually upwardly biased, but converges to random-mating heritability as sample size increases |
+| **Relatives / family methods** | Relatives become more genetically similar, so family-based estimators are affected too; the bias is method dependent |
+| **Cross-trait AM** | Score correlation can exceed effect correlation under xAM. Estimators of $r_g$ are biased |
 :::
 
 
-# Part 3: Gene-Environment Correlations {background-color="#2c3e50" style="color: white;"}
+# Part 3: <br> Gene-Environment Correlations {background-color="#2c3e50" style="color: white;"}
 
+<!--
 ## Same equation, now isolate the rGE term
 
 rGE means genes and environments co-vary.
+
 If $\mathrm{Cov}(x_j,e)\neq 0$, marginal SNP associations mix direct effects and rGE.
 
 ::: {.callout-note}
-## Reminder: the marginal association at SNP $j$ is
+## Reminder: the marginal association at locus $j$ is
 
 $$
 \begin{array}{r c c c c c c}
@@ -960,20 +1013,16 @@ $$
 
 In Part 1 and Part 2, we focused on the LD term.
 
-In Part 3, we keep that in the background and isolate the third term:
+In this part, we keep LD in the background and focus on the rGE term:
 
-$$
-\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)}.
-$$
-
-This is where gene-environment correlation enters the marginal SNP association.
+-->
 
 ## Where can $\text{Cov}(x_j,e)$ come from?
 ::: {style="font-size: 0.8em;"}
 | Source | Why genotype and environment become correlated |
 |--|----|
-| Indirect genetic effects | Related people's genotypes shape the focal person's environment |
 | Stratification / population structure | Allele frequencies and environments differ across groups |
+| Indirect genetic effects | Related people's genotypes shape the focal person's environment |
 | Residual confounding | Selection, ascertainment, or measurement structure |
 | Assortative mating | Can increase and even induce covariance between inherited alleles and family environments |
 :::
@@ -988,40 +1037,116 @@ Across many loci, this can aggregate into $\text{Cov}(g,e) \neq 0$.
 Crucially, **active and evocative gene-environment correlations are not confounding**. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. This is also important for how "direct" genetic effects are interpreted.
 :::
 
-## Why relatives' environmental effects induce $\mathrm{Cov}(g,e)$ {.smaller}
+## Stratification
 
-Write the phenotype as
-
-$$
-y_i = g_i + e_i,\qquad
-e_i = e_i^{I} + e_i^*,\qquad
-e_i^{I} = \sum_{k=1}^{M}\gamma_k x_{i\ell k}.
-$$
-
-Here $e_i^{I}$ is the part of the focal person's environment created by relatives.
-
-For a specific relative $\ell$, shared inheritance implies a same-locus correlation
-$\mathrm{Cov}(x_{ij},x_{i\ell j}) \neq 0$.
-Therefore
+Suppose allele frequency at locus $x_1$ differs across some strata $S \in {1,2}$:
 
 $$
-\mathrm{Cov}(x_{ij},e_i^{I})
+E[x_1 | S=1] \neq E[x_1 | S=2]
+$$
+
+Suppose further that the strata has an environmentally mediated effect on the phenotype:
+
+$$
+y_i = \sum_j^{M} \beta_j x_{ij} + e_i
+\quad
+\text{where}
+\quad
+e_i = \beta_S S_i + e_i^\prime  
+$$
+
+Under these assumptions, the genotype at locus $x_1$ will be indirectly correlated with the phenotype via the environment:
+
+$$
+\mathrm{Cov}(x_1,e)
 =
-\sum_{k=1}^{M}\gamma_k\,\mathrm{Cov}(x_{ij},x_{i\ell k})
-\neq 0.
+\mathrm{Cov}(x_1,\beta_S S)
 $$
 
-At minimum, the $k=j$ term contributes; with long-range covariance structure (for example from AM), some $k\neq j$ terms can also contribute.
 
-Aggregating over loci with $g_i = \sum_{j=1}^{M}\beta_j x_{ij}$:
+## Indirect genetic effects, SNPs
+
+Suppose that relatives $\ell$ (e.g., parents) environmentally influences the focal person's phenotype, and that this influence was heritable on behalf of the relatives:
 
 $$
-\mathrm{Cov}(g_i,e_i^{I})
+y_i = \sum_j^{M} \beta_j x_{ij} + e_i
+\quad\text{where}\quad
+e_i = e_i^{I} + e_i^\prime
+\quad\text{and}\quad
+e_i^{I} = \sum_\ell \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}
+$$
+
+Here $e_i^{I}$ is the part of the focal person's environment created by relatives. 
+
+If SNPs are i.i.d. and different relatives have independent effects, then the focal person's genotype will correlate with the environment, proportional to the genetic relatedness with relative $\ell$, $r_g^{\mathrm{i, \ell}}$:
+
+$$
+\mathrm{Cov}(x_{ij},e_i)
 =
-\sum_{j=1}^{M}\sum_{k=1}^{M}\beta_j\gamma_k\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
+\sum_{\ell} r_g^{\mathrm{i,\ell}} Var(\gamma_{k \ell} x_j)
 $$
 
-This is the direct route from relatives' environmental effects to nonzero $\mathrm{Cov}(g,e)$.
+::: {.callout-important appearance="simple"}
+Things get complicated because there may be multiple relatives (e.g., mother *and* father) affecting the focal person. <br> To simplify to a single relative, just remove $\sum_\ell$
+:::
+
+## Indirect genetic effects, genetic values
+
+Define the focal person's direct genetic value and the relative's environmental genetic value:
+
+$$
+g_i = \sum_{j=1}^{M}\beta_j x_{ij},
+\qquad
+g_{i\ell}^{E} = \sum_{j=1}^{M}\gamma_{\ell j} x_{i\ell j},
+\qquad
+e_i = \sum_{\ell} g_{i\ell}^{E} + e_i^*.
+$$
+
+Then
+
+$$
+\mathrm{Cov}(g_i,e_i)
+=
+\sum_{\ell}\mathrm{Cov}(g_i,g_{i\ell}^{E})
+\,+\,
+\mathrm{Cov}(g_i,e_i^*).
+$$
+
+Ignoring $\mathrm{Cov}(g_i,e_i^*)$ for intuition, each relative-specific term scales like
+
+$$
+\mathrm{Cov}(g_i,g_{i\ell}^{E})
+\propto
+r_{g}^{i,\ell}\,\rho_{\beta,\gamma_\ell},
+\qquad
+\rho_{\beta,\gamma_\ell}=\mathrm{Corr}(\beta_j,\gamma_{\ell j}).
+$$
+
+So even if many loci have $\mathrm{Cov}(x_{ij},e_i)\neq 0$, the aggregate $\mathrm{Cov}(g_i,e_i)$ depends on how aligned
+the direct-effect architecture $(\beta_j)$ is with the indirect/environmental architecture $(\gamma_{\ell j})$.
+
+::: {.callout-important}
+`SNP-level alignment` ($\mathrm{Cov}(x_j,e)$) is not enough by itself.  
+`Trait-level alignment` ($\mathrm{Cov}(g,e)$) is strongest when direct and indirect effect vectors are genetically correlated ($\rho_{\beta,\gamma}\neq 0$).
+:::
+
+
+## Indirect genetic effects + assortative mating
+**Assortative mating can severely increase gene-environment correlations**
+
+1. Assortative mating induces long-range LD, meaning locus $x_j$ may correlate with loci **across the *relatives*** genome, not just $x_{\ell j}$. 
+2. The genotypic correlation between the focal individual and their relatives can increase
+3. The effects of different relatives (e.g., mother and father) are likely to be correlated
+4. Assortative mating opens weird pathways. For example, maternally inherited alleles can be correlated with paternal environmental effects
+
+Aggregating over relatives and loci:
+
+$$
+\mathrm{Cov}(g_i,e_i)
+=
+\sum_\ell \sum_{j=1}^{M}\sum_{k=1}^{M}\beta_j\gamma_{ \ell}\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
+$$
+
 
 ## Consequence 1: marginal SNP associations include rGE
 
