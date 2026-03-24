@@ -683,8 +683,9 @@ This is a statistical formulation of the infinitesimal model, where we treat the
 
 ::: {.callout-note}
 ## Mixed model vs. SEM/twin tradition
-The mixed model and the twin/SEM model estimate the same variance components —  $\text{Var}(\boldsymbol{y}) = \sigma^2_g \mathbf{A} + \sigma^2_e \mathbf{I}$. But the mixed model formulation makes something else visible: we can **predict individual genetic values** $\hat{g}$ as a standard output. This is because the model retains the explicit linear structure $\boldsymbol{y} = \mathbf{W}\boldsymbol{\beta} + \mathbf{Z}\boldsymbol{g} + \boldsymbol{e}$, rather than specifying only the marginal covariance of $\boldsymbol{y}$.
+The twin/SEM approach groups individuals into mutually exclusive family types (MZ pairs, DZ pairs, …) and specifies a separate covariance model for each. The mixed model instead works directly with $\mathbf{A}$, so it handles any relationship in the pedigree simultaneously.
 :::
+
 
 ## Mixed model example {.smaller}
 
