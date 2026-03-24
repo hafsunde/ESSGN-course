@@ -972,7 +972,7 @@ Notably, the resulting estimates do not correspond to either the *score correlat
 | **AM induces genetic similarity** | $\text{Cov}(y_m,y_p) > 0 \quad \Rightarrow \quad \text{Cov}(g_m,g_p) > 0$ |
 | **Repeated AM** | Long-range LD builds up over generations |
 | **Population target** | Heritability itself can change because long-range LD adds genetic variance |
-| **GWAS / LDSC** | Marginal associations absorb distant tagged signal, pushing summary-statistic $h^2$ upward |
+| **GWAS / LDSC** | Marginal associations absorb distant tagged signal, pushing $\hat h_{\mathrm{LDSC}}^2$ upward |
 | **GREML** | In realistic sample sizes, heritability estimates are usually upwardly biased, but converges to random-mating heritability as sample size increases |
 | **Relatives / family methods** | Relatives become more genetically similar, so family-based estimators are affected too; the bias is method dependent |
 | **Cross-trait AM** | Score correlation can exceed effect correlation under xAM. Estimators of $r_g$ are biased |
@@ -1031,8 +1031,8 @@ Crucially, **active and evocative gene-environment correlations are not confound
 :::
 
 ::: {.callout-warning .fragment}
-**Caution:** `rGE` and `GxE` are not the same thing. <br> 
-`rGE` means genes and environments are correlated (for example, $\text{Cov}(g,e) \neq 0$), while `GxE` means genetic effects change across environments (an interaction).
+## Note: *rGE* and *GxE* are not the same thing
+**rGE** means genes and environments are correlated (for example, $\text{Cov}(x_j,e) \neq 0$), while **GxE** means genetic effects ($\beta_j$) varies across environments (an interaction).
 :::
 
 ## Where can $\text{Cov}(x_j,e)$ come from?
@@ -1060,7 +1060,7 @@ $$
 Suppose further that the strata has an environmentally mediated effect on the phenotype:
 
 $$
-y_i = \sum_j^{M} \beta_j x_{ij} + e_i
+y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
 \quad
 \text{where}
 \quad
@@ -1078,91 +1078,98 @@ $$
 
 ## Indirect genetic effects, SNP-level
 
-Suppose that relatives $\ell$ (e.g., parents) environmentally influences the focal person's phenotype, and that this influence was heritable on behalf of the relatives:
+Suppose that relatives $\ell$ (e.g., parents) environmentally influence the focal person's phenotype, and that this influence was heritable on behalf of the relatives:
 
 $$
-y_i = \sum_j^{M} \beta_j x_{ij} + e_i
+y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
 \quad\text{where}\quad
-e_i = e_i^{I} + e_i^\prime
+e_i = \sum_\ell e_{i \ell}^{R} + e_i^\prime
 \quad\text{and}\quad
-e_i^{I} = \sum_\ell \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}
+e_{i \ell}^{R} = \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}
 $$
 
-Here $e_i^{I}$ is the part of the focal person's environment created by relatives. 
+Here $e_{i \ell}^{R}$ is the part of the focal person's environment created by a specific relative $\ell$. 
 
-If SNPs are i.i.d. and different relatives have independent effects, then the focal person's genotype will correlate with the environment, proportional to the genetic relatedness with relative $\ell$, $r_g^{\mathrm{\ell}}$:
+If SNPs are i.i.d., then the correlation between the focal person's genotype and the environment created by relative $\ell$ will proportional to the genetic relatedness $r_g^{\mathrm{\ell}}$:
 
 $$
-\mathrm{Cov}(x_{ij},e_i)
+\mathrm{Cov}(x_{j},e_{\ell})
 =
-\sum_{\ell} r_g^{\mathrm{\ell}} Var(\gamma_{k \ell} x_j)
+\gamma_{k \ell} \text{Cov}(x_j, x_{j \ell})
+=
+r_g^{\mathrm{\ell}}\, \gamma_{k \ell} Var(x_j)
 $$
 
-::: {.callout-important appearance="simple"}
-Things get complicated because there may be multiple relatives (e.g., mother *and* father) affecting the focal person. <br> To simplify to a single relative, just remove $\sum_\ell$
+::: {.callout-caution appearance="simple"}
+Things can get complicated when there are multiple relatives (e.g., mother, father, *and* siblings) affecting the focal person, because their effects are typically not independent.
 :::
 
 ## Indirect genetic effects, trait-level
 
 Define the focal person's direct genetic value and the relative's environmental genetic value:
 
+
 ::: {style="font-size: 0.8em;"}
 $$
 g_i = \sum_{j=1}^{M}\beta_j x_{ij},
 \qquad
-g_{i\ell}^{I} = \sum_{j=1}^{M}\gamma_{\ell j} x_{i\ell j},
+g_{i\ell}^{R} = \sum_{j=1}^{M}\gamma_{\ell j} x_{i\ell j},
 \qquad
-\mathrm{Cov}(g_i,e_i)
+\mathrm{Cov}(g,e)
 =
-\sum_{\ell}\mathrm{Cov}(g_i,g_{i\ell}^{E}).
+\sum_{\ell}\mathrm{Cov}(g,g_{\ell}^{R}).
 $$
 :::
 
 ::: {.callout-tip appearance="minimal"}
-The environmental effects can be conceived as *extended phenotypes* on behalf of the relatives genes
+The environmental effects can be conceived as *extended phenotypes* on behalf of the relatives' genes
 :::
 
-Each relative-specific covariance term scales like
+If SNPs are i.i.d., then each relative-specific covariance term is:
 
-<!-- Write as rg* b*g *var(x_j) -->
 ::: {style="font-size: 0.8em;"}
 $$
-\mathrm{Cov}(g_i,g_{i\ell}^{I})
+\mathrm{Cov}(g,g_{\ell}^{R})
+=
+\sum_{j=1}^{M} \beta_j \gamma_j \text{Cov}(x_j, x_{j \ell})
+\quad
 \propto
+\quad
 r_{g}^{\ell}\,\rho_{\beta,\gamma_\ell}
-\quad \text{where} \quad
-\rho_{\beta,\gamma_\ell}=\mathrm{Corr}(\beta_j,\gamma_{\ell j}).
 $$
 :::
 
-So even if many loci have $\mathrm{Cov}(x_{ij},e_i)\neq 0$, the aggregate $\mathrm{Cov}(g_i,e_i)$ depends on how aligned the direct-effect architecture $(\beta_j)$ is with the indirect/environmental architecture $(\gamma_{\ell j})$.
+where $\rho_{\beta,\gamma_\ell}$ is the genetic correlation between direct and indirect genetic effects and $r_{g}^{\ell}$ is the genotypic correlation between the focal person and relative $\ell$. 
 
-::: {.callout-important appearance="simple"}
-If $\rho_{\beta, \gamma} = 0$, then $\text{Cov}(g,e) = 0$ even if $\text{Cov}(x_j,e) \ne 0$ 
+::: {.callout-important}
+## Key point: 
+Even if many loci have $\mathrm{Cov}(x_{j},e)\neq 0$, **the aggregate $\mathrm{Cov}(g,e)$ depends on the genetic correlation between direct $(\beta)$ and indirect $(\gamma_{\ell})$ effects**. If $\rho_{\beta, \gamma} = 0$ across relatives, then $\text{Cov}(g,e) = 0$ even if $\text{Cov}(x_j,e) \ne 0$ 
 :::
 
 
-## Indirect genetic effects + assortative mating
+
+## Indirect genetic effects + assortative mating?
 **Assortative mating can severely increase gene-environment correlations**
 
-1. [Assortative mating induces long-range LD, meaning locus $x_j$ may correlate with loci **across the *relatives*** genome, not just $x_{\ell j}$.]{.fragment}
+1. [Assortative mating induces long-range LD, meaning SNPs are not i.i.d.: <br>Locus $x_j$ may correlate with loci **across the *relatives'*** genome, not just $x_{\ell j}$.]{.fragment}
 2. [The genotypic correlation between the focal individual and their relatives can increase]{.fragment}
 3. [The effects of different relatives (e.g., mother and father) are likely to be correlated]{.fragment}
-4. [Assortative mating opens weird pathways. For example, maternally inherited alleles can be correlated with paternal environmental effects]{.fragment}
-5. [The genetic correlation between direct and indirect genetic effects may change.]{.fragment}
+4. [Assortative mating opens weird pathways. <br>For example, maternally inherited alleles can be correlated with paternal environmental effects]{.fragment}
+5. [The genetic (score) correlation between direct and indirect genetic effects may change.]{.fragment}
 
-::: {.fragment}
-<details>
-<summary>Show useless equation</summary>
 
 Aggregating over relatives and loci:
 $$
-\mathrm{Cov}(g_i,e_i)
+\mathrm{Cov}(g,e)
 =
-\sum_\ell \sum_{j=1}^{M}\sum_{k=1}^{M}\beta_j\gamma_{ \ell}\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
+\sum_\ell \sum_{j=1}^{M}\sum_{k=1}^{M}\beta_j\gamma_{ \ell}\,\mathrm{Cov}(x_{j},x_{\ell k}).
 $$
-</details>
-:::
+
+
+
+
+## Why should we care? {.huge background-color="#5b0f0f" color="white" .center}
+
 
 ## Consequence 1: <br> Marginal associations include rGE
 
@@ -1194,7 +1201,7 @@ If $\mathrm{Cov}(x_j,e)\neq 0$, the marginal SNP association absorbs rGE and is 
 This consequence happens even if $\text{Cov}(g,e)=0$
 
 ::: {.callout-important .fragment}
-Just like under assortative mating (Part 2, Consequence 1), once GWAS marginal associations are affected, downstream analyses that rely on GWAS summary statistics (e.g., LDSC) are affected too.
+Just like under assortative mating, once GWAS marginal associations are affected, downstream analyses that rely on GWAS summary statistics (e.g., LDSC) are affected too.
 :::
 
 ## Consequence 2: $\text{Cov}(g,y)$ is affected
@@ -1209,9 +1216,9 @@ y = g + e
 \text{Var}(g) + \text{Cov}(g,e)
 $$
 
-So with rGE, $\text{Cov}(g,y)$ no longer equals $\text{Var}(g)$.
+With rGE, $\text{Cov}(g,y)$ no longer equals $\text{Var}(g)$.
 
-::: {.callout-important}
+::: {.callout-important .fragment}
 ## This matters for polygenic scores 
 Even with a **perfect** score, where $PGS_i = g_i$, regressing $y_i$ on $PGS_i$ still gives
 
@@ -1223,9 +1230,9 @@ $$
 1 + \frac{\text{Cov}(g,e)}{\text{Var}(g)}.
 $$
 
-If $\text{Cov}(g,e)\neq 0$, the *true* genetic value slope is not a pure genetic signal; it also reflects environmentally correlated differences.
+If $\text{Cov}(g,e)\neq 0$, the slope for the *true* genetic value is not a pure genetic signal. It also reflects environmentally correlated differences.
 
-Polygenic scores can be biased, in part, **because the true genetic value is environmentally confounded**
+Polygenic scores can tag environmental effects **even without biased weights**, because the true genetic value is also tagging environmental effects
 :::
 
 ## Consequence 3: <br> Variance decomposition becomes awkward
@@ -1235,19 +1242,23 @@ $$
 \text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)
 $$
 
+::: {.fragment}
 The sign of the covariance matters:
 
 ::: {style="font-size: 0.8em;"}
 | Sign of $\text{Cov}(g,e)$ | Interpretation | Related concept |
 |-|---|--|
-| **Positive** | Genes and environments tend to push in the same direction | Matthew effects |
-| **Negative** | Genes and environments tend to push in opposite directions | Compensatory effects |
+| **Positive** | Genes and environments tend to push in **the same direction** | Matthew effects |
+| **Negative** | Genes and environments tend to push in **opposite directions** | Compensatory effects |
+:::
 :::
 
-::: {.callout-important}
-If rGE is negative enough, the environment can work against genetic differences so strongly that $\text{Var}(y)<\text{Var}(g)$.
+::: {.callout-important .fragment}
+## $\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)$ is a **statistical identity**, not a clean causal partition of phenotypic variation.
 
-$\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)$ is a **statistical identity**, not a clean causal partition of phenotypic variation.
+If we suppose $\text{Var}(g) = Var(e) = 1$ and $\text{Cov}(g,e) = -0.30$, then $\text{Var}(y) = 1.4$ and $h^2 = \text{Var}(g)/\text{Var}(y) = 0.72$. Does it make sense to say that heritability is 72% in this example? How much variance does environment explain? 
+
+In theory, if rGE is negative enough, the environment can work against genetic differences so strongly that $\text{Var}(g) > \text{Var}(y)$. 
 :::
 
 ## Summary: gene-environment correlations
@@ -1261,73 +1272,60 @@ $\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)$ is a **statis
 | **Trait level** | Many nonzero $\mathrm{Cov}(x_j,e)$ terms do not guarantee $\mathrm{Cov}(g,e)\neq 0$; the aggregate depends on alignment between direct and indirect effect architectures |
 | **Assortative mating** | AM can strengthen rGE by increasing focal-relative genetic correlations and opening extra paths between inherited alleles and family environments |
 | **Prediction / PGS** | Even a perfect score tracks $\mathrm{Cov}(g,y)=\mathrm{Var}(g)+\mathrm{Cov}(g,e)$, so its slope can contain environmentally correlated signal |
-| **Variance decomposition** | $\mathrm{Var}(y)=\mathrm{Var}(g)+\mathrm{Var}(e)+2\mathrm{Cov}(g,e)$ is an identity, not a clean causal partition; with negative rGE, $\mathrm{Var}(y)$ can even be smaller than $\mathrm{Var}(g)$ |
+| **Variance decomposition** | $\mathrm{Var}(y)=\mathrm{Var}(g)+\mathrm{Var}(e)+2\mathrm{Cov}(g,e)$ is an identity, not a clean causal partition; *Especially with negative rGE* |
 ::::
 
 # Part 4: What to do? Use families! {background-color="#2c3e50" style="color: white;"}
 
-## Why bring up families at all?
+## The overarching problem (and solution)
 
-The key family-design idea from Session 1 is **random segregation variance**.
-
-At SNP $j$, the offspring genotype can be written as
-
-$$
-x_{jc} = \frac{1}{2}x_{jp} + \frac{1}{2}x_{jm} + (\epsilon_{jp} + \epsilon_{jm})
-$$
-
-so its variance contains a part that is predictable from the parents and a part that comes from the random segregation draw:
-
-$$
-\text{Var}(x_{jc})
-= \text{predictable from parents}
-+ \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\text{random segregation variance}}
-$$
-
-::: {.callout-note}
-Family designs exploit this last term. Across siblings, the parents are the same, but the realized segregation draw is not.
+::: {.callout-tip appearance="minimal"}
+**The unifying theme:** Different sources of confounding ultimately comes down to the same thing: **unmodelled correlation structure**.
 :::
 
-## Why families help
-
-Within a family, many background features are held much more constant:
-
-- the parents are the same
-- ancestry background is much more similar
-- much of the rearing environment is shared
-
-What still differs is the **realized segregation draw**: which alleles were actually transmitted within the family.
-
-::: {.callout-note}
-So family-based designs change the comparison: instead of asking why people from different families differ, they compare relatives who share much more of their ancestry and family background.
+::: {.fragment}
+In theory, this correlation structure could be accounted for by adding enough covariates. <br> 
+In reality, this is not feasable, even for observed confounders like other SNPs. <br>**Instead, we must deal with the correlation structure by design.** 
 :::
+
+::: {.fragment}
+One key idea is to isolate **random segregation variance**.
+:::
+
+::: {.fragment}
+Remember, the offspring genotype at SNP $j$ can be written as
+
+$$
+x_{jc} = \frac{1}{2}x_{jp} + \frac{1}{2}x_{jm} + \color{red}{(\epsilon_{jp} + \epsilon_{jm})}
+$$
+:::
+
+::: {.callout-tip .fragment}
+## Key idea:
+By conditioning on parents' or siblings' genotype, you remove the variance that is predictable from the parents, and are left with only the random segregeation variance. <br>This variance is indepndent from long-range LD and environmental effects.
+:::
+
 
 ## Where does the problem live?
 
-Part 3 distinguished between problems in **estimated SNP effects** and problems in **genotypes / genetic values / covariance structure**.
+We must distinguish problems in **marginal SNP effects** and problems in **realized genotypes and true genetic values**.
 
+:::: {style="font-size: 0.8em;"}
 | If the problem is in... | Family-based response |
-|---|---|
-| **$\tilde{\beta}_j$** | If the marginal SNP coefficient is contaminated, condition on **parental genotypes** in GWAS so the estimate moves closer to the direct effect $\beta_j$ |
-| **$x_j$, $g$, or a PGS** | Cleaner SNP weights are not enough if the inherited genotype or true genetic value is itself correlated with family background. Then we need to condition on **parental genetic values**, or a parental PGS proxy |
-| **Trait-level covariance** | If the problem is that direct and indirect pathways are mixed together in $\mathrm{Cov}(g,y)$ or variance components, use a **family mixed model** such as M-GCTA |
-
-## What families help with, and what they do not
-
-| High-level takeaway | Why |
-|---|---|
-| **They help with between-family confounding** | Comparing relatives reduces differences in ancestry background, parental background, and some AM-related between-family structure |
-| **They do not make LD disappear** | Relatives still inherit correlated variants, including long-range structure created by assortative mating |
-| **They do not remove all indirect effects or rGE** | Relatives can still shape each other's environments, and non-shared environments still differ |
-| **They are less precise** | Within-family contrasts use less variation than population GWAS |
+|--|------|
+| **$\tilde{\beta}_j$** | Condition on parental genotypes **in the GWAS** so the estimate moves closer to the direct effect $\beta_j$ |
+| **$x_j$, $g$, or a PGS** | If the inherited genotype or true genetic value is itself correlated with family background, then cleaner SNP weights does not solve our issues. The solution depends on the estimand, but to attain direct genetic effects, we would need to condition on **parental genetic values** (or parental PGSs) |
+| **Trait-level covariance** | If the problem is that direct and indirect pathways are mixed together in $\mathrm{Cov}(g,y)$, use a **family mixed model** such as M-GCTA to explicitly model direct and indirect genetic variance, *as well as their covariance* |
+::::
 
 ::: {.callout-important}
-This is why a **perfect polygenic score is not automatically unconfounded**. Some problems live in the SNP weights, but others live in the realized genotype, the true genetic value, and the family-level correlation structure.
+## Reminder
+A perfect polygenic score ($PGS_i = g$) is not automatically unconfounded, because the true genetic value could be correlated with environmental effects.
 :::
 
-## Mixed-model family designs
 
-Sibling comparisons are one kind of family design. Another is to use relatives inside a **mixed model** to separate direct and indirect genetic pathways.
+## Mixed-model family designs
+One can use use relatives inside a **mixed model** to separate direct and indirect genetic pathways.
 
 ## Intuition: ordinary GREML vs M-GCTA
 
@@ -1337,10 +1335,12 @@ Ordinary GREML asks:
 
 M-GCTA asks:
 
-- Are focal people whose **mothers** are slightly more genetically similar also slightly more phenotypically similar?
+- Additionally, are focal people whose **mothers** are slightly more genetically similar also slightly more phenotypically similar?
 
 ::: {.callout-note}
 In both cases the logic is covariance matching. If a source of genetic similarity creates phenotype similarity, give the mixed model the corresponding covariance matrix.
+
+The logic can also easily be extended to, say, Trios (Trio-GCTA)
 :::
 
 ## The M-GCTA model
@@ -1365,31 +1365,11 @@ $$
 The logic is exactly the same as ordinary GREML: if a pathway creates phenotype covariance, give the model the covariance matrix for that pathway. The only difference is that we now include covariance from a **relative's** genotype as well as the focal person's own genotype.
 :::
 
-In today's practical, the focal phenotype is the offspring and the relevant relative is the mother. So M-GCTA extends the direct-only GREML model by adding:
+In this session's practical, the focal phenotype is the offspring and the relevant relative is the mother. So M-GCTA extends the direct-only GREML model by adding:
 
 - a focal direct component based on $\mathbf{G}_{F} = \mathbf{G}_{oo}$
 - a maternal indirect component based on $\mathbf{G}_{R} = \mathbf{G}_{mm}$
 - a covariance component for overlap between direct and maternal effects
-
-::: {.callout-important}
-Following Eilertsen et al. (2021), this logic is not inherently tied to an offspring phenotype. The framework is defined relative to a **focal phenotype** and can be applied to phenotypes measured in different family members.
-:::
-
-::: {.callout-important}
-This is why M-GCTA belongs in the family-design toolbox: it uses known family roles and multiple related genomes to ask whether a relative's genotype shapes the focal outcome through the environment, rather than forcing all genotype-related covariance into the focal person's direct effect.
-:::
-
-## Bridge to practical
-
-Families are not one method; they are a **toolbox**:
-
-- if the problem is in **$\tilde{\beta}_j$**, condition on parental genotypes
-- if the problem is in **$x_j$, $g$, or a PGS**, condition on parental genetic values
-- if the problem is in **trait-level covariance decomposition**, use a family mixed model such as M-GCTA
-
-::: {.callout-note}
-Today's practical focuses on the **trait-level** example: M-GCTA with simulated trios.
-:::
 
 # Part 5: Practical {background-color="#2c3e50" style="color: white;"}
 
