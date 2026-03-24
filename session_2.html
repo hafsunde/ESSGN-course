@@ -2272,6 +2272,44 @@ In this part, we keep LD in the background and focus on the rGE term:
 
 -->
 </section>
+<section id="what-is-rge" class="slide level2">
+<h2>What is rGE</h2>
+<p>Gene-environment correlation (rGE) means that genetic differences and environmental differences are statistically correlated, rather than varying independently.</p>
+<p>rGE can be on the SNP-level (<span class="math inline">\(\text{Cov}(x_j,e)\)</span>) and on the trait-level (<span class="math inline">\(\text{Cov}(g,e)\)</span>)</p>
+<div class="fragment">
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Only passive gene-environment correlation is confounding</strong></p>
+</div>
+<div class="callout-content">
+<ul>
+<li><strong>Passive <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because of shared causes (e.g., parents)</li>
+<li><strong>Active / Evocative <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods) Crucially, <strong>active and evocative gene-environment correlations are not confounding</strong>. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. This is also important for how “direct” genetic effects are interpreted.</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="fragment">
+<div class="callout callout-warning callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Warning</strong></p>
+</div>
+<div class="callout-content">
+<p><strong>Caution:</strong> <code>rGE</code> and <code>GxE</code> are not the same thing. <br> <code>rGE</code> means genes and environments are correlated (for example, <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>), while <code>GxE</code> means genetic effects change across environments (an interaction).</p>
+</div>
+</div>
+</div>
+</div>
+</section>
 <section id="where-can-textcovx_je-come-from" class="slide level2">
 <h2>Where can <span class="math inline">\(\text{Cov}(x_j,e)\)</span> come from?</h2>
 <div style="font-size: 0.8em;">
@@ -2306,23 +2344,8 @@ In this part, we keep LD in the background and focus on the rGE term:
 </tbody>
 </table>
 </div>
-<p>Different mechanisms can produce the <strong>same statistical symptom</strong>: <span class="math inline">\(\text{Cov}(x_j,e) \neq 0\)</span>. Across many loci, this can aggregate into <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>.</p>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Only passive gene-environment correlation is confounding</strong></p>
-</div>
-<div class="callout-content">
-<ul>
-<li><strong>Passive <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because of shared causes (e.g., parents)</li>
-<li><strong>Active / Evocative <span class="math inline">\(r_{ge}\)</span></strong>: Genotype and environment are correlated because the focal person selects, creates, or evokes their environment based on their genotype (e.g., peers, partners, neighborhoods) Crucially, <strong>active and evocative gene-environment correlations are not confounding</strong>. They are part of the causal pathway from genotype to phenotype, and are therefore mediators of the genetic effect. This is also important for how “direct” genetic effects are interpreted.</li>
-</ul>
-</div>
-</div>
-</div>
+<p>Different mechanisms can produce the <strong>same statistical symptom</strong>: <span class="math inline">\(\text{Cov}(x_j,e) \neq 0\)</span>.</p>
+<p>Across many loci, this can aggregate into <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>.</p>
 </section>
 <section id="stratification" class="slide level2">
 <h2>Stratification</h2>
@@ -2345,8 +2368,8 @@ e_i = \beta_S S_i + e_i^\prime
 \mathrm{Cov}(x_1,\beta_S S)
 \]</span></p>
 </section>
-<section id="indirect-genetic-effects-snps" class="slide level2">
-<h2>Indirect genetic effects, SNPs</h2>
+<section id="indirect-genetic-effects-snp-level" class="slide level2">
+<h2>Indirect genetic effects, SNP-level</h2>
 <p>Suppose that relatives <span class="math inline">\(\ell\)</span> (e.g., parents) environmentally influences the focal person’s phenotype, and that this influence was heritable on behalf of the relatives:</p>
 <p><span class="math display">\[
 y_i = \sum_j^{M} \beta_j x_{ij} + e_i
@@ -2356,11 +2379,11 @@ e_i = e_i^{I} + e_i^\prime
 e_i^{I} = \sum_\ell \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}
 \]</span></p>
 <p>Here <span class="math inline">\(e_i^{I}\)</span> is the part of the focal person’s environment created by relatives.</p>
-<p>If SNPs are i.i.d. and different relatives have independent effects, then the focal person’s genotype will correlate with the environment, proportional to the genetic relatedness with relative <span class="math inline">\(\ell\)</span>, <span class="math inline">\(r_g^{\mathrm{i, \ell}}\)</span>:</p>
+<p>If SNPs are i.i.d. and different relatives have independent effects, then the focal person’s genotype will correlate with the environment, proportional to the genetic relatedness with relative <span class="math inline">\(\ell\)</span>, <span class="math inline">\(r_g^{\mathrm{\ell}}\)</span>:</p>
 <p><span class="math display">\[
 \mathrm{Cov}(x_{ij},e_i)
 =
-\sum_{\ell} r_g^{\mathrm{i,\ell}} Var(\gamma_{k \ell} x_j)
+\sum_{\ell} r_g^{\mathrm{\ell}} Var(\gamma_{k \ell} x_j)
 \]</span></p>
 <div class="callout callout-important callout-style-simple">
 <div class="callout-body">
@@ -2373,33 +2396,107 @@ e_i^{I} = \sum_\ell \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}
 </div>
 </div>
 </section>
-<section id="indirect-genetic-effects-genetic-values" class="slide level2">
-<h2>Indirect genetic effects, genetic values</h2>
+<section id="indirect-genetic-effects-trait-level" class="slide level2">
+<h2>Indirect genetic effects, trait-level</h2>
 <p>Define the focal person’s direct genetic value and the relative’s environmental genetic value:</p>
+<div style="font-size: 0.8em;">
 <p><span class="math display">\[
 g_i = \sum_{j=1}^{M}\beta_j x_{ij},
 \qquad
-g_{i\ell}^{E} = \sum_{j=1}^{M}\gamma_{\ell j} x_{i\ell j},
+g_{i\ell}^{I} = \sum_{j=1}^{M}\gamma_{\ell j} x_{i\ell j},
 \qquad
-e_i = \sum_{\ell} g_{i\ell}^{E} + e_i^*.
-\]</span></p>
-<p>Then</p>
-<p><span class="math display">\[
 \mathrm{Cov}(g_i,e_i)
 =
-\sum_{\ell}\mathrm{Cov}(g_i,g_{i\ell}^{E})
-\,+\,
-\mathrm{Cov}(g_i,e_i^*).
+\sum_{\ell}\mathrm{Cov}(g_i,g_{i\ell}^{E}).
 \]</span></p>
-<p>Ignoring <span class="math inline">\(\mathrm{Cov}(g_i,e_i^*)\)</span> for intuition, each relative-specific term scales like</p>
+</div>
+<div class="callout callout-tip no-icon callout-style-simple">
+<div class="callout-body">
+<div class="callout-content">
+<p>The environmental effects can be conceived as <em>extended phenotypes</em> on behalf of the relatives genes</p>
+</div>
+</div>
+</div>
+<p>Each relative-specific covariance term scales like</p>
+<div style="font-size: 0.8em;">
 <p><span class="math display">\[
-\mathrm{Cov}(g_i,g_{i\ell}^{E})
+\mathrm{Cov}(g_i,g_{i\ell}^{I})
 \propto
-r_{g}^{i,\ell}\,\rho_{\beta,\gamma_\ell},
-\qquad
+r_{g}^{\ell}\,\rho_{\beta,\gamma_\ell}
+\quad \text{where} \quad
 \rho_{\beta,\gamma_\ell}=\mathrm{Corr}(\beta_j,\gamma_{\ell j}).
 \]</span></p>
+</div>
 <p>So even if many loci have <span class="math inline">\(\mathrm{Cov}(x_{ij},e_i)\neq 0\)</span>, the aggregate <span class="math inline">\(\mathrm{Cov}(g_i,e_i)\)</span> depends on how aligned the direct-effect architecture <span class="math inline">\((\beta_j)\)</span> is with the indirect/environmental architecture <span class="math inline">\((\gamma_{\ell j})\)</span>.</p>
+<div class="callout callout-important callout-style-simple">
+<div class="callout-body">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-content">
+<p>If <span class="math inline">\(\rho_{\beta, \gamma} = 0\)</span>, then <span class="math inline">\(\text{Cov}(g,e) = 0\)</span> even if <span class="math inline">\(\text{Cov}(x_j,e) \ne 0\)</span></p>
+</div>
+</div>
+</div>
+</section>
+<section id="indirect-genetic-effects-assortative-mating" class="slide level2 scrollable">
+<h2>Indirect genetic effects + assortative mating</h2>
+<p><strong>Assortative mating can severely increase gene-environment correlations</strong></p>
+<ol type="1">
+<li><span class="fragment">Assortative mating induces long-range LD, meaning locus <span class="math inline">\(x_j\)</span> may correlate with loci <strong>across the <em>relatives</em></strong> genome, not just <span class="math inline">\(x_{\ell j}\)</span>.</span></li>
+<li><span class="fragment">The genotypic correlation between the focal individual and their relatives can increase</span></li>
+<li><span class="fragment">The effects of different relatives (e.g., mother and father) are likely to be correlated</span></li>
+<li><span class="fragment">Assortative mating opens weird pathways. For example, maternally inherited alleles can be correlated with paternal environmental effects</span></li>
+<li><span class="fragment">The genetic correlation between direct and indirect genetic effects may change.</span></li>
+</ol>
+<div class="fragment">
+<details>
+<summary>
+Show useless equation
+</summary>
+Aggregating over relatives and loci: <span class="math display">\[
+\mathrm{Cov}(g_i,e_i)
+=
+\sum_\ell \sum_{j=1}^{M}\sum_{k=1}^{M}\beta_j\gamma_{ \ell}\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
+\]</span>
+</details>
+</div>
+</section>
+<section id="consequence-1-marginal-associations-include-rge" class="slide level2">
+<h2>Consequence 1: <br> Marginal associations include rGE</h2>
+<div class="callout callout-note callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>Reminder: the marginal association at locus <span class="math inline">\(j\)</span> is</strong></p>
+</div>
+<div class="callout-content">
+<p><span class="math display">\[
+\begin{array}{r c c c c c c}
+\tilde{\beta}_j
+&amp; = &amp;
+\beta_j
+&amp; + &amp;
+\color{grey}{\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}}
+&amp; + &amp;
+\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
+&amp; &amp;
+\scriptstyle {\text{Direct Effect}}
+&amp; &amp;
+\color{grey}{\scriptstyle {\text{Linkage Disequilibrium}}}
+&amp; &amp;
+\scriptstyle {\text{rGE}}
+\end{array}
+\]</span></p>
+</div>
+</div>
+</div>
+<p>If <span class="math inline">\(\mathrm{Cov}(x_j,e)\neq 0\)</span>, the marginal SNP association absorbs rGE and is no longer a pure direct effect.</p>
+<p><br></p>
+<p>This consequence happens even if <span class="math inline">\(\text{Cov}(g,e)=0\)</span></p>
+<div class="fragment">
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2409,51 +2506,14 @@ r_{g}^{i,\ell}\,\rho_{\beta,\gamma_\ell},
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p><code>SNP-level alignment</code> (<span class="math inline">\(\mathrm{Cov}(x_j,e)\)</span>) is not enough by itself.<br>
-<code>Trait-level alignment</code> (<span class="math inline">\(\mathrm{Cov}(g,e)\)</span>) is strongest when direct and indirect effect vectors are genetically correlated (<span class="math inline">\(\rho_{\beta,\gamma}\neq 0\)</span>).</p>
+<p>Just like under assortative mating (Part 2, Consequence 1), once GWAS marginal associations are affected, downstream analyses that rely on GWAS summary statistics (e.g., LDSC) are affected too.</p>
+</div>
 </div>
 </div>
 </div>
 </section>
-<section id="indirect-genetic-effects-assortative-mating" class="slide level2 scrollable">
-<h2>Indirect genetic effects + assortative mating</h2>
-<p><strong>Assortative mating can severely increase gene-environment correlations</strong></p>
-<ol type="1">
-<li>Assortative mating induces long-range LD, meaning locus <span class="math inline">\(x_j\)</span> may correlate with loci <strong>across the <em>relatives</em></strong> genome, not just <span class="math inline">\(x_{\ell j}\)</span>.</li>
-<li>The genotypic correlation between the focal individual and their relatives can increase</li>
-<li>The effects of different relatives (e.g., mother and father) are likely to be correlated</li>
-<li>Assortative mating opens weird pathways. For example, maternally inherited alleles can be correlated with paternal environmental effects</li>
-</ol>
-<p>Aggregating over relatives and loci:</p>
-<p><span class="math display">\[
-\mathrm{Cov}(g_i,e_i)
-=
-\sum_\ell \sum_{j=1}^{M}\sum_{k=1}^{M}\beta_j\gamma_{ \ell}\,\mathrm{Cov}(x_{ij},x_{i\ell k}).
-\]</span></p>
-</section>
-<section id="consequence-1-marginal-snp-associations-include-rge" class="slide level2">
-<h2>Consequence 1: marginal SNP associations include rGE</h2>
-<p><span class="math display">\[
-\begin{array}{r c c c c c c}
-\tilde{\beta}_j
-&amp; = &amp;
-\beta_j
-&amp; + &amp;
-\sum_{k \ne j}^{M} \beta_k \frac{\text{Cov}(x_j, x_k)}{\text{Var}(x_j)}
-&amp; + &amp;
-\frac{\text{Cov}(x_j, e)}{\text{Var}(x_j)} \\
-&amp; &amp;
-\scriptstyle {\text{True Effect}}
-&amp; &amp;
-\scriptstyle {\text{Linkage Disequilibrium}}
-&amp; &amp;
-\scriptstyle {\text{rGE}}
-\end{array}
-\]</span></p>
-<p>If <span class="math inline">\(\mathrm{Cov}(x_j,e)\neq 0\)</span>, the marginal SNP association absorbs rGE and is no longer a pure direct effect.</p>
-</section>
-<section id="consequence-2-textcovgy-is-also-affected" class="slide level2">
-<h2>Consequence 2: <span class="math inline">\(\text{Cov}(g,y)\)</span> is also affected</h2>
+<section id="consequence-2-textcovgy-is-affected" class="slide level2">
+<h2>Consequence 2: <span class="math inline">\(\text{Cov}(g,y)\)</span> is affected</h2>
 <p><span class="math display">\[
 y = g + e
 \qquad \Longrightarrow \qquad
@@ -2464,40 +2524,64 @@ y = g + e
 \text{Var}(g) + \text{Cov}(g,e)
 \]</span></p>
 <p>So with rGE, <span class="math inline">\(\text{Cov}(g,y)\)</span> no longer equals <span class="math inline">\(\text{Var}(g)\)</span>.</p>
+<div class="callout callout-important callout-titled callout-style-default">
+<div class="callout-body">
+<div class="callout-title">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<p><strong>This matters for polygenic scores</strong></p>
+</div>
+<div class="callout-content">
+<p>Even with a <strong>perfect</strong> score, where <span class="math inline">\(PGS_i = g_i\)</span>, regressing <span class="math inline">\(y_i\)</span> on <span class="math inline">\(PGS_i\)</span> still gives</p>
+<p><span class="math display">\[
+\frac{\text{Cov}(PGS,y)}{\text{Var}(PGS)}
+=
+\frac{\text{Cov}(g,y)}{\text{Var}(g)}
+=
+1 + \frac{\text{Cov}(g,e)}{\text{Var}(g)}.
+\]</span></p>
+<p>If <span class="math inline">\(\text{Cov}(g,e)\neq 0\)</span>, the <em>true</em> genetic value slope is not a pure genetic signal; it also reflects environmentally correlated differences.</p>
+<p>Polygenic scores can be biased, in part, <strong>because the true genetic value is environmentally confounded</strong></p>
+</div>
+</div>
+</div>
 </section>
 <section id="consequence-3-variance-decomposition-becomes-awkward" class="slide level2">
-<h2>Consequence 3: variance decomposition becomes awkward</h2>
-<p>Keep these quantities conceptually separate:</p>
-<p><span class="math display">\[
-\text{Var}(g) \qquad \text{Var}(e) \qquad \text{Cov}(g,e) \qquad \text{Var}(y)
-\]</span></p>
-<p>With <span class="math inline">\(y=g+e\)</span>:</p>
+<h2>Consequence 3: <br> Variance decomposition becomes awkward</h2>
+<p>If <span class="math inline">\(\text{Cov}(g,e)\neq 0\)</span>, the gene-environment correlation has its own variance component</p>
 <p><span class="math display">\[
 \text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)
 \]</span></p>
 <p>The sign of the covariance matters:</p>
+<div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
+<col style="width: 16%">
 <col style="width: 50%">
-<col style="width: 50%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
 <th>Sign of <span class="math inline">\(\text{Cov}(g,e)\)</span></th>
 <th>Interpretation</th>
+<th>Related concept</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Positive</td>
-<td>Genetically higher-valued individuals tend to experience environments that push in the same direction</td>
+<td><strong>Positive</strong></td>
+<td>Genes and environments tend to push in the same direction</td>
+<td>Matthew effects</td>
 </tr>
 <tr class="even">
-<td>Negative</td>
-<td>Genetically higher-valued individuals tend to experience environments that push in the opposite direction</td>
+<td><strong>Negative</strong></td>
+<td>Genes and environments tend to push in opposite directions</td>
+<td>Compensatory effects</td>
 </tr>
 </tbody>
 </table>
+</div>
 <div class="callout callout-important callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2507,104 +2591,62 @@ y = g + e
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
+<p>If rGE is negative enough, the environment can work against genetic differences so strongly that <span class="math inline">\(\text{Var}(y)&lt;\text{Var}(g)\)</span>.</p>
 <p><span class="math inline">\(\text{Var}(y) = \text{Var}(g) + \text{Var}(e) + 2\text{Cov}(g,e)\)</span> is a <strong>statistical identity</strong>, not a clean causal partition of phenotypic variation.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="mini-example-negative-rge" class="slide level2">
-<h2>Mini example: negative rGE</h2>
-<p>Take:</p>
-<p><span class="math display">\[
-\text{Var}(g)=0.40,\quad
-\text{Var}(e)=0.80,\quad
-\text{Cov}(g,e)=-0.10.
-\]</span></p>
-<p>This can happen when environments partially compensate for genetic liability.</p>
-<p>Then:</p>
-<p><span class="math display">\[
-\text{Var}(y)=0.40+0.80+2(-0.10)=1.00
-\]</span></p>
-<p><span class="math display">\[
-\text{Cov}(g,y)=\text{Var}(g)+\text{Cov}(g,e)=0.40-0.10=0.30
-\]</span></p>
-<p>Without rGE (same <span class="math inline">\(\text{Var}(g)\)</span> and <span class="math inline">\(\text{Var}(e)\)</span>), we would instead have:</p>
-<p><span class="math display">\[
-\text{Var}(y)=1.20,\qquad
-\text{Cov}(g,y)=0.40.
-\]</span></p>
-<p>Negative rGE therefore moves both quantities downward.</p>
-</section>
-<section id="take-home-map-and-bridge" class="slide level2">
-<h2>Take-home map and bridge</h2>
-<div style="font-size: 0.86em;">
+<section id="summary-gene-environment-correlations" class="slide level2">
+<h2>Summary: gene-environment correlations</h2>
+<div style="font-size: 0.8em;">
 <table class="caption-top">
 <colgroup>
-<col style="width: 33%">
-<col style="width: 33%">
-<col style="width: 33%">
+<col style="width: 25%">
+<col style="width: 75%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Quantity</th>
-<th>What it means</th>
-<th>What it does <strong>not</strong> automatically mean</th>
+<th>Step</th>
+<th>Main lesson</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td><span class="math inline">\(\text{Cov}(x_j,e)\)</span></td>
-<td>SNP-level genotype-environment alignment</td>
-<td>A direct SNP effect</td>
+<td><strong>Confounding vs mediation</strong></td>
+<td>Only passive rGE is confounding; active and evocative rGE are part of the causal pathway from genotype to phenotype</td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\tilde{\beta}_j\)</span></td>
-<td>Marginal SNP association</td>
-<td>A pure direct effect</td>
+<td><strong>Shared statistical symptom</strong></td>
+<td>Stratification, indirect genetic effects, residual confounding, and assortative mating can all induce <span class="math inline">\(\mathrm{Cov}(x_j,e)\neq 0\)</span></td>
 </tr>
 <tr class="odd">
-<td><span class="math inline">\(\text{Cov}(g,y)\)</span></td>
-<td>Genetic value-phenotype association</td>
-<td>Automatically equal to <span class="math inline">\(\text{Var}(g)\)</span> (equality only if <span class="math inline">\(\text{Cov}(g,e)=0\)</span>)</td>
+<td><strong>SNP level</strong></td>
+<td>If <span class="math inline">\(\mathrm{Cov}(x_j,e)\neq 0\)</span>, the marginal association <span class="math inline">\(\tilde{\beta}_j\)</span> is not a pure direct effect, and downstream summary-statistic methods inherit that contamination</td>
 </tr>
 <tr class="even">
-<td><span class="math inline">\(\text{Cov}(g,e)\)</span></td>
-<td>Trait-level genetic-environmental alignment</td>
-<td>A causal variance component by itself</td>
+<td><strong>Trait level</strong></td>
+<td>Many nonzero <span class="math inline">\(\mathrm{Cov}(x_j,e)\)</span> terms do not guarantee <span class="math inline">\(\mathrm{Cov}(g,e)\neq 0\)</span>; the aggregate depends on alignment between direct and indirect effect architectures</td>
+</tr>
+<tr class="odd">
+<td><strong>Assortative mating</strong></td>
+<td>AM can strengthen rGE by increasing focal-relative genetic correlations and opening extra paths between inherited alleles and family environments</td>
+</tr>
+<tr class="even">
+<td><strong>Prediction / PGS</strong></td>
+<td>Even a perfect score tracks <span class="math inline">\(\mathrm{Cov}(g,y)=\mathrm{Var}(g)+\mathrm{Cov}(g,e)\)</span>, so its slope can contain environmentally correlated signal</td>
+</tr>
+<tr class="odd">
+<td><strong>Variance decomposition</strong></td>
+<td><span class="math inline">\(\mathrm{Var}(y)=\mathrm{Var}(g)+\mathrm{Var}(e)+2\mathrm{Cov}(g,e)\)</span> is an identity, not a clean causal partition; with negative rGE, <span class="math inline">\(\mathrm{Var}(y)\)</span> can even be smaller than <span class="math inline">\(\mathrm{Var}(g)\)</span></td>
 </tr>
 </tbody>
 </table>
 </div>
-<div class="callout callout-warning callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Warning</strong></p>
-</div>
-<div class="callout-content">
-<p><strong>Caution:</strong> <code>rGE</code> and <code>GxE</code> are not the same thing. <code>rGE</code> means genes and environments are correlated (for example, <span class="math inline">\(\text{Cov}(g,e) \neq 0\)</span>), while <code>GxE</code> means genetic effects change across environments (an interaction).</p>
-</div>
-</div>
-</div>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>Part 4 follows naturally: family designs change the comparison (toward within-family variation), which helps with several between-family rGE sources but does not remove all covariance structure.</p>
-</div>
-</div>
-</div>
 </section></section>
 <section>
-<section id="part-4-family-based-designs-overview" class="title-slide slide level1 center" data-background-color="#2c3e50" style="color: white;">
-<h1>Part 4: Family-based designs (overview)</h1>
+<section id="part-4-what-to-do-use-families" class="title-slide slide level1 center" data-background-color="#2c3e50" style="color: white;">
+<h1>Part 4: What to do? Use families!</h1>
 
 </section>
 <section id="why-bring-up-families-at-all" class="slide level2">
