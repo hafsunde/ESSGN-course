@@ -454,6 +454,7 @@ E[g_i] = E[e_i] = 0
 = \sigma_g^2
 $$
 
+::: {.fragment}
 Here, the regression slope of $g$ on $y$ is
 
 $$
@@ -462,7 +463,9 @@ b_{g \mid y}
 = \frac{\sigma_g^2}{\sigma_y^2}
 = h^2
 $$
+:::
 
+::: {.fragment}
 Meaning the corresponding expected genetic value given phenotype is
 
 $$
@@ -507,6 +510,7 @@ So the regression coefficient equals $h^2$ only when $\text{Cov}(g,e)=0$.
 If $\text{Cov}(g,e) > 0$, it is larger than $h^2$; if $\text{Cov}(g,e) < 0$, it is smaller.
 
 </details>
+:::
 :::
 
 ## Quantifying genetic similarity 
@@ -651,6 +655,12 @@ $$
 + \text{Var}(\pcol{g_c^{p}})
 + 2\text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}})
 $$
+
+::: {style="font-size: 0.6em;"}
+$$ 
+\text{where} \quad \text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}}) = \sum_{j=1}^{M}\sum_{k=1}^{M} \beta_j\beta_k\,\text{Cov}(\mcol{x_j^{m}}, \pcol{x_k^{p}}) 
+$$
+:::
 :::
 
 ::: {.callout-note .fragment}
@@ -662,7 +672,10 @@ Covariance **within** the maternal or paternal haplotype is called **cis** covar
 
 ## What happens after *several* generations of AM {.smaller}
 
-Repeated assortment plus recombination gradually converts part of the inherited **trans** covariance into **cis** covariance. Written out fully, the three variance components become:
+Repeated assortment plus recombination gradually converts part of the inherited **trans** covariance into **cis** covariance. 
+
+::: {.fragment}
+Written out fully, the three variance components become:
 
 $$
 {\scriptsize
@@ -687,6 +700,7 @@ $$
 }_{2\text{Cov}\left(\mcol{g_c^{m}}, \pcol{g_c^{p}}\right)\ \text{(trans)}}
 }
 $$
+:::
 
 <br>
 
@@ -1078,14 +1092,22 @@ $$
 
 ## Indirect genetic effects, SNP-level
 
-Suppose that relatives $\ell$ (e.g., parents) environmentally influence the focal person's phenotype, and that this influence was heritable on behalf of the relatives:
+Suppose that a relative $\ell$ (e.g., a parent) environmentally influence the focal person's phenotype, and that this influence was heritable on behalf of the relative:
 
 $$
-y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
+\underbrace{
+y_i
+=
+\sum_{j=1}^{M} \beta_j x_{ij}
++
+e_i
+}_{\text{additive model}}
 \quad\text{where}\quad
-e_i = \sum_\ell e_{i \ell}^{R} + e_i^\prime
+\underbrace{
+e_i = \sum_\ell e_{i \ell}^{R} + e_i^\prime}_{\text{environmental effects}}
 \quad\text{and}\quad
-e_{i \ell}^{R} = \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}
+\underbrace{
+e_{i \ell}^{R} = \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}}_{\text{relative's effect}}
 $$
 
 Here $e_{i \ell}^{R}$ is the part of the focal person's environment created by a specific relative $\ell$. 
@@ -1093,7 +1115,7 @@ Here $e_{i \ell}^{R}$ is the part of the focal person's environment created by a
 If SNPs are i.i.d., then the correlation between the focal person's genotype and the environment created by relative $\ell$ will proportional to the genetic relatedness $r_g^{\mathrm{\ell}}$:
 
 $$
-\mathrm{Cov}(x_{j},e_{\ell})
+\mathrm{Cov}(x_{j},e_{\ell}^{R})
 =
 \gamma_{k \ell} \text{Cov}(x_j, x_{j \ell})
 =
@@ -1230,8 +1252,6 @@ $$
 1 + \frac{\text{Cov}(g,e)}{\text{Var}(g)}.
 $$
 
-If $\text{Cov}(g,e)\neq 0$, the slope for the *true* genetic value is not a pure genetic signal. It also reflects environmentally correlated differences.
-
 Polygenic scores can tag environmental effects **even without biased weights**, because the true genetic value is also tagging environmental effects
 :::
 
@@ -1302,7 +1322,7 @@ $$
 
 ::: {.callout-tip .fragment}
 ## Key idea:
-By conditioning on parents' or siblings' genotype, you remove the variance that is predictable from the parents, and are left with only the random segregeation variance. <br>This variance is indepndent from long-range LD and environmental effects.
+By conditioning on parents' or siblings' genotype, you remove the variance that is predictable from the parents, and are left with only the random segregeation variance. <br>This variance is independent from long-range LD and environmental effects.
 :::
 
 
@@ -1333,14 +1353,16 @@ Ordinary GREML asks:
 
 - Are focal people who are slightly more genetically similar also slightly more phenotypically similar?
 
+::: {.fragment}
 M-GCTA asks:
 
 - Additionally, are focal people whose **mothers** are slightly more genetically similar also slightly more phenotypically similar?
+:::
 
-::: {.callout-note}
+::: {.callout-not .fragment}
 In both cases the logic is covariance matching. If a source of genetic similarity creates phenotype similarity, give the mixed model the corresponding covariance matrix.
 
-The logic can also easily be extended to, say, Trios (Trio-GCTA)
+The logic can also easily be extended to, say, trios (Trio-GCTA)
 :::
 
 ## The M-GCTA model
@@ -1348,28 +1370,24 @@ The logic can also easily be extended to, say, Trios (Trio-GCTA)
 In Session 1, GREML used a GRM to model covariance from individuals' own genotypes:
 
 $$
-\mathbf{y}_{F} = \mathbf{g}_{F} + \mathbf{e}_{F},
+\mathbf{y} = \mathbf{g} + \mathbf{e},
 \qquad
-\mathbf{g}_{F} \sim \mathcal{N}(\mathbf{0},\; \sigma_F^2 \mathbf{G}_{F})
+\mathbf{g} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G})
 $$
 
-Here $F$ just means the **focal phenotype**. It could be an offspring phenotype, a maternal phenotype, or any other phenotype measured in one family member.
-
-If a relative's genotype also helps shape that focal phenotype, then part of what we are calling "environment" has its own genetic covariance structure:
+If a relative's genotype (e.g., the mother, M) also shape that phenotype, then part of what we are calling "environment" has its own genetic covariance structure:
 
 $$
-\mathbf{y}_{F} = \mathbf{g}_{F} + \mathbf{g}_{R \rightarrow F} + \mathbf{e}_{F}
+\mathbf{y} = \mathbf{g} + \mathbf{g}_{M} + \mathbf{e},
+\qquad
+\mathbf{g_M} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G_M})
 $$
-
-::: {.callout-note}
-The logic is exactly the same as ordinary GREML: if a pathway creates phenotype covariance, give the model the covariance matrix for that pathway. The only difference is that we now include covariance from a **relative's** genotype as well as the focal person's own genotype.
-:::
 
 In this session's practical, the focal phenotype is the offspring and the relevant relative is the mother. So M-GCTA extends the direct-only GREML model by adding:
 
-- a focal direct component based on $\mathbf{G}_{F} = \mathbf{G}_{oo}$
-- a maternal indirect component based on $\mathbf{G}_{R} = \mathbf{G}_{mm}$
-- a covariance component for overlap between direct and maternal effects
+- a direct component based on $\mathbf{G} =$ `Goo`
+- a maternal indirect component based on $\mathbf{G}_{M} =$ `Gmm`
+- a covariance component for overlap between direct and maternal effects: `Dom`
 
 # Part 5: Practical {background-color="#2c3e50" style="color: white;"}
 
@@ -1578,13 +1596,3 @@ mmaternal = fit(GREMLModel, @formula(y ~ 1), df2, r2; verbose = false)
 ```
 
 ::::
-
-## Interpretation checkpoint
-
-After running the simulation, check that you can answer these questions:
-
-1. Does parent-offspring regression recover something close to the simulated `h^2 = 0.5` in the direct-only setting?
-2. In the direct-only GREML model, what do the estimated variance components look like before and after adding the maternal indirect effect?
-3. Once you fit the maternal model, do the variance components move closer to the data-generating values?
-4. Why does the direct-only model misattribute part of the maternal effect?
-

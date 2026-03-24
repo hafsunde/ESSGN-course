@@ -37,3 +37,5 @@ Thumbs.db
 
 /.quarto/
 **/*.quarto_ipynb
+session_2_speaker_notes_tmp.html
+session_2_speaker_notes.md

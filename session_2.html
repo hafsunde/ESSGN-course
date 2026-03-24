@@ -1641,6 +1641,7 @@ E[g_i] = E[e_i] = 0
 = \text{Var}(g)
 = \sigma_g^2
 \]</span></p>
+<div class="fragment">
 <p>Here, the regression slope of <span class="math inline">\(g\)</span> on <span class="math inline">\(y\)</span> is</p>
 <p><span class="math display">\[
 b_{g \mid y}
@@ -1648,6 +1649,8 @@ b_{g \mid y}
 = \frac{\sigma_g^2}{\sigma_y^2}
 = h^2
 \]</span></p>
+</div>
+<div class="fragment">
 <p>Meaning the corresponding expected genetic value given phenotype is</p>
 <p><span class="math display">\[
 E[g_i \mid y_i] = h^2 y_i
@@ -1688,6 +1691,7 @@ b_{g \mid y}
 <p>where <span class="math inline">\(\sigma_{ge} = \text{Cov}(g,e)\)</span> and <span class="math inline">\(h^2 = \sigma_g^2/\sigma_y^2\)</span>.</p>
 <p>So the regression coefficient equals <span class="math inline">\(h^2\)</span> only when <span class="math inline">\(\text{Cov}(g,e)=0\)</span>. If <span class="math inline">\(\text{Cov}(g,e) &gt; 0\)</span>, it is larger than <span class="math inline">\(h^2\)</span>; if <span class="math inline">\(\text{Cov}(g,e) &lt; 0\)</span>, it is smaller.</p>
 </details>
+</div>
 </div>
 </div>
 </div>
@@ -1863,6 +1867,11 @@ g_c = \mcol{g_c^{m}} + \pcol{g_c^{p}}
 + \text{Var}(\pcol{g_c^{p}})
 + 2\text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}})
 \]</span></p>
+<div style="font-size: 0.6em;">
+<p><span class="math display">\[
+\text{where} \quad \text{Cov}(\mcol{g_c^{m}}, \pcol{g_c^{p}}) = \sum_{j=1}^{M}\sum_{k=1}^{M} \beta_j\beta_k\,\text{Cov}(\mcol{x_j^{m}}, \pcol{x_k^{p}})
+\]</span></p>
+</div>
 </div>
 <div class="fragment">
 <div class="callout callout-note callout-titled callout-style-default">
@@ -1883,7 +1892,9 @@ g_c = \mcol{g_c^{m}} + \pcol{g_c^{p}}
 </section>
 <section id="what-happens-after-several-generations-of-am" class="slide level2 smaller">
 <h2>What happens after <em>several</em> generations of AM</h2>
-<p>Repeated assortment plus recombination gradually converts part of the inherited <strong>trans</strong> covariance into <strong>cis</strong> covariance. Written out fully, the three variance components become:</p>
+<p>Repeated assortment plus recombination gradually converts part of the inherited <strong>trans</strong> covariance into <strong>cis</strong> covariance.</p>
+<div class="fragment">
+<p>Written out fully, the three variance components become:</p>
 <p><span class="math display">\[
 {\scriptsize
 \text{Var}(g_c)
@@ -1907,6 +1918,7 @@ g_c = \mcol{g_c^{m}} + \pcol{g_c^{p}}
 }_{2\text{Cov}\left(\mcol{g_c^{m}}, \pcol{g_c^{p}}\right)\ \text{(trans)}}
 }
 \]</span></p>
+</div>
 <p><br></p>
 <div class="fragment" style="font-size: 0.8em;">
 <table class="caption-top">
@@ -2371,18 +2383,26 @@ e_i = \beta_S S_i + e_i^\prime
 </section>
 <section id="indirect-genetic-effects-snp-level" class="slide level2">
 <h2>Indirect genetic effects, SNP-level</h2>
-<p>Suppose that relatives <span class="math inline">\(\ell\)</span> (e.g., parents) environmentally influence the focal person’s phenotype, and that this influence was heritable on behalf of the relatives:</p>
+<p>Suppose that a relative <span class="math inline">\(\ell\)</span> (e.g., a parent) environmentally influence the focal person’s phenotype, and that this influence was heritable on behalf of the relative:</p>
 <p><span class="math display">\[
-y_i = \sum_{j=1}^{M} \beta_j x_{ij} + e_i
+\underbrace{
+y_i
+=
+\sum_{j=1}^{M} \beta_j x_{ij}
++
+e_i
+}_{\text{additive model}}
 \quad\text{where}\quad
-e_i = \sum_\ell e_{i \ell}^{R} + e_i^\prime
+\underbrace{
+e_i = \sum_\ell e_{i \ell}^{R} + e_i^\prime}_{\text{environmental effects}}
 \quad\text{and}\quad
-e_{i \ell}^{R} = \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}
+\underbrace{
+e_{i \ell}^{R} = \sum_{k=1}^{M}\gamma_{k \ell} x_{i\ell k} + e_{i\ell}}_{\text{relative&#39;s effect}}
 \]</span></p>
 <p>Here <span class="math inline">\(e_{i \ell}^{R}\)</span> is the part of the focal person’s environment created by a specific relative <span class="math inline">\(\ell\)</span>.</p>
 <p>If SNPs are i.i.d., then the correlation between the focal person’s genotype and the environment created by relative <span class="math inline">\(\ell\)</span> will proportional to the genetic relatedness <span class="math inline">\(r_g^{\mathrm{\ell}}\)</span>:</p>
 <p><span class="math display">\[
-\mathrm{Cov}(x_{j},e_{\ell})
+\mathrm{Cov}(x_{j},e_{\ell}^{R})
 =
 \gamma_{k \ell} \text{Cov}(x_j, x_{j \ell})
 =
@@ -2546,7 +2566,6 @@ y = g + e
 =
 1 + \frac{\text{Cov}(g,e)}{\text{Var}(g)}.
 \]</span></p>
-<p>If <span class="math inline">\(\text{Cov}(g,e)\neq 0\)</span>, the slope for the <em>true</em> genetic value is not a pure genetic signal. It also reflects environmentally correlated differences.</p>
 <p>Polygenic scores can tag environmental effects <strong>even without biased weights</strong>, because the true genetic value is also tagging environmental effects</p>
 </div>
 </div>
@@ -2690,7 +2709,7 @@ x_{jc} = \frac{1}{2}x_{jp} + \frac{1}{2}x_{jm} + \color{red}{(\epsilon_{jp} + \e
 <p><strong>Key idea:</strong></p>
 </div>
 <div class="callout-content">
-<p>By conditioning on parents’ or siblings’ genotype, you remove the variance that is predictable from the parents, and are left with only the random segregeation variance. <br>This variance is indepndent from long-range LD and environmental effects.</p>
+<p>By conditioning on parents’ or siblings’ genotype, you remove the variance that is predictable from the parents, and are left with only the random segregeation variance. <br>This variance is independent from long-range LD and environmental effects.</p>
 </div>
 </div>
 </div>
@@ -2751,56 +2770,36 @@ x_{jc} = \frac{1}{2}x_{jp} + \frac{1}{2}x_{jm} + \color{red}{(\epsilon_{jp} + \e
 <ul>
 <li>Are focal people who are slightly more genetically similar also slightly more phenotypically similar?</li>
 </ul>
+<div class="fragment">
 <p>M-GCTA asks:</p>
 <ul>
 <li>Additionally, are focal people whose <strong>mothers</strong> are slightly more genetically similar also slightly more phenotypically similar?</li>
 </ul>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
 </div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
+<div class="callout-not fragment">
 <p>In both cases the logic is covariance matching. If a source of genetic similarity creates phenotype similarity, give the mixed model the corresponding covariance matrix.</p>
-<p>The logic can also easily be extended to, say, Trios (Trio-GCTA)</p>
-</div>
-</div>
+<p>The logic can also easily be extended to, say, trios (Trio-GCTA)</p>
 </div>
 </section>
 <section id="the-m-gcta-model" class="slide level2">
 <h2>The M-GCTA model</h2>
 <p>In Session 1, GREML used a GRM to model covariance from individuals’ own genotypes:</p>
 <p><span class="math display">\[
-\mathbf{y}_{F} = \mathbf{g}_{F} + \mathbf{e}_{F},
+\mathbf{y} = \mathbf{g} + \mathbf{e},
 \qquad
-\mathbf{g}_{F} \sim \mathcal{N}(\mathbf{0},\; \sigma_F^2 \mathbf{G}_{F})
+\mathbf{g} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G})
 \]</span></p>
-<p>Here <span class="math inline">\(F\)</span> just means the <strong>focal phenotype</strong>. It could be an offspring phenotype, a maternal phenotype, or any other phenotype measured in one family member.</p>
-<p>If a relative’s genotype also helps shape that focal phenotype, then part of what we are calling “environment” has its own genetic covariance structure:</p>
+<p>If a relative’s genotype (e.g., the mother, M) also shape that phenotype, then part of what we are calling “environment” has its own genetic covariance structure:</p>
 <p><span class="math display">\[
-\mathbf{y}_{F} = \mathbf{g}_{F} + \mathbf{g}_{R \rightarrow F} + \mathbf{e}_{F}
+\mathbf{y} = \mathbf{g} + \mathbf{g}_{M} + \mathbf{e},
+\qquad
+\mathbf{g_M} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G_M})
 \]</span></p>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>The logic is exactly the same as ordinary GREML: if a pathway creates phenotype covariance, give the model the covariance matrix for that pathway. The only difference is that we now include covariance from a <strong>relative’s</strong> genotype as well as the focal person’s own genotype.</p>
-</div>
-</div>
-</div>
 <p>In this session’s practical, the focal phenotype is the offspring and the relevant relative is the mother. So M-GCTA extends the direct-only GREML model by adding:</p>
 <ul>
-<li>a focal direct component based on <span class="math inline">\(\mathbf{G}_{F} = \mathbf{G}_{oo}\)</span></li>
-<li>a maternal indirect component based on <span class="math inline">\(\mathbf{G}_{R} = \mathbf{G}_{mm}\)</span></li>
-<li>a covariance component for overlap between direct and maternal effects</li>
+<li>a direct component based on <span class="math inline">\(\mathbf{G} =\)</span> <code>Goo</code></li>
+<li>a maternal indirect component based on <span class="math inline">\(\mathbf{G}_{M} =\)</span> <code>Gmm</code></li>
+<li>a covariance component for overlap between direct and maternal effects: <code>Dom</code></li>
 </ul>
 </section></section>
 <section>
@@ -2979,16 +2978,6 @@ Show Session 1 code
 </div>
 </div>
 </div>
-</section>
-<section id="interpretation-checkpoint" class="slide level2 scrollable">
-<h2>Interpretation checkpoint</h2>
-<p>After running the simulation, check that you can answer these questions:</p>
-<ol type="1">
-<li>Does parent-offspring regression recover something close to the simulated <code>h^2 = 0.5</code> in the direct-only setting?</li>
-<li>In the direct-only GREML model, what do the estimated variance components look like before and after adding the maternal indirect effect?</li>
-<li>Once you fit the maternal model, do the variance components move closer to the data-generating values?</li>
-<li>Why does the direct-only model misattribute part of the maternal effect?</li>
-</ol>
 
 </section></section>
     </div>
