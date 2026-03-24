@@ -58,7 +58,7 @@ include-in-header:
 
 A **random variable** $X$ is a quantity whose value is uncertain. We don't know its exact value, but we know the probability of the values it can take - it has a distribution.
 
-The **expectation** (mean) summarizes its center — the "balance point" of the distribution:
+The **expectation** (mean) $E[X] = \mu_x$ summarizes its center — the "balance point" of the distribution:
 
 :::: {.columns}
 ::: {.column width="60%"}
@@ -422,6 +422,7 @@ $$
 	\text{Cov}(x_{jc}, x_{jp}) = \frac{1}{2}\text{Var}(x_{jp})
 $$
 
+<!--
 ::: {.callout-note}
 ## The variance of the offspring genotype
 Variance at SNP $j$ can be decomposed into components determined by the paternal and maternal genotype, and random segregation:
@@ -433,7 +434,7 @@ $$
 = \text{Var}(x_j)
 $$
 :::
-
+-->
 
 
 ## Covariance of genetic values among relatives {.smaller}
@@ -461,10 +462,6 @@ Galton (1886) regressed offspring height on **mid-parent height** (average of bo
 > *Tall parents have tall children — but the children are less extreme. The offspring regress toward the population mean.*
 
 He called it **regression to mediocrity**. The infinitesimal model explains why.
-
-**The regression slope of offspring on one parent:**
-
-$$b = \frac{\text{Cov}(y_c, y_p)}{\text{Var}(y_p)} = \frac{\frac{1}{2}\sigma^2_g}{\sigma^2_y} = \frac{1}{2}h^2$$
 
 **The regression slope of offspring on mid-parent** $\bar{y}_p = \tfrac{1}{2}(y_{\text{mother}} + y_{\text{father}})$:
 
@@ -765,7 +762,7 @@ Predicting genetic values is the primary goal in animal/plant breeding — selec
 The mixed-effects framework handles a wide range of genetic models — all by reshaping **how $\mathbf{Z}$ connects** phenotypes to genetic effects:
 
 | Model | What $\mathbf{Z}$ encodes |
-|---|---|
+|--|----|
 | Multi-trait | Trait indicators — each observation maps to a trait-specific genetic effect |
 | G$\times$E | Environmental covariates — genetic effects interact with measured environments |
 | Growth curves | Time of measurement — genetic effects vary over age or developmental stage |
