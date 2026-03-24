@@ -2651,15 +2651,14 @@ y = g + e
 </section>
 <section id="why-bring-up-families-at-all" class="slide level2">
 <h2>Why bring up families at all?</h2>
-<p>Much of this lecture has been about one central problem: the <strong>population</strong> coefficient <span class="math inline">\(\tilde{\beta}_j\)</span> is not always the same as the direct effect <span class="math inline">\(\beta_j\)</span>.</p>
-<p>Across unrelated people, SNP associations can reflect:</p>
+<p>Part 3 distinguished between <strong>SNP-level</strong> and <strong>trait-level</strong> problems.</p>
+<p>Within the SNP-level story, it is useful to separate <strong>two different objects</strong>:</p>
 <ul>
-<li>local LD</li>
-<li>assortative mating</li>
-<li>stratification</li>
-<li>parental genetic nurture and other shared family environments</li>
+<li><strong>the SNP weight</strong> <span class="math inline">\(\beta_j\)</span>: the marginal coefficient <span class="math inline">\(\tilde{\beta}_j\)</span> need not equal the direct effect</li>
+<li><strong>the realized genotype</strong> <span class="math inline">\(x_j\)</span>: even with a cleaner weight, the inherited genotype can still proxy family background in downstream prediction</li>
+<li><strong>the trait level:</strong> quantities like <span class="math inline">\(\mathrm{Cov}(g,y)\)</span> and variance decompositions can mix direct and indirect or environmentally correlated pathways</li>
 </ul>
-<p>One could, in principle, try to adjust for all of these things by adding more and more covariates. But that is unrealistic, even for observed confounders like other SNPS let lonen unobserved confounders.</p>
+<p>Family designs matter because they respond to both problems in the same way: they <strong>change the comparison</strong>.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2669,32 +2668,20 @@ y = g + e
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>Family-based designs matter because they change the comparison. Instead of asking why people from different families differ, they compare relatives who share much of their background.</p>
+<p>Instead of asking why people from different families differ, family-based designs compare relatives who share much more of their ancestry and family background.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="core-intuition" class="slide level2">
-<h2>Core intuition</h2>
+<section id="why-families-help" class="slide level2">
+<h2>Why families help</h2>
 <p>Within a family, many background features are held much more constant:</p>
 <ul>
 <li>the parents are the same</li>
 <li>ancestry background is much more similar</li>
 <li>much of the rearing environment is shared</li>
 </ul>
-<p>What still differs is the random segregation of alleles from parents to offspring.</p>
-<p>Recall from Session 1:</p>
-<p><span class="math display">\[
-x_{jc} =
-\underbrace{\left(\frac{1}{2}x_{jp} + \epsilon_{jp}\right)}_{\pcol{x_j^{p}}}
-+
-\underbrace{\left(\frac{1}{2}x_{jm} + \epsilon_{jm}\right)}_{\mcol{x_j^{m}}}
-\]</span></p>
-<p><span class="math display">\[
-\text{Var}(x_{jc})
-= \frac{1}{4}\text{Var}(x_{jp}) + \frac{1}{4}\text{Var}(x_{jm}) + \frac{1}{2}\text{Cov}(x_{jp}, x_{jm})
-+ \underbrace{\text{Var}(\epsilon_{jp} + \epsilon_{jm})}_{\text{segregation variance}}
-\]</span></p>
+<p>What still differs is the <strong>realized segregation draw</strong>: which alleles were actually transmitted within the family.</p>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -2704,26 +2691,13 @@ x_{jc} =
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>This is the callback to Session 1: the <strong>random segregation deviations</strong> do the heavy lifting. The key term is the segregation variance, and it is <strong>random</strong>. It comes from which alleles happened to be transmitted, not from stable differences in ancestry, parents, or shared family background.</p>
-</div>
-</div>
-</div>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>Across siblings, the parents are the same, so much of the family background is fixed. What differs is the realized draw of the <span class="math inline">\(\epsilon\)</span> terms. That is why family designs use <strong>within-family random segregation</strong> to get closer to direct effects than ordinary population GWAS.</p>
+<p>This is the callback to Session 1. Family designs move away from <strong>across-family variation</strong> and closer to <strong>within-family variation</strong>, where much of the between-family background is already held fixed.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="what-family-designs-are-good-for" class="slide level2">
-<h2>What family designs are good for</h2>
+<section id="three-uses-of-families" class="slide level2">
+<h2>Three uses of families</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 50%">
@@ -2731,33 +2705,28 @@ x_{jc} =
 </colgroup>
 <thead>
 <tr class="header">
-<th>Question</th>
-<th>High-level answer</th>
+<th>Object or level</th>
+<th>What family information helps with</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Why can they help with stratification?</td>
-<td>Relatives are compared against each other rather than against people from different ancestry backgrounds</td>
+<td><strong><span class="math inline">\(\beta_j\)</span> problem</strong></td>
+<td>Conditioning on parental genotypes in GWAS can make estimated SNP weights closer to direct effects by removing much of the <strong>between-family</strong> signal from stratification, parental background, and some assortative mating</td>
 </tr>
 <tr class="even">
-<td>Why can they help with parental genetic nurture?</td>
-<td>Siblings share the same parents, so much of the parental background is held fixed</td>
+<td><strong><span class="math inline">\(x_j\)</span> / PGS problem</strong></td>
+<td>If the problem is in the realized inherited genotype or score, the relevant control is the <strong>parental genetic value</strong> or parental PGS, which absorbs the family-predictable component</td>
 </tr>
 <tr class="odd">
-<td>Why can they help with assortative mating?</td>
-<td>They hold the parental pair fixed, removing much of the between-family assortment signal</td>
-</tr>
-<tr class="even">
-<td>Why are they appealing conceptually?</td>
-<td>They target the same confounding problem we have discussed all day, but by changing the design rather than adding more covariates</td>
+<td><strong>Trait-level covariance problem</strong></td>
+<td>Family-based mixed models can use family covariance structure to separate direct and indirect pathways rather than forcing all genotype-related covariance into one component</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="what-they-do-not-magically-solve" class="slide level2">
-<h2>What they do <strong>not</strong> magically solve</h2>
-<p>Family-based estimates are still not automatically equal to the direct causal effect.</p>
+<section id="what-families-help-with-and-what-they-do-not" class="slide level2">
+<h2>What families help with, and what they do not</h2>
 <table class="caption-top">
 <colgroup>
 <col style="width: 50%">
@@ -2765,26 +2734,26 @@ x_{jc} =
 </colgroup>
 <thead>
 <tr class="header">
-<th>Remaining limitation</th>
-<th>Why it remains</th>
+<th>High-level takeaway</th>
+<th>Why</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Local and long-range LD</td>
-<td>Relatives still inherit correlated variants, including background correlation induced by assortative mating</td>
+<td><strong>They help with between-family confounding</strong></td>
+<td>Comparing relatives reduces differences in ancestry background, parental background, and some AM-related between-family structure</td>
 </tr>
 <tr class="even">
-<td>Indirect effects within families</td>
-<td>One relative’s genotype can still affect another relative’s environment</td>
+<td><strong>They do not make LD disappear</strong></td>
+<td>Relatives still inherit correlated variants, including long-range structure created by assortative mating</td>
 </tr>
 <tr class="odd">
-<td>Non-shared environments</td>
-<td>Siblings do not experience identical environments</td>
+<td><strong>They do not remove all indirect effects or rGE</strong></td>
+<td>Relatives can still shape each other’s environments, and non-shared environments still differ</td>
 </tr>
 <tr class="even">
-<td>Lower precision</td>
-<td>Within-family contrasts use less genetic variation than population GWAS</td>
+<td><strong>They are less precise</strong></td>
+<td>Within-family contrasts use less variation than population GWAS</td>
 </tr>
 </tbody>
 </table>
@@ -2797,112 +2766,16 @@ x_{jc} =
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>The right takeaway is not “family GWAS is perfect.” The right takeaway is that it removes much of the <strong>between-family confounding</strong> that worries us in population GWAS.</p>
+<p>Conditioning on parental genotypes can help with the <strong><span class="math inline">\(\beta_j\)</span> problem</strong>, but it does not by itself solve the <strong><span class="math inline">\(x_j\)</span> problem</strong>. For downstream prediction, the inherited genotype or PGS can still contain a family-background component unless we also condition on parental genetic values.</p>
 </div>
 </div>
 </div>
-</section>
-<section id="cleaner-weights-are-not-the-same-as-unconfounded-scores" class="slide level2">
-<h2>Cleaner weights are not the same as unconfounded scores</h2>
-<p>Family designs mainly help with the <strong>estimated SNP weight</strong> by making the marginal coefficient closer to a direct effect.</p>
-<p>But many downstream uses depend on both the weight and the realized genotype:</p>
-<p><span class="math display">\[
-\mathrm{PGS}_i^{F} = \sum_j \hat{\tilde{\beta}}_j^{F} x_{ij}
-\]</span></p>
-<p>That does <strong>not</strong> mean the score itself is automatically unconfounded.</p>
-<p>Two problems can still remain at the SNP level:</p>
-<ul>
-<li><span class="math inline">\(x_{ij}\)</span> can still be correlated with other causal SNPs through local or long-range LD</li>
-<li><span class="math inline">\(x_{ij}\)</span> can still be correlated with environments, so <span class="math inline">\(\text{Cov}(x_{ij}, e_i)\)</span> need not vanish</li>
-</ul>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Important</strong></p>
-</div>
-<div class="callout-content">
-<p>Even a perfectly measured genetic value <span class="math inline">\(g\)</span> would still be associated with the phenotype through both direct and indirect pathways. A polygenic score has the same problem, so better SNP weights alone do not make it unconfounded.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="why-adjust-for-parental-or-sibling-polygenic-scores" class="slide level2">
-<h2>Why adjust for parental or sibling polygenic scores?</h2>
-<p>At the polygenic score level, the same segregation logic still applies. A focal person’s score can be written as:</p>
-<p><span class="math display">\[
-\mathrm{PGS}_F = \frac{1}{2}\left(\mathrm{PGS}_p + \mathrm{PGS}_m\right) + \Delta_F
-\]</span></p>
-<p>where:</p>
-<ul>
-<li><span class="math inline">\(\frac{1}{2}(\mathrm{PGS}_p + \mathrm{PGS}_m)\)</span> is the expected family background in the score</li>
-<li><span class="math inline">\(\Delta_F\)</span> is the <strong>random segregation deviation</strong> in the score</li>
-</ul>
-<p>If the focal phenotype depends both on the focal genotype and on family-level genetic background, then regressing <span class="math inline">\(y_F\)</span> on <span class="math inline">\(\mathrm{PGS}_F\)</span> alone will mix those two sources of variation.</p>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>So the problem is the same as before: the observed polygenic score contains both a <strong>between-family component</strong> and a <strong>within-family segregation component</strong>.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="why-the-adjustment-helps" class="slide level2">
-<h2>Why the adjustment helps</h2>
-<p>If we fit</p>
-<p><span class="math display">\[
-y_F = b_1 \mathrm{PGS}_F + b_2 \overline{\mathrm{PGS}}_{parent} + \varepsilon_F
-\qquad \text{or} \qquad
-y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
-\]</span></p>
-<p>then the extra family score absorbs part of the shared family-genetic background.</p>
-<p>That means the remaining identifying variation in <span class="math inline">\(\mathrm{PGS}_F\)</span> is closer to the segregation term <span class="math inline">\(\Delta_F\)</span>:</p>
-<ul>
-<li>adjusting for <strong>parental</strong> scores targets the family background more directly</li>
-<li>adjusting for a <strong>sibling</strong> score uses another child of the same parents as a proxy for that shared background</li>
-<li>in both cases, the coefficient on <span class="math inline">\(\mathrm{PGS}_F\)</span> becomes more within-family in spirit</li>
-</ul>
-<div class="callout callout-important callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Important</strong></p>
-</div>
-<div class="callout-content">
-<p>This is why these controls can help: they soak up the part of the focal score that is predictable from the family, leaving more of the signal that comes from the focal person’s <strong>random segregation draw</strong>.</p>
-</div>
-</div>
-</div>
-<div class="callout callout-note callout-titled callout-style-default">
-<div class="callout-body">
-<div class="callout-title">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<p><strong>Note</strong></p>
-</div>
-<div class="callout-content">
-<p>But again, this is not magic. LD, residual <span class="math inline">\(\text{Cov}(x,e)\)</span>, sibling indirect effects, and measurement error in the scores can still matter.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="mixed-model-family-designs" class="slide level2">
-<h2>Mixed-model family designs</h2>
-<p>Sibling comparisons are one kind of family design. Another is to use relatives inside a <strong>mixed model</strong> to separate direct and indirect genetic pathways.</p>
 </section>
 <section id="intuition-ordinary-greml-vs-m-gcta" class="slide level2">
 <h2>Intuition: ordinary GREML vs M-GCTA</h2>
+<p>One family answer is to estimate cleaner <strong>SNP weights</strong> by conditioning on parental genotypes.</p>
+<p>Another is to make <strong>PGS analyses</strong> more within-family by conditioning on parental genetic values.</p>
+<p>The trait-level family answer can be a <strong>family-based mixed model</strong>.</p>
 <p>Ordinary GREML asks:</p>
 <ul>
 <li>Are focal people who are slightly more genetically similar also slightly more phenotypically similar?</li>
@@ -2927,14 +2800,14 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 </section>
 <section id="the-m-gcta-model" class="slide level2">
 <h2>The M-GCTA model</h2>
-<p>In Session 1, GREML used a GRM to model covariance from individuals’ own genotypes:</p>
+<p>In Session 1, GREML modeled covariance from individuals’ own genotypes:</p>
 <p><span class="math display">\[
 \mathbf{y}_{F} = \mathbf{g}_{F} + \mathbf{e}_{F},
 \qquad
 \mathbf{g}_{F} \sim \mathcal{N}(\mathbf{0},\; \sigma_F^2 \mathbf{G}_{F})
 \]</span></p>
 <p>Here <span class="math inline">\(F\)</span> just means the <strong>focal phenotype</strong>. It could be an offspring phenotype, a maternal phenotype, or any other phenotype measured in one family member.</p>
-<p>If a relative’s genotype also helps shape that focal phenotype, then part of what we are calling “environment” has its own genetic covariance structure:</p>
+<p>If a relative’s genotype also helps shape that focal phenotype, then the trait-level covariance has more than one genetic pathway:</p>
 <p><span class="math display">\[
 \mathbf{y}_{F} = \mathbf{g}_{F} + \mathbf{g}_{R \rightarrow F} + \mathbf{e}_{F}
 \]</span></p>
@@ -2947,7 +2820,7 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>The logic is exactly the same as ordinary GREML: if a pathway creates phenotype covariance, give the model the covariance matrix for that pathway. The only difference is that we now include covariance from a <strong>relative’s</strong> genotype as well as the focal person’s own genotype.</p>
+<p>The logic is the same as ordinary GREML: if a pathway creates phenotype covariance, give the model the covariance matrix for that pathway. M-GCTA adds covariance from a <strong>relative’s</strong> genotype as well as the focal person’s own genotype.</p>
 </div>
 </div>
 </div>
@@ -2979,20 +2852,19 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <p><strong>Important</strong></p>
 </div>
 <div class="callout-content">
-<p>This is why M-GCTA belongs in the family-design toolbox: it uses known family roles and multiple related genomes to ask whether a relative’s genotype shapes the focal outcome through the environment, rather than forcing all genotype-related covariance into the focal person’s direct effect.</p>
+<p>This is the trait-level family answer in today’s lecture: use family covariance structure to ask whether a relative’s genotype shapes the focal outcome through the environment, rather than forcing all genotype-related covariance into the focal person’s direct effect.</p>
 </div>
 </div>
 </div>
 </section>
-<section id="bridge-to-tomorrow" class="slide level2">
-<h2>Bridge to tomorrow</h2>
-<p>For this session, the main message is just:</p>
-<p><span class="math display">\[
-\text{Population GWAS: across-family variation}
-\qquad \longrightarrow \qquad
-\text{Family designs: within-family variation}
-\]</span></p>
-<p>That shift in identifying variation is why family-based methods are such an important complement to standard GWAS.</p>
+<section id="bridge-to-practical" class="slide level2">
+<h2>Bridge to practical</h2>
+<p>The family answer depends on <strong>where the problem lives</strong>:</p>
+<ul>
+<li>if the problem is in <strong><span class="math inline">\(\beta_j\)</span></strong>, condition on parental genotypes</li>
+<li>if the problem is in <strong><span class="math inline">\(x_j\)</span> or a PGS</strong>, condition on parental genetic values</li>
+<li>if the problem is in <strong>trait-level covariance decomposition</strong>, use a family mixed model such as M-GCTA</li>
+</ul>
 <div class="callout callout-note callout-titled callout-style-default">
 <div class="callout-body">
 <div class="callout-title">
@@ -3002,7 +2874,7 @@ y_F = b_1 \mathrm{PGS}_F + b_2 \mathrm{PGS}_{sib} + \varepsilon_F
 <p><strong>Note</strong></p>
 </div>
 <div class="callout-content">
-<p>We will leave the design details, estimators, and tradeoffs for the family-based session, and keep today’s treatment at the conceptual level.</p>
+<p>Today’s practical focuses on the <strong>trait-level</strong> example: M-GCTA with simulated trios.</p>
 </div>
 </div>
 </div>
