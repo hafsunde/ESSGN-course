@@ -16,6 +16,7 @@ sources/
 .env
 .venv/
 venv/
+Old/
 
 # --- Folders ending in "cache" ---
 *cache/
