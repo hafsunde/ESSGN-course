@@ -2791,15 +2791,30 @@ x_{jc} = \frac{1}{2}x_{jp} + \frac{1}{2}x_{jm} + \color{red}{(\epsilon_{jp} + \e
 \]</span></p>
 <p>If a relative’s genotype (e.g., the mother, M) also shape that phenotype, then part of what we are calling “environment” has its own genetic covariance structure:</p>
 <p><span class="math display">\[
-\mathbf{y} = \mathbf{g} + \mathbf{g}_{M} + \mathbf{e},
+\mathbf{y} = \mathbf{g}_c + \mathbf{g}_m + \mathbf{e},
 \qquad
-\mathbf{g_M} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G_M})
+\begin{pmatrix}
+\mathbf{g}_c \\
+\mathbf{g}_m
+\end{pmatrix}
+\sim
+\mathcal{N}
+\left(
+\begin{pmatrix}
+0 \\
+0
+\end{pmatrix},
+\begin{pmatrix}
+\sigma_d^2 \mathbf{G}_{oo} &amp; \sigma_{di} \mathbf{G}_{om} \\
+\sigma_{di} \mathbf{G}_{mo} &amp; \sigma_i^2 \mathbf{G}_{mm}
+\end{pmatrix}
+\right)
 \]</span></p>
 <p>In this session’s practical, the focal phenotype is the offspring and the relevant relative is the mother. So M-GCTA extends the direct-only GREML model by adding:</p>
 <ul>
-<li>a direct component based on <span class="math inline">\(\mathbf{G} =\)</span> <code>Goo</code></li>
-<li>a maternal indirect component based on <span class="math inline">\(\mathbf{G}_{M} =\)</span> <code>Gmm</code></li>
-<li>a covariance component for overlap between direct and maternal effects: <code>Dom</code></li>
+<li>a direct component based on <span class="math inline">\(\mathbf{G}_{oo} =\)</span> <code>Goo</code></li>
+<li>a maternal indirect component based on <span class="math inline">\(\mathbf{G}_{mm} =\)</span> <code>Gmm</code></li>
+<li>a covariance component for overlap between direct and maternal effects (<span class="math inline">\(\textbf{G_om + Gmo}\)</span>): <code>Dom</code></li>
 </ul>
 </section></section>
 <section>

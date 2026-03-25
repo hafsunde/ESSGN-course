@@ -1378,16 +1378,31 @@ $$
 If a relative's genotype (e.g., the mother, M) also shape that phenotype, then part of what we are calling "environment" has its own genetic covariance structure:
 
 $$
-\mathbf{y} = \mathbf{g} + \mathbf{g}_{M} + \mathbf{e},
+\mathbf{y} = \mathbf{g}_c + \mathbf{g}_m + \mathbf{e},
 \qquad
-\mathbf{g_M} \sim \mathcal{N}(\mathbf{0},\; \sigma_g^2 \mathbf{G_M})
+\begin{pmatrix}
+\mathbf{g}_c \\
+\mathbf{g}_m
+\end{pmatrix}
+\sim
+\mathcal{N}
+\left(
+\begin{pmatrix}
+0 \\
+0
+\end{pmatrix},
+\begin{pmatrix}
+\sigma_d^2 \mathbf{G}_{oo} & \sigma_{di} \mathbf{G}_{om} \\
+\sigma_{di} \mathbf{G}_{mo} & \sigma_i^2 \mathbf{G}_{mm}
+\end{pmatrix}
+\right)
 $$
 
 In this session's practical, the focal phenotype is the offspring and the relevant relative is the mother. So M-GCTA extends the direct-only GREML model by adding:
 
-- a direct component based on $\mathbf{G} =$ `Goo`
-- a maternal indirect component based on $\mathbf{G}_{M} =$ `Gmm`
-- a covariance component for overlap between direct and maternal effects: `Dom`
+- a direct component based on $\mathbf{G}_{oo} =$ `Goo`
+- a maternal indirect component based on $\mathbf{G}_{mm} =$ `Gmm`
+- a covariance component for overlap between direct and maternal effects ($\textbf{G_om + Gmo}$): `Dom`
 
 # Part 5: Practical {background-color="#2c3e50" style="color: white;"}
 
