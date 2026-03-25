@@ -850,6 +850,10 @@ Run **sim_genomic.R** (or **.jl**) in parts 1–4:
 In practice, $\mathbf{G}$ is computed by optimized genetics libraries. You can also speed things up by pointing R to a fast BLAS (e.g., OpenBLAS, MKL).
 :::
 
+[sim_genomic.R](https://github.com/hafsunde/ESSGN-course/blob/main/practical/sim_genomic_raw.R) <br>
+[sim_genomic.jl](https://github.com/hafsunde/ESSGN-course/blob/main/practical/sim_genomic.jl)
+
+
 ## Part 1: Simulate genotypes {.smaller}
 
 :::: {.panel-tabset}
